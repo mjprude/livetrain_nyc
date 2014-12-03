@@ -1,7 +1,7 @@
 # Using MTA real-time arrival data
 The MTA provides it's real-time subway arrival data in a google protocol buffer format. To use this, follow the instructions below:
 
-Explination of installation:
+Explaination of installation:
 https://news.ycombinator.com/item?id=4979517
 
 ### -Get a Developer API Key from the MTA
