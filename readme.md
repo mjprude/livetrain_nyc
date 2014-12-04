@@ -70,7 +70,7 @@ ruby-protoc gtfs-nyct-subway.proto
 
 Now that we have the ability to do something with the Protocol Buffer feed, we need to grab the MTA's feed. (See API curl above. In the case below we saved the feed to our working directory)
 
-In a separate ruby file, require the gtfs-realtime.pb.rb and gtfs-realtime.proto files. Here's where the magic of the ruby-protocol-buffers gem comes into play.  We can use the modules that it wrote for us and .parse method to read the encrypted string. It turns out you can call .to_hash on the return value of .parse and you get a nice, familiar ruby hash.
+In a separate ruby file, require the gtfs-realtime.pb.rb and gtfs-realtime.proto files. Here's where the magic of the ruby-protocol-buffers gem comes into play.  We can use the modules that it wrote for us and the .parse method to read the encrypted string. It turns out you can call .to_hash on the return value of .parse and you get a nice, familiar ruby hash.
 
 ```ruby
 require './gtfs-realtime.pb.rb'
