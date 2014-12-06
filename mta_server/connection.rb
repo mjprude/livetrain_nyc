@@ -1,4 +1,4 @@
 ActiveRecord::Base.establish_connection({
   adapter: 'postgresql',
-  database: '***DATABASE***'
+  database: 'mta_realtime'
   })
