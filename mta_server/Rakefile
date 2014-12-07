@@ -8,7 +8,6 @@ Dir[ROOT_PATH+"/lib/*.rb"].each{ |file| require file }
 Dir[ROOT_PATH+"/helpers/*.rb"].each{ |file| require file }
 
 namespace :db do
-  # csv = File.read()
 end
 
 desc "Show Routes for This File"
