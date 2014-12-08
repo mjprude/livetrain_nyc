@@ -5,6 +5,5 @@ module MTA
       'Feedz'
     end
 
-
   end
 end
