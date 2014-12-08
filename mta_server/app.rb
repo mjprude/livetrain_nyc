@@ -8,5 +8,6 @@ Dir[ROOT_PATH+"/modules/*.rb"].each{ |file| require file }
 
 
 get '/api/update' do
+  content_type :json
   MTA::FeedParser.feed
 end
