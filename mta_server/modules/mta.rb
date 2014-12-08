@@ -4,12 +4,12 @@ module MTA
     def self.feed
       filenames = []
       Dir.glob('./mta_assets/feeds/*/*.json') do |file|
-        filenames << [File.basename(file), File.path(file)]
+        filenames << File.path(file)
       end
       filenames.sort! do |fileX, fileY|
-        Time.parse(fileX[0].chomp('_realtime.json').gsub!('_', ' ').gsub!('.', ':')) <=> Time.parse(fileY[0].chomp('_realtime.json').gsub!('_', ' ').gsub!('.', ':'))
+        File.mtime(fileX) <=> File.mtime(fileY)
       end
-      JSON.generate(human_feed("#{filenames[1][1]}"))
+      JSON.generate(human_feed(filenames[1]))
     end
 
     def self.get_ruby_hash(file)
