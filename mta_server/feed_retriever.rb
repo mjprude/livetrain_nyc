@@ -16,7 +16,7 @@ loop do
   date, time, zone = current_time.to_s.split(' ')
   string = "./mta_assets/feeds/#{@feedA ? 'feedA' : 'feedB'}/" + date + "_" + time.gsub(':', '.') + "_" + 'realtime.json'
 
-  transit_realtime_data = TransitRealtime::FeedMessage.parse(HTTParty.get("http://datamine.mta.info/mta_esi.php?key=#{ENV['MTA_REALTIME_API_KEY']}&feed_id=2")).to_hash
+  transit_realtime_data = TransitRealtime::FeedMessage.parse(HTTParty.get("http://datamine.mta.info/mta_esi.php?key=#{ENV['MTA_REALTIME_API_KEY']}&feed_id=1")).to_hash
   ###
   ### Maybe come up with a way to handle situations where transit_realtime_data is not available?
   ###

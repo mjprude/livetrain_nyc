@@ -47,7 +47,7 @@ module MTA
           end
           human_trip_update = {
             'trip_id' => entity['trip_update']['trip']['trip_id'],
-            'direction' => entity['trip_update']['trip']['trip_id'][-1],
+            'direction' => entity['trip_update']['stop_time_update'][0]['stop_id'][-1],
             'route_id' => entity['trip_update']['trip']['route_id'],
             'stop_time_update' => human_stop_time_update
           }
