@@ -27,5 +27,5 @@ loop do
   f.write(JSON.generate(transit_realtime_data))
   f.close
   @feedA = !@feedA
-  sleep 35
+  sleep 30
 end
