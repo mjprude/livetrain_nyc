@@ -41,12 +41,10 @@ module MTA
             humanized_stop_info = {}
             humanized_stop_info['stop_id'] = stop['stop_id'][0..-2]
             if stop['arrival']
-              date, time, zone = Time.at(stop['arrival']['time']).to_s.split(' ')
-              humanized_stop_info['arrival_time'] = time
+              humanized_stop_info['arrival_time'] = human_time(Time.at(stop['arrival']['time']))
             end
             if stop['departure']
-              date, time, zone = Time.at(stop['departure']['time']).to_s.split(' ')
-              humanized_stop_info['departure_time'] = time
+              humanized_stop_info['departure_time'] = human_time(Time.at(stop['departure']['time']))
             end
             human_stop_time_update << humanized_stop_info
           end
