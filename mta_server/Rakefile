@@ -16,11 +16,11 @@ task :routes do
 
   def capitalize_http(route)
     route
-      .gsub('get', '    GET  ')
-      .gsub('put', '    PUT  ')
-      .gsub('patch', '  PATCH  ')
-      .gsub('post', '   POST  ')
-      .gsub('delete', ' DELETE  ')
+    .gsub('get', '    GET  ')
+    .gsub('put', '    PUT  ')
+    .gsub('patch', '  PATCH  ')
+    .gsub('post', '   POST  ')
+    .gsub('delete', ' DELETE  ')
   end
 
   def get_routes(path)
@@ -38,5 +38,16 @@ task :routes do
   else
     Dir['./controllers/*.rb'].each{ |controller| get_routes(controller) }
   end
+
+end
+
+namespace :mta do
+
+  desc 'run feed retriever'
+  task :feed do
+
+
+  end
+
 
 end
