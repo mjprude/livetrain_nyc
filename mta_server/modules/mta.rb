@@ -2,6 +2,17 @@ module MTA
   class FeedParser
 
     def self.feed
+      JSON.generate(human_feed(find_most_recent_file))
+    end
+
+    def self.line(route_id)
+      feed = human_feed(find_most_recent_file)
+      JSON.generate(feed['entity'].select { |entity| entity["route_id"] == route_id })
+    end
+
+    ### "Helper" methods
+
+    def self.find_most_recent_file
       filenames = []
       Dir.glob('./mta_assets/feeds/*/*.json') do |file|
         filenames << File.path(file)
@@ -9,17 +20,11 @@ module MTA
       filenames.sort! do |fileX, fileY|
         File.mtime(fileX) <=> File.mtime(fileY)
       end
-      JSON.generate(human_feed(filenames[1]))
+      filenames[1]
     end
 
     def self.get_ruby_hash(file)
       hash = JSON.parse(File.read(file))
-    end
-
-    def self.get_trip_id(entity)
-      if entity['trip_update']
-        entity['trip_update']['trip']['trip_id']
-      end
     end
 
     def self.human_time(computer_time)
@@ -32,7 +37,7 @@ module MTA
       entities.each do |entity|
         if entity['trip_update']
           human_stop_time_update = []
-          entity['trip_update']['stop_time_update'].each do |stop|
+          entity['trip_update']['stop_time_update'].slice(0..1).each do |stop|
             humanized_stop_info = {}
             humanized_stop_info['stop_id'] = stop['stop_id'][0..-2]
             if stop['arrival']
@@ -49,7 +54,8 @@ module MTA
             'trip_id' => entity['trip_update']['trip']['trip_id'],
             'direction' => entity['trip_update']['stop_time_update'][0]['stop_id'][-1],
             'route_id' => entity['trip_update']['trip']['route_id'],
-            'stop_time_update' => human_stop_time_update
+            'stops_remaining' => entity['trip_update']['stop_time_update'].count,
+            'stop_time_update' => human_stop_time_update,
           }
           human_entities << human_trip_update
         end

@@ -46,7 +46,6 @@ namespace :mta do
   desc 'run feed retriever'
   task :feed do
 
-
   end
 
 
