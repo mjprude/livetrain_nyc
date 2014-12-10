@@ -11,3 +11,8 @@ get '/api/update' do
   content_type :json
   MTA::FeedParser.feed
 end
+
+get '/api/line/:route_id' do
+  content_type :json
+  MTA::FeedParser.line(params[:route_id])
+end

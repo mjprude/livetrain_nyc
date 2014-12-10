@@ -7,3 +7,4 @@ gem 'sinatra-reloader'
 gem 'pg'
 gem 'json'
 gem 'httparty'
+gem 'whenever', :require => false
