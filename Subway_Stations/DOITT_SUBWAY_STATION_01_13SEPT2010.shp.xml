@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<metadata>
+	<idinfo>
+		<citation>
+			<citeinfo>
+				<origin>Metropolitan Transportation Authority</origin>
+				<pubdate>9/11/2009</pubdate>
+				<title Sync="TRUE">DOITT_SUBWAY_STATION_01_13SEPT2010</title>
+				<geoform Sync="TRUE">vector digital data</geoform>
+				<ftname Sync="TRUE">DOITT_SUBWAY_STATION_01_13SEPT2010</ftname><onlink Sync="TRUE">\\doitt.nycnet\gisroot\GIS\Projects\DoITT\BIG APPS\2010\DOITT_SUBWAY_STATION_01_13SEPT2010.shp</onlink></citeinfo>
+		</citation>
+		<descript>
+			<abstract>Point representing approximate location of NYC Transit Subway stations</abstract>
+			<purpose>To help locate Subway stations</purpose>
+			<langdata Sync="TRUE">en</langdata></descript>
+		<timeperd>
+			<timeinfo>
+				<sngdate>
+					<caldate>6/2010</caldate>
+				</sngdate>
+			</timeinfo>
+			<current>publication date</current>
+		</timeperd>
+		<status>
+			<progress>Complete</progress>
+			<update>Irregular</update>
+		</status>
+		<spdom>
+			<bounding>
+				<westbc Sync="TRUE">-74.031009</westbc>
+				<eastbc Sync="TRUE">-73.754305</eastbc>
+				<northbc Sync="TRUE">40.903222</northbc>
+				<southbc Sync="TRUE">40.575777</southbc>
+			</bounding>
+			<lboundng><leftbc Sync="TRUE">975677.969994</leftbc><rightbc Sync="TRUE">1052169.082035</rightbc><bottombc Sync="TRUE">149142.012707</bottombc><topbc Sync="TRUE">268346.145860</topbc></lboundng></spdom>
+		<keywords>
+			<theme>
+				<themekt>REQUIRED: Reference to a formally registered thesaurus or a similar authoritative source of theme keywords.</themekt>
+				<themekey>Metropolitan Transportation Authority, MTA, Subway stations, Transportation, Subway, Trains</themekey>
+			</theme>
+		</keywords>
+		<accconst>None</accconst>
+		<useconst>The product was developed by the City of New York and is provided solely for informational purposes. The City makes no representation as to the accuracy of the information or its suitability for any purpose. The City disclaims any liability for errors. The City makes no warranties, express or implied, including, but not limited to, implied warranties or merchantability and fitness for a particular purpose as to the quality, content, accuracy, or completeness of the information, text graphics, links and other items contained on this product. Materials are subject to change without notice from the City. In no event will the City be liable for any damages, including loss of data, lost profits, business interruption, loss of business information or other pecuniary loss that might arise from the use of this map or the information it contains. Any determination of topography or contours, or any depiction of physical improvements, property lines or boundaries is for general information only and shall not be used for the design, modification, or construction of improvements to real property or for flood plain determination.</useconst>
+		<ptcontac>
+			<cntinfo>
+				<cntorgp>
+					<cntorg>NYC Transit Operations Planning</cntorg>
+				</cntorgp>
+			</cntinfo>
+		</ptcontac>
+		<native Sync="TRUE">Microsoft Windows XP Version 5.1 (Build 2600) Service Pack 2; ESRI ArcCatalog 9.3.1.3000</native>
+		<natvform Sync="TRUE">Shapefile</natvform></idinfo>
+	<spdoinfo>
+		<direct Sync="TRUE">Vector</direct>
+		<ptvctinf>
+			<sdtsterm Name="DOITT_SUBWAY_STATION_01_13SEPT2010">
+				<sdtstype Sync="TRUE">Entity point</sdtstype>
+				<ptvctcnt Sync="TRUE">470</ptvctcnt>
+			</sdtsterm>
+			<esriterm Name="DOITT_SUBWAY_STATION_01_13SEPT2010"><efeatyp Sync="TRUE">Simple</efeatyp><efeageom Sync="TRUE">Point</efeageom><esritopo Sync="TRUE">FALSE</esritopo><efeacnt Sync="TRUE">470</efeacnt><spindex Sync="TRUE">TRUE</spindex><linrefer Sync="TRUE">FALSE</linrefer></esriterm></ptvctinf>
+	</spdoinfo>
+	<spref>
+		<horizsys>
+			<planar>
+				<planci>
+					<plance Sync="TRUE">coordinate pair</plance>
+					<coordrep>
+						<absres Sync="TRUE">0.000000</absres>
+						<ordres Sync="TRUE">0.000000</ordres>
+					</coordrep>
+					<plandu Sync="TRUE">U.S. Foot</plandu>
+				</planci>
+				<mapproj><mapprojn Sync="TRUE">Lambert Conformal Conic</mapprojn><lambertc><stdparll Sync="TRUE">40.666667</stdparll><stdparll Sync="TRUE">41.033333</stdparll><longcm Sync="TRUE">-74.000000</longcm><latprjo Sync="TRUE">40.166667</latprjo><feast Sync="TRUE">984250.000000</feast></lambertc></mapproj></planar>
+			<geodetic>
+				<horizdn Sync="TRUE">NAD 83 [Continental US]</horizdn>
+				<ellips Sync="TRUE">GRS 80</ellips>
+				<semiaxis Sync="TRUE">6378137.000000</semiaxis>
+				<denflat Sync="TRUE">298.257222</denflat>
+			</geodetic>
+			<cordsysn><geogcsn Sync="TRUE">NAD 83 [Continental US]</geogcsn><projcsn Sync="TRUE">New York 3104, Long Island Zone [1983, US Survey feet]</projcsn></cordsysn></horizsys>
+		<vertdef>
+			<altsys>
+				<altres Sync="TRUE">1.000000</altres>
+				<altenc Sync="TRUE">Explicit elevation coordinate included with horizontal coordinates</altenc>
+			</altsys>
+		</vertdef>
+	</spref>
+	<eainfo>
+		<detailed Name="DOITT_SUBWAY_STATION_01_13SEPT2010">
+			<enttyp>
+				<enttypl Sync="TRUE">DOITT_SUBWAY_STATION_01_13SEPT2010</enttypl>
+				<enttypt Sync="TRUE">Feature Class</enttypt><enttypc Sync="TRUE">470</enttypc></enttyp>
+			<attr><attrlabl Sync="TRUE">FID</attrlabl><attalias Sync="TRUE">FID</attalias><attrtype Sync="TRUE">OID</attrtype><attwidth Sync="TRUE">4</attwidth><atprecis Sync="TRUE">0</atprecis><attscale Sync="TRUE">0</attscale><attrdef Sync="TRUE">Internal feature number.</attrdef><attrdefs Sync="TRUE">ESRI</attrdefs><attrdomv><udom Sync="TRUE">Sequential unique whole numbers that are automatically generated.</udom></attrdomv></attr><attr>
+				<attrlabl>NAME</attrlabl>
+				<attalias Sync="TRUE">NAME</attalias><attrtype Sync="TRUE">String</attrtype><attwidth Sync="TRUE">100</attwidth></attr>
+			<attr>
+				<attrlabl>URL</attrlabl>
+				<attalias Sync="TRUE">URL</attalias><attrtype Sync="TRUE">String</attrtype><attwidth Sync="TRUE">200</attwidth></attr>
+			<attr>
+				<attrlabl>LINE</attrlabl>
+				<attalias Sync="TRUE">LINE</attalias><attrtype Sync="TRUE">String</attrtype><attwidth Sync="TRUE">80</attwidth></attr>
+			<attr>
+				<attrlabl>SHAPE</attrlabl>
+				<attrdef>Feature geometry.</attrdef>
+				<attrdefs>ESRI</attrdefs>
+				<attrdomv>
+					<udom>Coordinates defining the features.</udom>
+				</attrdomv>
+				<attalias Sync="TRUE">Shape</attalias><attrtype Sync="TRUE">Geometry</attrtype><attwidth Sync="TRUE">0</attwidth><atprecis Sync="TRUE">0</atprecis><attscale Sync="TRUE">0</attscale></attr>
+		</detailed>
+	</eainfo>
+	<distinfo>
+		<resdesc>Downloadable Data</resdesc>
+		<stdorder><digform><digtinfo><transize Sync="TRUE">0.013</transize><dssize Sync="TRUE">0.013</dssize></digtinfo></digform></stdorder></distinfo>
+	<metainfo>
+		<metd Sync="TRUE">20100914</metd>
+		<metc>
+			<cntinfo>
+				<cntorgp>
+					<cntorg>New York City Information Technology and Telecommunications</cntorg>
+					<cntper>Citywide GIS Group</cntper>
+				</cntorgp>
+				<cntaddr>
+					<addrtype>59 Maiden Lane, 33rd Floor</addrtype>
+					<city>New York</city>
+					<state>NY</state>
+					<postal>10038</postal>
+				</cntaddr>
+				<cntvoice>(212) 232-1134</cntvoice>
+			</cntinfo>
+		</metc>
+		<metstdn Sync="TRUE">FGDC Content Standards for Digital Geospatial Metadata</metstdn>
+		<metstdv Sync="TRUE">FGDC-STD-001-1998</metstdv>
+		<mettc Sync="TRUE">local time</mettc>
+		<metextns>
+			<onlink>http://www.esri.com/metadata/esriprof80.html</onlink>
+			<metprof>ESRI Metadata Profile</metprof>
+		</metextns>
+		<langmeta Sync="TRUE">en</langmeta><metextns><onlink Sync="TRUE">http://www.esri.com/metadata/esriprof80.html</onlink><metprof Sync="TRUE">ESRI Metadata Profile</metprof></metextns></metainfo>
+	<Esri><MetaID>{E94F064B-E773-4818-849A-DA5D47F9BB46}</MetaID><CreaDate>20091201</CreaDate><CreaTime>11290100</CreaTime><SyncOnce>FALSE</SyncOnce><SyncDate>20100914</SyncDate><SyncTime>12204700</SyncTime><ModDate>20100914</ModDate><ModTime>12204700</ModTime><DataProperties><lineage><Process ToolSource="C:\Program Files\ArcGIS\ArcToolbox\Toolboxes\Conversion Tools.tbx\FeatureClassToFeatureClass" Date="20100914" Time="120702">FeatureClassToFeatureClass "Database Connections\geoserver@geodev.sde\GEOSERVER.SUBWAY_STATION" "T:\GIS\Projects\DoITT\BIG APPS\2010" DOITT_SUBWAY_STATION_01_13SEPT2010.shp # "NAME 'NAME' true true false 100 Text 0 0 ,First,#,Database Connections\geoserver@geodev.sde\GEOSERVER.SUBWAY_STATION,NAME,-1,-1;URL 'URL' true true false 200 Text 0 0 ,First,#,Database Connections\geoserver@geodev.sde\GEOSERVER.SUBWAY_STATION,URL,-1,-1;LINE 'LINE' true true false 80 Text 0 0 ,First,#,Database Connections\geoserver@geodev.sde\GEOSERVER.SUBWAY_STATION,LINE,-1,-1" # "T:\GIS\Projects\DoITT\BIG APPS\2010\DOITT_SUBWAY_STATION_01_13SEPT2010.shp"</Process></lineage></DataProperties></Esri><dataqual><lineage><procstep><procdesc Sync="TRUE">Metadata imported.</procdesc><srcused Sync="TRUE">T:\GIS\Projects\DoITT\webmap\metadata\Done\subway_station.xml</srcused><procdate Sync="TRUE">20091201</procdate><proctime Sync="TRUE">11290100</proctime></procstep></lineage></dataqual><dataIdInfo><envirDesc Sync="TRUE">Microsoft Windows XP Version 5.1 (Build 2600) Service Pack 2; ESRI ArcCatalog 9.3.1.3000</envirDesc><dataLang><languageCode Sync="TRUE" value="en"></languageCode></dataLang><idCitation><resTitle Sync="TRUE">DOITT_SUBWAY_STATION_01_13SEPT2010</resTitle><presForm><PresFormCd Sync="TRUE" value="005"></PresFormCd></presForm></idCitation><spatRpType><SpatRepTypCd Sync="TRUE" value="001"></SpatRepTypCd></spatRpType><dataExt><geoEle><GeoBndBox esriExtentType="native"><westBL Sync="TRUE">975677.969994</westBL><eastBL Sync="TRUE">1052169.082035</eastBL><northBL Sync="TRUE">268346.14586</northBL><southBL Sync="TRUE">149142.012707</southBL><exTypeCode Sync="TRUE">1</exTypeCode></GeoBndBox></geoEle></dataExt><geoBox esriExtentType="decdegrees"><westBL Sync="TRUE">-74.031009</westBL><eastBL Sync="TRUE">-73.754305</eastBL><northBL Sync="TRUE">40.903222</northBL><southBL Sync="TRUE">40.575777</southBL><exTypeCode Sync="TRUE">1</exTypeCode></geoBox></dataIdInfo><mdLang><languageCode Sync="TRUE" value="en"></languageCode></mdLang><mdStanName Sync="TRUE">ISO 19115 Geographic Information - Metadata</mdStanName><mdStanVer Sync="TRUE">DIS_ESRI1.0</mdStanVer><mdChar><CharSetCd Sync="TRUE" value="004"></CharSetCd></mdChar><mdHrLv><ScopeCd Sync="TRUE" value="005"></ScopeCd></mdHrLv><mdHrLvName Sync="TRUE">dataset</mdHrLvName><distInfo><distributor><distorTran><onLineSrc><orDesc Sync="TRUE">002</orDesc><linkage Sync="TRUE">file://\\doitt.nycnet\gisroot\GIS\Projects\DoITT\BIG APPS\2010\DOITT_SUBWAY_STATION_01_13SEPT2010.shp</linkage><protocol Sync="TRUE">Local Area Network</protocol></onLineSrc><transSize Sync="TRUE">0.013</transSize></distorTran><distorFormat><formatName Sync="TRUE">Shapefile</formatName></distorFormat></distributor></distInfo><refSysInfo><RefSystem><refSysID><identCode Sync="TRUE">New York 3104, Long Island Zone [1983, US Survey feet]</identCode></refSysID></RefSystem></refSysInfo><spatRepInfo><VectSpatRep><topLvl><TopoLevCd Sync="TRUE" value="001"></TopoLevCd></topLvl><geometObjs Name="DOITT_SUBWAY_STATION_01_13SEPT2010"><geoObjTyp><GeoObjTypCd Sync="TRUE" value="004"></GeoObjTypCd></geoObjTyp><geoObjCnt Sync="TRUE">470</geoObjCnt></geometObjs></VectSpatRep></spatRepInfo><mdDateSt Sync="TRUE">20100914</mdDateSt></metadata>
