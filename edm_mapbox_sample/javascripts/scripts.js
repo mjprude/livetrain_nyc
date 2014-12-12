@@ -7,6 +7,7 @@ var map = L.mapbox.map('map', 'mjprude.kcf5kl75')
             .setView([ 40.75583970971843, -73.90090942382812 ], 12);
 
 var shuttleStationCoordinates = [ [ -73.986229, 40.755983000933206 ], [ -73.979189, 40.752769000933171 ] ];
+var originTerminus;
 
 // ******************* SVG OVERLAY GENERATION ***********************
 var svg = d3.select(map.getPanes().markerPane).append("svg");
@@ -44,16 +45,6 @@ function applyLatLngToLayer(d) {
     return map.latLngToLayerPoint(new L.LatLng(y, x));
 }
 
-
-// Append stations
-var originTerminus = kennyPowers.selectAll(".stations")
-                                .data(shuttleStationCoordinates)
-                                .enter()
-                                .append('circle', '.stations')
-                                .attr('r', '7')
-                                .style('fill', 'red')
-                                .style('opacity', '1');
-
 // ******************* Map layer reset on user zoom ****************
 function reset() {
 
@@ -84,6 +75,7 @@ function reset() {
     });
   }
 
+  // Append line path
   shuttlePath.attr("d", toLine);
 
   originTerminus.attr('transform', function(d){
@@ -106,10 +98,15 @@ d3.json("/subway_routes_geojson.json", function (json) {
 
   // Add this generated geojson object to the map.
   // L.geoJson(json).addTo(map);
+  
+  //****************************** D3 Below ****************************   
+
+
    var featuresdata = json.features.filter(function(d) {
             
             return d.properties.route_id == "GS"
         })
+
   //D3 stuff...
   shuttlePath = kennyPowers.selectAll(".shuttlePath")
     .data([featuresdata[0].geometry.coordinates])
@@ -120,6 +117,14 @@ d3.json("/subway_routes_geojson.json", function (json) {
     .attr('stroke', 'grey')
     .attr('stroke-width', 5);
 
+  // Append stations
+  originTerminus = kennyPowers.selectAll(".stations")
+                                  .data(shuttleStationCoordinates)
+                                  .enter()
+                                  .append('circle', '.stations')
+                                  .attr('r', '7')
+                                  .style('fill', 'red')
+                                  .style('opacity', '1');
     reset();
 });
 
