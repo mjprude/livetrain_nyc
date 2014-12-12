@@ -122,9 +122,11 @@ d3.json("/subway_routes_geojson.json", function (json) {
                                   .data(shuttleStationCoordinates)
                                   .enter()
                                   .append('circle', '.stations')
-                                  .attr('r', '7')
-                                  .style('fill', 'red')
-                                  .style('opacity', '1');
+                                  .attr('r', '10')
+                                  .style('fill', 'white')
+                                  .style('opacity', '1')
+                                  .attr('stroke', 'grey')
+                                  .attr('stroke-width', 4);
     reset();
 });
 
