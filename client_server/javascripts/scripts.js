@@ -101,6 +101,7 @@ function positionReset() {
 
   // Update line path
   shuttlePath.attr("d", toLine);
+  oneTrainPath.attr("d", toLine);
 
   // Update station positions
   originTerminus.attr('transform', function(d){
@@ -137,18 +138,30 @@ d3.json("/subway_routes_geojson.json", function (json) {
    // Filters feed data to pull out the shuttle route 
    // (this actually doesn't do anything right now since the json 
     // only contains the shuttle points)
-   var routeData = json.features.filter(function(d) {
-            return d.properties.route_id == "GS"
-        })
+   function getRoutePathById(route_id){
+    return json.features.filter(function(d) {
+        return d.properties.route_id == route_id;
+      });
+   }
 
   shuttlePath = kennyPowers.selectAll(".shuttlePath")
-    .data([routeData[0].geometry.coordinates])
+    .data([getRoutePathById("GS")[0].geometry.coordinates])
     .enter()
     .append("path")
-    .attr("class", "routePath")
+    .attr("class", "shuttlePath routePath")
     .attr('fill', 'none')
     .attr('stroke', 'grey')
     .attr('stroke-width', routePathZoomScale(startingZoom));
+
+  oneTrainPath = kennyPowers.selectAll('.oneTrainPath')
+    .data([getRoutePathById("1")[0].geometry.coordinates[0], getRoutePathById("1")[0].geometry.coordinates[1] ])
+    .enter()
+    .append('path')
+    .attr('class', 'oneTrainPath routePath')
+    .attr('fill', 'none')
+    .attr('stroke', 'red')
+    .attr('stroke-width', routePathZoomScale(startingZoom));
+
 
   // Append stations
   originTerminus = kennyPowers.selectAll(".stations")
@@ -161,7 +174,9 @@ d3.json("/subway_routes_geojson.json", function (json) {
                                   .style('opacity', '1')
                                   .attr('stroke', 'grey')
                                   .attr('stroke-width', stationStrokeZoomScale(startingZoom));
-    positionReset();
+    
+  //call positionReset to populate the lines and such...
+  positionReset();
 });
 
 
