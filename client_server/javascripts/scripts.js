@@ -12,6 +12,8 @@ var map = L.mapbox.map('map', 'mjprude.kcf5kl75', {
 var shuttleStationCoordinates = [ [ -73.986229, 40.755983000933206 ], [ -73.979189, 40.752769000933171 ] ];
 var originTerminus;
 var shuttlePath;
+var oneTrainStations;
+var oneTrainPath;
 
 // ******************* SVG OVERLAY GENERATION ***********************
 var svg = d3.select(map.getPanes().markerPane).append("svg");
@@ -140,9 +142,10 @@ d3.json("/subway_routes_geojson.json", function (json) {
     // only contains the shuttle points)
    function getRoutePathById(route_id){
     return json.features.filter(function(d) {
-        return d.properties.route_id == route_id;
+        return d.properties.route_id === route_id;
       });
    }
+
 
   shuttlePath = kennyPowers.selectAll(".shuttlePath")
     .data([getRoutePathById("GS")[0].geometry.coordinates])
@@ -168,7 +171,7 @@ d3.json("/subway_routes_geojson.json", function (json) {
                                   .data(shuttleStationCoordinates)
                                   .enter()
                                   .append('circle')
-                                  .attr('class', 'stations')
+                                  .attr('class', 'station-GS stations')
                                   .attr('r', stationZoomScale(startingZoom))
                                   .style('fill', 'white')
                                   .style('opacity', '1')
@@ -177,6 +180,29 @@ d3.json("/subway_routes_geojson.json", function (json) {
     
   //call positionReset to populate the lines and such...
   positionReset();
+});
+
+d3.json("/subway_stops_geojson.json", function (json) {
+
+   function getStationsById(route_id){
+    var filteredResults = json.features.filter(function(feature) {
+        return feature.properties.Routes_ALL.indexOf(route_id) > -1;
+      });
+    return filteredResults;
+   }
+  oneTrainStationCoordinates = getStationsById('1');
+
+  oneTrainStations = kennyPowers.selectAll('.station-1')
+                                .data(oneTrainStationCoordinates)
+                                .enter()
+                                .append('cirlce')
+                                .attr('class', 'station-1 stations')
+                                .attr('r', stationZoomScale(startingZoom))
+                                .style('fill', 'white')
+                                .style('opacity', '1')
+                                .attr('stroke', 'red')
+                                .attr('stroke-width', stationStrokeZoomScale(startingZoom));
+
 });
 
 
