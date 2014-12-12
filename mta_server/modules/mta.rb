@@ -1,6 +1,10 @@
 module MTA
   class FeedParser
 
+    def self.raw_feed
+      File.read(find_most_recent_file)
+    end
+
     def self.feed
       JSON.generate(human_feed(find_most_recent_file))
     end
