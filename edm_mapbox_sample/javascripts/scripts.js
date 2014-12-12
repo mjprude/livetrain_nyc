@@ -1,10 +1,13 @@
+var startingZoom = 12;
+var maxZoom = 17;
+var minZoom = 9;
 
 L.mapbox.accessToken = 'pk.eyJ1IjoibWpwcnVkZSIsImEiOiJiVG8yR2VrIn0.jtdF6eqGIKKs0To4p0mu0Q';
 var map = L.mapbox.map('map', 'mjprude.kcf5kl75', {
-              maxZoom: 17,
-              minZoom: 9,
+              maxZoom: maxZoom,
+              minZoom: minZoom,
             })
-            .setView([ 40.75583970971843, -73.90090942382812 ], 12);
+            .setView([ 40.75583970971843, -73.90090942382812 ], startingZoom);
 
 var shuttleStationCoordinates = [ [ -73.986229, 40.755983000933206 ], [ -73.979189, 40.752769000933171 ] ];
 var originTerminus;
@@ -13,6 +16,20 @@ var originTerminus;
 var svg = d3.select(map.getPanes().markerPane).append("svg");
 // The "g" element to which we append thigns
 var kennyPowers = svg.append("g").attr("class", "leaflet-zoom-hide");
+
+// ******************* SCALES AND SUCH ******************************
+var stationZoomScale = d3.scale.linear()
+                              .domain([ minZoom, maxZoom])
+                              .range([1, 10]);                             
+
+var stationStrokeZoomScale = d3.scale.linear()
+                              .domain([ minZoom, maxZoom])
+                              .range([ 1, 5]);
+
+var routePathZoomScale = d3.scale.linear()
+                              .domain([ minZoom, maxZoom])
+                              .range([1, 6]);
+
 
 // ******************* Projection abilities *************************
 
@@ -101,17 +118,14 @@ map.on('move', positionReset);
 // Handle marker and path resizing on map zoom
 function zoomReset(){
   var currentZoom = map.getZoom();
-  console.log(currentZoom);
 
-  var stationZoomScale = d3.scale.linear()
-                                .domain([ 9, 17])
-                                .range([2, 10])
-
-  console.log(stationZoomScale(currentZoom))
-
+  // Resize station circles
   kennyPowers.selectAll('.stations')
-              .attr('r', stationZoomScale(currentZoom));
-
+              .attr('r', stationZoomScale(currentZoom))
+              .attr('stroke-width', stationStrokeZoomScale(currentZoom));
+  // Resize lines
+  kennyPowers.selectAll('.routePath')
+              .attr('stroke-width', routePathZoomScale(currentZoom));
 }
 
 // Event listener for zoom event
@@ -131,10 +145,10 @@ d3.json("/subway_routes_geojson.json", function (json) {
     .data([featuresdata[0].geometry.coordinates])
     .enter()
     .append("path")
-    .attr("class", "lineConnect")
+    .attr("class", "routePath")
     .attr('fill', 'none')
     .attr('stroke', 'grey')
-    .attr('stroke-width', 5);
+    .attr('stroke-width', routePathZoomScale(startingZoom));
 
   // Append stations
   originTerminus = kennyPowers.selectAll(".stations")
@@ -142,11 +156,11 @@ d3.json("/subway_routes_geojson.json", function (json) {
                                   .enter()
                                   .append('circle')
                                   .attr('class', 'stations')
-                                  .attr('r', 10)
+                                  .attr('r', stationZoomScale(startingZoom))
                                   .style('fill', 'white')
                                   .style('opacity', '1')
                                   .attr('stroke', 'grey')
-                                  .attr('stroke-width', 4);
+                                  .attr('stroke-width', stationStrokeZoomScale(startingZoom));
     positionReset();
 });
 
