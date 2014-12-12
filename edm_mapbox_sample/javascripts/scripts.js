@@ -1,7 +1,4 @@
 
-// var containerSize;
-
-
 L.mapbox.accessToken = 'pk.eyJ1IjoibWpwcnVkZSIsImEiOiJiVG8yR2VrIn0.jtdF6eqGIKKs0To4p0mu0Q';
 var map = L.mapbox.map('map', 'mjprude.kcf5kl75')
             .setView([ 40.75583970971843, -73.90090942382812 ], 12);
@@ -45,14 +42,20 @@ function applyLatLngToLayer(d) {
     return map.latLngToLayerPoint(new L.LatLng(y, x));
 }
 
-// ******************* Map layer reset on user zoom ****************
-function reset() {
 
-  function getBounds(){
-    var northBound = map.getBounds().getNorth();
-    var westBound = map.getBounds().getWest();
-    return applyLatLngToLayer([ westBound, northBound ]);
-  }
+// Map resize functions
+// Gets map bounds to use for adjusting page resize
+function getBounds(){
+  var northBound = map.getBounds().getNorth();
+  var westBound = map.getBounds().getWest();
+  return applyLatLngToLayer([ westBound, northBound ]);
+}
+
+
+// ******************* Handling user map movements ****************
+
+// Handle path and marker positions on all mouse events 
+function positionReset() {
 
   function anchorMapOverlay(){
     var mapAnchorPoints = getBounds();
@@ -61,7 +64,7 @@ function reset() {
     var mapWidth = mapSize.x;
     var mapHeight = mapSize.y;
 
-    // Translate the svg to deal with 
+    // Translate the svg to deal with map dragging
     svg.attr('x', 0)
       .attr('y', 0)
       .attr('width', mapWidth)
@@ -69,41 +72,44 @@ function reset() {
       .style('transform', function(){
         return 'translate3d(' + mapAnchorPoints.x + 'px,' + mapAnchorPoints.y + "px, 0px)";
       });
-    // "Untranslate" the group that holds the station coordinates
+    // "Untranslate" the group that holds the station coordinates and path
     kennyPowers.style('transform', function(){
       return 'translate3d(' + -mapAnchorPoints.x + 'px,' + -mapAnchorPoints.y + "px, 0px)";
     });
   }
 
-  // Append line path
+  // Update line path
   shuttlePath.attr("d", toLine);
 
+  // Update station positions
   originTerminus.attr('transform', function(d){
     return 'translate(' + applyLatLngToLayer(d).x + "," + applyLatLngToLayer(d).y + ")";
   });
 
-
   anchorMapOverlay();
 }
 
-map.on('viewreset', reset);
-map.on('resize', reset);
-map.on('move', reset);
+// Event listeners for all user map movements
+map.on('viewreset', positionReset);
+map.on('resize', positionReset);
+map.on('move', positionReset);
+
+
+// Handle marker and path resizing on map zoom
+function zoomReset(){
+  var currentZoom = map.getZoom();
+  console.log(currentZoom);
+}
+
+// Event listener for zoom event
+map.on('viewreset', zoomReset)
 
 // Adds path using mapbox....
 d3.json("/subway_routes_geojson.json", function (json) {
-  // Generate a GeoJSON line. You could also load GeoJSON via AJAX
-  // or generate it some other way.
-  // var geojson = { type: 'LineString', coordinates: [] };
-
-  // Add this generated geojson object to the map.
-  // L.geoJson(json).addTo(map);
-  
-  //****************************** D3 Below ****************************   
-
-
+   // Filters feed data to pull out the shuttle route 
+   // (this actually doesn't do anything right now since the json 
+    // only contains the shuttle points)
    var featuresdata = json.features.filter(function(d) {
-            
             return d.properties.route_id == "GS"
         })
 
@@ -127,7 +133,7 @@ d3.json("/subway_routes_geojson.json", function (json) {
                                   .style('opacity', '1')
                                   .attr('stroke', 'grey')
                                   .attr('stroke-width', 4);
-    reset();
+    positionReset();
 });
 
 
