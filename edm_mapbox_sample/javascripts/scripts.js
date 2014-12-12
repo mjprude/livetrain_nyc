@@ -11,6 +11,7 @@ var map = L.mapbox.map('map', 'mjprude.kcf5kl75', {
 
 var shuttleStationCoordinates = [ [ -73.986229, 40.755983000933206 ], [ -73.979189, 40.752769000933171 ] ];
 var originTerminus;
+var shuttlePath;
 
 // ******************* SVG OVERLAY GENERATION ***********************
 var svg = d3.select(map.getPanes().markerPane).append("svg");
@@ -136,13 +137,12 @@ d3.json("/subway_routes_geojson.json", function (json) {
    // Filters feed data to pull out the shuttle route 
    // (this actually doesn't do anything right now since the json 
     // only contains the shuttle points)
-   var featuresdata = json.features.filter(function(d) {
+   var routeData = json.features.filter(function(d) {
             return d.properties.route_id == "GS"
         })
 
-  //D3 stuff...
   shuttlePath = kennyPowers.selectAll(".shuttlePath")
-    .data([featuresdata[0].geometry.coordinates])
+    .data([routeData[0].geometry.coordinates])
     .enter()
     .append("path")
     .attr("class", "routePath")
