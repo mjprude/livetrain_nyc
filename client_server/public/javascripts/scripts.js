@@ -1,5 +1,5 @@
 var startingZoom = 12;
-var maxZoom = 17;
+var maxZoom = 19;
 var minZoom = 9;
 
 L.mapbox.accessToken = 'pk.eyJ1IjoibWpwcnVkZSIsImEiOiJiVG8yR2VrIn0.jtdF6eqGIKKs0To4p0mu0Q';
@@ -106,7 +106,7 @@ function positionReset() {
   oneTrainPath.attr("d", toLine);
 
   // Update station positions
-  originTerminus.attr('transform', function(d){
+  d3.selectAll('.stations').attr('transform', function(d){
     return 'translate(' + applyLatLngToLayer(d).x + "," + applyLatLngToLayer(d).y + ")";
   });
 
@@ -188,14 +188,18 @@ d3.json("/subway_stops_geojson.json", function (json) {
     var filteredResults = json.features.filter(function(feature) {
         return feature.properties.Routes_ALL.indexOf(route_id) > -1;
       });
-    return filteredResults;
+    var stations = [];
+    for (var i = 0; i < filteredResults.length; i++ ) {
+      stations.push(filteredResults[i].geometry.coordinates);
+    }
+    return stations;
    }
   oneTrainStationCoordinates = getStationsById('1');
 
   oneTrainStations = kennyPowers.selectAll('.station-1')
                                 .data(oneTrainStationCoordinates)
                                 .enter()
-                                .append('cirlce')
+                                .append('circle')
                                 .attr('class', 'station-1 stations')
                                 .attr('r', stationZoomScale(startingZoom))
                                 .style('fill', 'white')
@@ -203,6 +207,7 @@ d3.json("/subway_stops_geojson.json", function (json) {
                                 .attr('stroke', 'red')
                                 .attr('stroke-width', stationStrokeZoomScale(startingZoom));
 
+  positionReset();
 });
 
 
