@@ -1,6 +1,9 @@
 
 L.mapbox.accessToken = 'pk.eyJ1IjoibWpwcnVkZSIsImEiOiJiVG8yR2VrIn0.jtdF6eqGIKKs0To4p0mu0Q';
-var map = L.mapbox.map('map', 'mjprude.kcf5kl75')
+var map = L.mapbox.map('map', 'mjprude.kcf5kl75', {
+              maxZoom: 17,
+              minZoom: 9,
+            })
             .setView([ 40.75583970971843, -73.90090942382812 ], 12);
 
 var shuttleStationCoordinates = [ [ -73.986229, 40.755983000933206 ], [ -73.979189, 40.752769000933171 ] ];
@@ -99,6 +102,16 @@ map.on('move', positionReset);
 function zoomReset(){
   var currentZoom = map.getZoom();
   console.log(currentZoom);
+
+  var stationZoomScale = d3.scale.linear()
+                                .domain([ 9, 17])
+                                .range([2, 10])
+
+  console.log(stationZoomScale(currentZoom))
+
+  kennyPowers.selectAll('.stations')
+              .attr('r', stationZoomScale(currentZoom));
+
 }
 
 // Event listener for zoom event
@@ -127,8 +140,9 @@ d3.json("/subway_routes_geojson.json", function (json) {
   originTerminus = kennyPowers.selectAll(".stations")
                                   .data(shuttleStationCoordinates)
                                   .enter()
-                                  .append('circle', '.stations')
-                                  .attr('r', '10')
+                                  .append('circle')
+                                  .attr('class', 'stations')
+                                  .attr('r', 10)
                                   .style('fill', 'white')
                                   .style('opacity', '1')
                                   .attr('stroke', 'grey')
