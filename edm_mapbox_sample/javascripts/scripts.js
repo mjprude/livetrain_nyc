@@ -84,6 +84,7 @@ function reset() {
     });
   }
 
+  shuttlePath.attr("d", toLine);
 
   originTerminus.attr('transform', function(d){
     return 'translate(' + applyLatLngToLayer(d).x + "," + applyLatLngToLayer(d).y + ")";
@@ -97,8 +98,6 @@ map.on('viewreset', reset);
 map.on('resize', reset);
 map.on('move', reset);
 
-reset();
-
 // Adds path using mapbox....
 d3.json("/subway_routes_geojson.json", function (json) {
   // Generate a GeoJSON line. You could also load GeoJSON via AJAX
@@ -111,17 +110,17 @@ d3.json("/subway_routes_geojson.json", function (json) {
             
             return d.properties.route_id == "GS"
         })
-  debugger
   //D3 stuff...
   shuttlePath = kennyPowers.selectAll(".shuttlePath")
     .data([featuresdata[0].geometry.coordinates])
     .enter()
     .append("path")
     .attr("class", "lineConnect")
-    .attr("d", toLine)
+    .attr('fill', 'none')
     .attr('stroke', 'grey')
     .attr('stroke-width', 5);
 
+    reset();
 });
 
 
