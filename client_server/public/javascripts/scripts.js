@@ -37,9 +37,10 @@ var routePathZoomScale = d3.scale.linear()
 
 // ******************* Projection abilities *************************
 
-  function animate(percentComplete, totalDuration, timeUntilDeparture){
+  function animate(percentComplete, duration, timeUntilDeparture){
     timeUntilDeparture = timeUntilDeparture || 0
     var startPoint = shuttlePath.node().getPointAtLength(shuttlePathLength * percentComplete);
+    d3.select('#marker').remove();
 
     sTrain = kennyPowers.append('circle')
                             .attr('r',5)
@@ -49,9 +50,9 @@ var routePathZoomScale = d3.scale.linear()
 
     function transition(path) {
       shuttlePath.transition()
-          .duration(totalDuration)
+          .duration(duration / (1 - percentComplete))
           .ease('linear')
-          .attrTween('blah', tweenDash)     
+          .attrTween('custom', tweenDash)     
     }
 
     function tweenDash() {
@@ -61,8 +62,8 @@ var routePathZoomScale = d3.scale.linear()
         var p = shuttlePath.node().getPointAtLength(t * shuttlePathLength + percentComplete * shuttlePathLength);
         sTrain.attr("transform", "translate(" + p.x + "," + p.y + ")");//move marker
         // return i(t);
-        if (t > 1 - percentComplete) {
-          setTimeout(function(){ sTrain.style('opacity', '0'); },3000);
+        if (t >= 1 - percentComplete) {
+          setTimeout(function(){ d3.select('#marker').style('opacity', '0'); },0);
         }
       }
     }
