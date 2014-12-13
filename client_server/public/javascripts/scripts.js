@@ -12,13 +12,14 @@ var map = L.mapbox.map('map', 'mjprude.kcf5kl75', {
 var shuttleStationCoordinates = [ [ -73.986229, 40.755983000933206 ], [ -73.979189, 40.752769000933171 ] ];
 var originTerminus;
 var shuttlePath;
+var shuttlePathLength;
 var oneTrainStations;
 var oneTrainPath;
+var sTrain;
 // ******************* SVG OVERLAY GENERATION ***********************
 var svg = d3.select(map.getPanes().markerPane).append("svg");
 // The "g" element to which we append thigns
 var kennyPowers = svg.append("g").attr("class", "leaflet-zoom-hide");
-var sTrain = kennyPowers.append('circle');
 
 // ******************* SCALES AND SUCH ******************************
 var stationZoomScale = d3.scale.linear()
@@ -35,6 +36,40 @@ var routePathZoomScale = d3.scale.linear()
 
 
 // ******************* Projection abilities *************************
+
+  function animate(){
+    var startPoint = shuttlePath.node().getPointAtLength(0);
+
+    
+    sTrain = kennyPowers.append('circle')
+                            .attr('r',5)
+                            .attr("id", "marker")
+                            .style('fill', 'red')
+                            .attr("transform", "translate("+ startPoint.x+","+startPoint.y+")");
+
+    function transition(path) {
+      shuttlePath.transition()
+          .duration(10000)
+          .ease('linear')
+          .attrTween('blah', tweenDash)     
+    }
+
+    function tweenDash() {
+      // var i = d3.interpolateString("0," + l, l + "," + l); // interpolation of stroke-dasharray style attr
+      // map.on('viewReset', function(){ l = shuttlePath.node().getTotalLength(); })
+      return function(t) {
+        var p = shuttlePath.node().getPointAtLength(t * shuttlePathLength);
+        sTrain.attr("transform", "translate(" + p.x + "," + p.y + ")");//move marker
+        // return i(t);
+        if (t === 1){
+          sTrain.style('opacity', '0');
+        }
+      }
+    }
+    
+    svg.select('path.shuttlePath').call(transition)
+  }
+
 
 // Line projection
 var transform = d3.geo.transform({
@@ -105,13 +140,17 @@ function positionReset() {
   shuttlePath.attr("d", toLine);
   oneTrainPath.attr("d", toLine);
 
+  shuttlePathLength = shuttlePath.node().getTotalLength();
+
   // Update station positions
   d3.selectAll('.stations').attr('transform', function(d){
     return 'translate(' + applyLatLngToLayer(d).x + "," + applyLatLngToLayer(d).y + ")";
   });
 
-  // d3.selectAll('#marker').attr('transform', function(d) {      
-  //   return 'translate(' + applyLatLngToLayer(d).x + "," + applyLatLngToLayer(d).y + ")";
+  // d3.selectAll('#marker').attr('transform', function(d) {
+  //   var y = shuttleStationCoordinates[0][0];
+  //   var x = shuttleStationCoordinates[0][1];
+  //   return 'translate(' + map.latLngToLayerPoint(new L.LatLng(y, x)).x + "," + map.latLngToLayerPoint(new L.LatLng(y, x)).x + ")";
   // });
 
   anchorMapOverlay();
@@ -139,7 +178,6 @@ function zoomReset() {
 // Event listener for zoom event
 map.on('viewreset', zoomReset)
 
-// Adds path using mapbox....
 d3.json("/subway_routes_geojson.json", function (json) {
    // Filters feed data to pull out the shuttle route 
    // (this actually doesn't do anything right now since the json 
@@ -151,6 +189,7 @@ d3.json("/subway_routes_geojson.json", function (json) {
    }
 
 
+
   shuttlePath = kennyPowers.selectAll(".shuttlePath")
     .data([getRoutePathById("GS")[0].geometry.coordinates])
     .enter()
@@ -159,6 +198,15 @@ d3.json("/subway_routes_geojson.json", function (json) {
     .attr('fill', 'none')
     .attr('stroke', 'grey')
     .attr('stroke-width', routePathZoomScale(startingZoom));
+
+  invisiblePath = kennyPowers.selectAll(".invisiblePath")
+    .data([getRoutePathById("GS")[0].geometry.coordinates])
+    .enter()
+    .append("path")
+    .attr("class", "invisiblePath routePath")
+    .attr('fill', 'none')
+    .style('opacity', '0')
+    .attr('stroke-width', routePathZoomScale(startingZoom));  
 
   oneTrainPath = kennyPowers.selectAll('.oneTrainPath')
     .data([getRoutePathById("1")[0].geometry.coordinates[0], getRoutePathById("1")[0].geometry.coordinates[1] ])
@@ -185,38 +233,42 @@ d3.json("/subway_routes_geojson.json", function (json) {
 
 
   //***************** ANIMATION ******************
+  // function animate(){
+  // svg.select('path.shuttlePath').call(transition)
 
-  svg.select('path.shuttlePath').call(transition)
+  // var startPoint = shuttlePath.node().getPointAtLength(0);
 
-  var startPoint = shuttlePath.node().getPointAtLength(0);
+  
+  // var sTrain = kennyPowers.append('circle')
+  //                         .attr('r',5)
+  //                         .attr("id", "marker")
+  //                         .style('fill', 'red');
+  //                         .attr("transform", "translate("+ startPoint.x+","+startPoint.y+")");
 
-  sTrain.attr('r',5)
-      .attr("id", "marker")
-      .style('fill', 'red')
-      .attr("transform", "translate("+ startPoint.x+","+startPoint.y+")");
+  // function transition(path) {
+  //   shuttlePath.transition()
+  //       .duration(10000)
+  //       .ease('linear')
+  //       .attrTween('blah', tweenDash)     
+  // }
 
-  function transition(path) {
-    shuttlePath.transition()
-        .duration(10000)
-        .ease('linear')
-        .attrTween('line', tweenDash)     
-  }
+  // function tweenDash() {
+  //   var l = shuttlePath.node().getTotalLength();
+  //   var i = d3.interpolateString("0," + l, l + "," + l); // interpolation of stroke-dasharray style attr
 
-  function tweenDash() {
-    var l = shuttlePath.node().getTotalLength();
-    // var i = d3.interpolateString("0," + l, l + "," + l); // interpolation of stroke-dasharray style attr
+  //   return function(t) {
+  //     var sTrain = d3.select("#marker")
+  //     var p = shuttlePath.node().getPointAtLength(t * l);
 
-    return function(t) {
-      var sTrain = d3.select("#marker");
-      var p = shuttlePath.node().getPointAtLength(t * l);
-
-      sTrain.attr("transform", "translate(" + p.x + "," + p.y + ")");//move marker
-      // return i(t);
-    }
-  }
+  //     sTrain.attr("transform", "translate(" + p.x + "," + p.y + ")");//move marker
+  //     return i(t);
+  //   }
+  // }
     
   //call positionReset to populate the lines and such...
-  // positionReset();
+  positionReset();
+    
+  // }
 });
 
 d3.json("/subway_stops_geojson.json", function (json) {
@@ -252,5 +304,8 @@ d3.json("/subway_stops_geojson.json", function (json) {
 
 $(function(){
   
+
+
+
 })
 
