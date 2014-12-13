@@ -12,7 +12,24 @@ require 'json'
 # f.write(transit_realtime.to_json)
 # f.close
 
-hash = JSON.parse(File.read("./edm_mapbox_sample/subway_routes_geojson.json"))
+hash = JSON.parse(File.read("./client_server/public/subway_routes_geojson.json"))
+
+stops = JSON.parse(File.read("./subway_stops_geojson.json"))
+
+routes_all = stops['features'].map do |feature|
+  {
+    stop_id: feature['properties']['STOP_ID'],
+    routes_all: feature['properties']['Routes_ALL'],
+  }
+end
+
+nil_routes = routes_all.select do |route|
+  route[:routes_all] == nil
+end
+
+string_routes = routes_all.select do |route|
+  route[:routes_all] == ''
+end
 
 # def path_by_route_id(route_id)
 #   hash['features'].select { |feature| feature['properties']['route_id'] == route_id }
