@@ -62,11 +62,10 @@ def write_file(hash, filename)
   f.close
 end
 
-route_ids = ['1', '2', '6', 'GS']
+route_ids = ['1', '2', '3', '4', '5', '6', 'L', 'GS']
 route_filter(route_ids)
 stop_filter(route_ids)
 reformat_routes
 reformat_stops
 
-
-binding.pry
+write_file(@return_hash, './irt_routes_and_stops.json')
