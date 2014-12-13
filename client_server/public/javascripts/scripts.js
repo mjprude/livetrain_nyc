@@ -37,10 +37,10 @@ var routePathZoomScale = d3.scale.linear()
 
 // ******************* Projection abilities *************************
 
-  function animate(){
-    var startPoint = shuttlePath.node().getPointAtLength(0);
+  function animate(percentComplete, totalDuration, timeUntilDeparture){
+    timeUntilDeparture = timeUntilDeparture || 0
+    var startPoint = shuttlePath.node().getPointAtLength(shuttlePathLength * percentComplete);
 
-    
     sTrain = kennyPowers.append('circle')
                             .attr('r',5)
                             .attr("id", "marker")
@@ -49,7 +49,7 @@ var routePathZoomScale = d3.scale.linear()
 
     function transition(path) {
       shuttlePath.transition()
-          .duration(10000)
+          .duration(totalDuration)
           .ease('linear')
           .attrTween('blah', tweenDash)     
     }
@@ -58,16 +58,15 @@ var routePathZoomScale = d3.scale.linear()
       // var i = d3.interpolateString("0," + l, l + "," + l); // interpolation of stroke-dasharray style attr
       // map.on('viewReset', function(){ l = shuttlePath.node().getTotalLength(); })
       return function(t) {
-        var p = shuttlePath.node().getPointAtLength(t * shuttlePathLength);
+        var p = shuttlePath.node().getPointAtLength(t * shuttlePathLength + percentComplete * shuttlePathLength);
         sTrain.attr("transform", "translate(" + p.x + "," + p.y + ")");//move marker
         // return i(t);
-        if (t === 1){
-          sTrain.style('opacity', '0');
+        if (t > 1 - percentComplete) {
+          setTimeout(function(){ sTrain.style('opacity', '0'); },3000);
         }
       }
     }
-    
-    svg.select('path.shuttlePath').call(transition)
+    setTimeout(function() { svg.select('path.shuttlePath').call(transition) },timeUntilDeparture)
   }
 
 
@@ -229,42 +228,7 @@ d3.json("/subway_routes_geojson.json", function (json) {
                                   .style('opacity', '1')
                                   .attr('stroke', 'grey')
                                   .attr('stroke-width', stationStrokeZoomScale(startingZoom));
-  
 
-
-  //***************** ANIMATION ******************
-  // function animate(){
-  // svg.select('path.shuttlePath').call(transition)
-
-  // var startPoint = shuttlePath.node().getPointAtLength(0);
-
-  
-  // var sTrain = kennyPowers.append('circle')
-  //                         .attr('r',5)
-  //                         .attr("id", "marker")
-  //                         .style('fill', 'red');
-  //                         .attr("transform", "translate("+ startPoint.x+","+startPoint.y+")");
-
-  // function transition(path) {
-  //   shuttlePath.transition()
-  //       .duration(10000)
-  //       .ease('linear')
-  //       .attrTween('blah', tweenDash)     
-  // }
-
-  // function tweenDash() {
-  //   var l = shuttlePath.node().getTotalLength();
-  //   var i = d3.interpolateString("0," + l, l + "," + l); // interpolation of stroke-dasharray style attr
-
-  //   return function(t) {
-  //     var sTrain = d3.select("#marker")
-  //     var p = shuttlePath.node().getPointAtLength(t * l);
-
-  //     sTrain.attr("transform", "translate(" + p.x + "," + p.y + ")");//move marker
-  //     return i(t);
-  //   }
-  // }
-    
   //call positionReset to populate the lines and such...
   positionReset();
     
