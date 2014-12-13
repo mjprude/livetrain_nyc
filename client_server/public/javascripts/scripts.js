@@ -45,7 +45,7 @@ var routePathZoomScale = d3.scale.linear()
     sTrain = kennyPowers.append('circle')
                             .attr('r',5)
                             .attr("id", "marker")
-                            .style('fill', 'red')
+                            .style('fill', 'grey')
                             .attr("transform", "translate("+ startPoint.x+","+startPoint.y+")");
 
     function transition(path) {
@@ -197,16 +197,8 @@ d3.json("/subway_routes_geojson.json", function (json) {
     .attr("class", "shuttlePath routePath")
     .attr('fill', 'none')
     .attr('stroke', 'grey')
+    .style('opacity', .5)
     .attr('stroke-width', routePathZoomScale(startingZoom));
-
-  invisiblePath = kennyPowers.selectAll(".invisiblePath")
-    .data([getRoutePathById("GS")[0].geometry.coordinates])
-    .enter()
-    .append("path")
-    .attr("class", "invisiblePath routePath")
-    .attr('fill', 'none')
-    .style('opacity', '0')
-    .attr('stroke-width', routePathZoomScale(startingZoom));  
 
   oneTrainPath = kennyPowers.selectAll('.oneTrainPath')
     .data([getRoutePathById("1")[0].geometry.coordinates[0], getRoutePathById("1")[0].geometry.coordinates[1] ])
@@ -215,6 +207,7 @@ d3.json("/subway_routes_geojson.json", function (json) {
     .attr('class', 'oneTrainPath routePath')
     .attr('fill', 'none')
     .attr('stroke', 'red')
+    .style('opacity', .5)
     .attr('stroke-width', routePathZoomScale(startingZoom));
 
 
@@ -226,7 +219,7 @@ d3.json("/subway_routes_geojson.json", function (json) {
                                   .attr('class', 'station-GS stations')
                                   .attr('r', stationZoomScale(startingZoom))
                                   .style('fill', 'white')
-                                  .style('opacity', '1')
+                                  .style('opacity', .5)
                                   .attr('stroke', 'grey')
                                   .attr('stroke-width', stationStrokeZoomScale(startingZoom));
 
@@ -257,7 +250,7 @@ d3.json("/subway_stops_geojson.json", function (json) {
                                 .attr('class', 'station-1 stations')
                                 .attr('r', stationZoomScale(startingZoom))
                                 .style('fill', 'white')
-                                .style('opacity', '1')
+                                .style('opacity', .5)
                                 .attr('stroke', 'red')
                                 .attr('stroke-width', stationStrokeZoomScale(startingZoom));
 
