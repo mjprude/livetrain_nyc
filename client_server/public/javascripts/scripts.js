@@ -100,6 +100,7 @@ function applyLatLngToLayer(d) {
     return map.latLngToLayerPoint(new L.LatLng(y, x));
 };
 
+// Use to position stops
 function stopApplyLatLngToLayer(d) {
     var y = d.coordinates[1];
     var x = d.coordinates[0];
@@ -141,26 +142,16 @@ function positionReset() {
     });
   }
 
-  // Update line paths
+  // Update STATIC routePaths
   d3.selectAll('.routePath').attr('d', toLine);
-  // shuttlePath.attr("d", toLine);
-  // oneTrainPath.attr("d", toLine);
 
-  // shuttlePathLength = shuttlePath.node().getTotalLength();
-
-  // Update stop positions
+  // Update STOP positions and OVERLAYS
   d3.selectAll('.stops').attr('transform', function(d){
     return 'translate(' + stopApplyLatLngToLayer(d).x + ',' + stopApplyLatLngToLayer(d).y + ")";
   });
   d3.selectAll('.stopOverlays').attr('transform', function(d){
     return 'translate(' + stopApplyLatLngToLayer(d).x + ',' + stopApplyLatLngToLayer(d).y + ")";
   });
-
-  // d3.selectAll('#marker').attr('transform', function(d) {
-  //   var y = shuttleStationCoordinates[0][0];
-  //   var x = shuttleStationCoordinates[0][1];
-  //   return 'translate(' + map.latLngToLayerPoint(new L.LatLng(y, x)).x + "," + map.latLngToLayerPoint(new L.LatLng(y, x)).x + ")";
-  // });
 
   anchorMapOverlay();
 }
@@ -171,7 +162,7 @@ map.on('resize', positionReset);
 map.on('move', positionReset);
 
 
-// Handle marker and path resizing on map zoom
+// ************** Handle marker and path resizing on user map zoom ***********************
 function zoomReset() {
   var currentZoom = map.getZoom();
 
@@ -194,6 +185,8 @@ function zoomReset() {
 // Event listener for zoom event
 map.on('viewreset', zoomReset)
 
+
+// ********************** LOAD JSON - STATIC DATA (STATIONS AND LINES) ********************
 d3.json("/irt_routes_and_stops.json", function (json) {
 
   // Add routes to map
