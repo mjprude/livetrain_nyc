@@ -22,7 +22,7 @@ var svg = d3.select(map.getPanes().markerPane).append("svg");
 var staticGroup = svg.append("g").attr("class", "leaflet-zoom-hide");
 
 // ******************* SCALES AND SUCH ******************************
-var stationZoomScale = d3.scale.linear()
+var stopZoomScale = d3.scale.linear()
                               .domain([ minZoom, maxZoom])
                               .range([1, 10]);                             
 
@@ -100,6 +100,12 @@ function applyLatLngToLayer(d) {
     return map.latLngToLayerPoint(new L.LatLng(y, x));
 }
 
+function stopApplyLatLngToLayer(d) {
+    var y = d.coordinates[1];
+    var x = d.coordinates[0];
+    return map.latLngToLayerPoint(new L.LatLng(y, x)); 
+}
+
 
 // Map resize functions
 // Gets map bounds to use for adjusting page resize
@@ -130,7 +136,7 @@ function positionReset() {
       .style('transform', function(){
         return 'translate3d(' + mapAnchorPoints.x + 'px,' + mapAnchorPoints.y + "px, 0px)";
       });
-    // "Untranslate" the group that holds the station coordinates and path
+    // "Untranslate" the group that holds the stop coordinates and path
     staticGroup.style('transform', function(){
       return 'translate3d(' + -mapAnchorPoints.x + 'px,' + -mapAnchorPoints.y + "px, 0px)";
     });
@@ -143,10 +149,10 @@ function positionReset() {
 
   // shuttlePathLength = shuttlePath.node().getTotalLength();
 
-  // Update station positions
-  // d3.selectAll('.stations').attr('transform', function(d){
-  //   return 'translate(' + applyLatLngToLayer(d).x + "," + applyLatLngToLayer(d).y + ")";
-  // });
+  // Update stop positions
+  d3.selectAll('.stops').attr('transform', function(d){
+    return 'translate(' + stopApplyLatLngToLayer(d).x + ',' + stopApplyLatLngToLayer(d).y + ")";
+  });
 
   // d3.selectAll('#marker').attr('transform', function(d) {
   //   var y = shuttleStationCoordinates[0][0];
@@ -168,8 +174,8 @@ function zoomReset() {
   var currentZoom = map.getZoom();
 
   // Resize station circles
-  staticGroup.selectAll('.stations')
-              .attr('r', stationZoomScale(currentZoom))
+  staticGroup.selectAll('.stops')
+              .attr('r', stopZoomScale(currentZoom))
               .attr('stroke-width', stationStrokeZoomScale(currentZoom));
   // Resize lines
   staticGroup.selectAll('.routePath')
@@ -191,21 +197,35 @@ d3.json("/irt_routes_and_stops.json", function (json) {
               .data([routes[i].path_coordinates])
               .enter()
               .append('path')
+              .attr('id', pathId)
               .attr('class', 'routePath ' + className)
               .attr('fill', 'none')
               .attr('stroke', 'rgb' + routes[i].color)
-              .style('opacity', 1)
-              .attr('stroke-width', routePathZoomScale(startingZoom))
-    
+              .style('opacity', .5)
+              .attr('stroke-width', routePathZoomScale(startingZoom));    
   }
 
+  // Add stations to map
+  var stops = json.stops;
+  console.log(stops.length);
+  staticGroup.selectAll('stops')
+            .data(stops)
+            .enter()
+            .append('circle')
+            .attr('r', stopZoomScale(startingZoom))
+            .attr('id', function(d){ return d.stop_id; })
+            .attr('class', 'stops')
+            .attr('opacity', .5)
+            .attr('fill', function(d){ return 'rgb' + d.colors[0]; })
+
+
   // Append stations
-  // originTerminus = staticGroup.selectAll(".stations")
+  // originTerminus = staticGroup.selectAll(".stations")  
   //                                 .data(shuttleStationCoordinates)
   //                                 .enter()
   //                                 .append('circle')
   //                                 .attr('class', 'station-GS stations')
-  //                                 .attr('r', stationZoomScale(startingZoom))
+  //                                 .attr('r', stopZoomScale(startingZoom))
   //                                 .style('fill', 'white')
   //                                 .style('opacity', .5)
   //                                 .attr('stroke', 'grey')
@@ -236,7 +256,7 @@ d3.json("/subway_stops_geojson.json", function (json) {
   //                               .enter()
   //                               .append('circle')
   //                               .attr('class', 'station-1 stations')
-  //                               .attr('r', stationZoomScale(startingZoom))
+  //                               .attr('r', stopZoomScale(startingZoom))
   //                               .style('fill', 'white')
   //                               .style('opacity', .5)
   //                               .attr('stroke', 'red')
