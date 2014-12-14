@@ -135,7 +135,7 @@ function positionReset() {
       return 'translate3d(' + -mapAnchorPoints.x + 'px,' + -mapAnchorPoints.y + "px, 0px)";
     });
   }
-  debugger
+
   // Update line path
   d3.selectAll('.routePath').attr('d', toLine)
   // shuttlePath.attr("d", toLine);
@@ -144,9 +144,9 @@ function positionReset() {
   // shuttlePathLength = shuttlePath.node().getTotalLength();
 
   // Update station positions
-  d3.selectAll('.stations').attr('transform', function(d){
-    return 'translate(' + applyLatLngToLayer(d).x + "," + applyLatLngToLayer(d).y + ")";
-  });
+  // d3.selectAll('.stations').attr('transform', function(d){
+  //   return 'translate(' + applyLatLngToLayer(d).x + "," + applyLatLngToLayer(d).y + ")";
+  // });
 
   // d3.selectAll('#marker').attr('transform', function(d) {
   //   var y = shuttleStationCoordinates[0][0];
@@ -181,51 +181,23 @@ map.on('viewreset', zoomReset)
 
 d3.json("/irt_routes_and_stops.json", function (json) {
 
-  // var $routes = $(json.routes);
-
-  // $routes.each(function(route){
-  //   console.log(route.route_id)
-  // })
-
-  var routes = json.routes
-  for (var i = 1; i < routes.length; i++){
+  // Add routes to map
+  var routes = json.routes;
+  console.log(routes.length);
+  for (var i = 0; i < routes.length; i++){
     var className = "route-" + routes[i].route_id;
-    staticGroup.selectAll("." + className)
-              .data(routes[i].path_coordinates)
+    var pathId = "path-" + i;
+    staticGroup.selectAll(pathId)
+              .data([routes[i].path_coordinates])
               .enter()
               .append('path')
               .attr('class', 'routePath ' + className)
               .attr('fill', 'none')
-              .attr('stroke', 'grey')
-              .style('opacity', .5)
+              .attr('stroke', 'rgb' + routes[i].color)
+              .style('opacity', 1)
               .attr('stroke-width', routePathZoomScale(startingZoom))
     
   }
-
-
-
-
-
-  // shuttlePath = staticGroup.selectAll(".shuttlePath")
-  //   .data([getRoutePathById("GS")[0].geometry.coordinates])
-  //   .enter()
-  //   .append("path")
-  //   .attr("class", "shuttlePath routePath")
-  //   .attr('fill', 'none')
-  //   .attr('stroke', 'grey')
-  //   .style('opacity', .5)
-  //   .attr('stroke-width', routePathZoomScale(startingZoom));
-
-  // oneTrainPath = staticGroup.selectAll('.oneTrainPath')
-  //   .data([getRoutePathById("1")[0].geometry.coordinates[0], getRoutePathById("1")[0].geometry.coordinates[1] ])
-  //   .enter()
-  //   .append('path')
-  //   .attr('class', 'oneTrainPath routePath')
-  //   .attr('fill', 'none')
-  //   .attr('stroke', 'red')
-  //   .style('opacity', .5)
-  //   .attr('stroke-width', routePathZoomScale(startingZoom));
-
 
   // Append stations
   // originTerminus = staticGroup.selectAll(".stations")
@@ -240,7 +212,7 @@ d3.json("/irt_routes_and_stops.json", function (json) {
   //                                 .attr('stroke-width', stationStrokeZoomScale(startingZoom));
 
   // call positionReset to populate the lines and such...
-  // positionReset();
+  positionReset();
     
   
 });
