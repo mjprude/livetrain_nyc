@@ -19,7 +19,7 @@ var sTrain;
 // ******************* SVG OVERLAY GENERATION ***********************
 var svg = d3.select(map.getPanes().markerPane).append("svg");
 // The "g" element to which we append thigns
-var kennyPowers = svg.append("g").attr("class", "leaflet-zoom-hide");
+var staticGroup = svg.append("g").attr("class", "leaflet-zoom-hide");
 
 // ******************* SCALES AND SUCH ******************************
 var stationZoomScale = d3.scale.linear()
@@ -42,7 +42,7 @@ var routePathZoomScale = d3.scale.linear()
     var startPoint = shuttlePath.node().getPointAtLength(shuttlePathLength * percentComplete);
     d3.select('#marker').remove();
 
-    sTrain = kennyPowers.append('circle')
+    sTrain = staticGroup.append('circle')
                             .attr('r',5)
                             .attr("id", "marker")
                             .style('fill', 'grey')
@@ -131,16 +131,17 @@ function positionReset() {
         return 'translate3d(' + mapAnchorPoints.x + 'px,' + mapAnchorPoints.y + "px, 0px)";
       });
     // "Untranslate" the group that holds the station coordinates and path
-    kennyPowers.style('transform', function(){
+    staticGroup.style('transform', function(){
       return 'translate3d(' + -mapAnchorPoints.x + 'px,' + -mapAnchorPoints.y + "px, 0px)";
     });
   }
-
+  debugger
   // Update line path
-  shuttlePath.attr("d", toLine);
-  oneTrainPath.attr("d", toLine);
+  d3.selectAll('.routePath').attr('d', toLine)
+  // shuttlePath.attr("d", toLine);
+  // oneTrainPath.attr("d", toLine);
 
-  shuttlePathLength = shuttlePath.node().getTotalLength();
+  // shuttlePathLength = shuttlePath.node().getTotalLength();
 
   // Update station positions
   d3.selectAll('.stations').attr('transform', function(d){
@@ -167,94 +168,109 @@ function zoomReset() {
   var currentZoom = map.getZoom();
 
   // Resize station circles
-  kennyPowers.selectAll('.stations')
+  staticGroup.selectAll('.stations')
               .attr('r', stationZoomScale(currentZoom))
               .attr('stroke-width', stationStrokeZoomScale(currentZoom));
   // Resize lines
-  kennyPowers.selectAll('.routePath')
+  staticGroup.selectAll('.routePath')
               .attr('stroke-width', routePathZoomScale(currentZoom));
 }
 
 // Event listener for zoom event
 map.on('viewreset', zoomReset)
 
-d3.json("/subway_routes_geojson.json", function (json) {
-   // Filters feed data to pull out the shuttle route 
-   // (this actually doesn't do anything right now since the json 
-    // only contains the shuttle points)
-   function getRoutePathById(route_id){
-    return json.features.filter(function(d) {
-        return d.properties.route_id === route_id;
-      });
-   }
+d3.json("/irt_routes_and_stops.json", function (json) {
+
+  // var $routes = $(json.routes);
+
+  // $routes.each(function(route){
+  //   console.log(route.route_id)
+  // })
+
+  var routes = json.routes
+  for (var i = 1; i < routes.length; i++){
+    var className = "route-" + routes[i].route_id;
+    staticGroup.selectAll("." + className)
+              .data(routes[i].path_coordinates)
+              .enter()
+              .append('path')
+              .attr('class', 'routePath ' + className)
+              .attr('fill', 'none')
+              .attr('stroke', 'grey')
+              .style('opacity', .5)
+              .attr('stroke-width', routePathZoomScale(startingZoom))
+    
+  }
 
 
 
-  shuttlePath = kennyPowers.selectAll(".shuttlePath")
-    .data([getRoutePathById("GS")[0].geometry.coordinates])
-    .enter()
-    .append("path")
-    .attr("class", "shuttlePath routePath")
-    .attr('fill', 'none')
-    .attr('stroke', 'grey')
-    .style('opacity', .5)
-    .attr('stroke-width', routePathZoomScale(startingZoom));
 
-  oneTrainPath = kennyPowers.selectAll('.oneTrainPath')
-    .data([getRoutePathById("1")[0].geometry.coordinates[0], getRoutePathById("1")[0].geometry.coordinates[1] ])
-    .enter()
-    .append('path')
-    .attr('class', 'oneTrainPath routePath')
-    .attr('fill', 'none')
-    .attr('stroke', 'red')
-    .style('opacity', .5)
-    .attr('stroke-width', routePathZoomScale(startingZoom));
+
+  // shuttlePath = staticGroup.selectAll(".shuttlePath")
+  //   .data([getRoutePathById("GS")[0].geometry.coordinates])
+  //   .enter()
+  //   .append("path")
+  //   .attr("class", "shuttlePath routePath")
+  //   .attr('fill', 'none')
+  //   .attr('stroke', 'grey')
+  //   .style('opacity', .5)
+  //   .attr('stroke-width', routePathZoomScale(startingZoom));
+
+  // oneTrainPath = staticGroup.selectAll('.oneTrainPath')
+  //   .data([getRoutePathById("1")[0].geometry.coordinates[0], getRoutePathById("1")[0].geometry.coordinates[1] ])
+  //   .enter()
+  //   .append('path')
+  //   .attr('class', 'oneTrainPath routePath')
+  //   .attr('fill', 'none')
+  //   .attr('stroke', 'red')
+  //   .style('opacity', .5)
+  //   .attr('stroke-width', routePathZoomScale(startingZoom));
 
 
   // Append stations
-  originTerminus = kennyPowers.selectAll(".stations")
-                                  .data(shuttleStationCoordinates)
-                                  .enter()
-                                  .append('circle')
-                                  .attr('class', 'station-GS stations')
-                                  .attr('r', stationZoomScale(startingZoom))
-                                  .style('fill', 'white')
-                                  .style('opacity', .5)
-                                  .attr('stroke', 'grey')
-                                  .attr('stroke-width', stationStrokeZoomScale(startingZoom));
+  // originTerminus = staticGroup.selectAll(".stations")
+  //                                 .data(shuttleStationCoordinates)
+  //                                 .enter()
+  //                                 .append('circle')
+  //                                 .attr('class', 'station-GS stations')
+  //                                 .attr('r', stationZoomScale(startingZoom))
+  //                                 .style('fill', 'white')
+  //                                 .style('opacity', .5)
+  //                                 .attr('stroke', 'grey')
+  //                                 .attr('stroke-width', stationStrokeZoomScale(startingZoom));
 
-  //call positionReset to populate the lines and such...
-  positionReset();
+  // call positionReset to populate the lines and such...
+  // positionReset();
     
-  // }
+  
 });
 
 d3.json("/subway_stops_geojson.json", function (json) {
 
-   function getStationsById(route_id){
-    var filteredResults = json.features.filter(function(feature) {
-        return feature.properties.Routes_ALL.indexOf(route_id) > -1;
-      });
-    var stations = [];
-    for (var i = 0; i < filteredResults.length; i++ ) {
-      stations.push(filteredResults[i].geometry.coordinates);
-    }
-    return stations;
-   }
-  oneTrainStationCoordinates = getStationsById('1');
+  //  function getStationsById(route_id){
+  //   var filteredResults = json.features.filter(function(feature) {
+  //       return feature.properties.Routes_ALL.indexOf(route_id) > -1;
+  //     });
+  //   var stations = [];
+  //   for (var i = 0; i < filteredResults.length; i++ ) {
+  //     stations.push(filteredResults[i].geometry.coordinates);
+  //   }
+  //   return stations;
+  //  }
+  // oneTrainStationCoordinates = getStationsById('1');
 
-  oneTrainStations = kennyPowers.selectAll('.station-1')
-                                .data(oneTrainStationCoordinates)
-                                .enter()
-                                .append('circle')
-                                .attr('class', 'station-1 stations')
-                                .attr('r', stationZoomScale(startingZoom))
-                                .style('fill', 'white')
-                                .style('opacity', .5)
-                                .attr('stroke', 'red')
-                                .attr('stroke-width', stationStrokeZoomScale(startingZoom));
+  // oneTrainStations = staticGroup.selectAll('.station-1')
+  //                               .data(oneTrainStationCoordinates)
+  //                               .enter()
+  //                               .append('circle')
+  //                               .attr('class', 'station-1 stations')
+  //                               .attr('r', stationZoomScale(startingZoom))
+  //                               .style('fill', 'white')
+  //                               .style('opacity', .5)
+  //                               .attr('stroke', 'red')
+  //                               .attr('stroke-width', stationStrokeZoomScale(startingZoom));
 
-  positionReset();
+  // positionReset();
 
 });
 
