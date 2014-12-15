@@ -2,6 +2,27 @@ var startingZoom = 12;
 var maxZoom = 19;
 var minZoom = 9;
 
+var fakeJSON = [{
+  trainId: '1',
+  tripOne: {
+    path: 'path-22',
+    percentComplete: 0,
+    duration: 5000,
+    timeUntilDeparture: 0,
+  },
+  tripTwo: {
+    path: 'path-24',
+    percentComplete: 0,
+    duration: 5000,
+    timeUntilDeparture: 3000,
+  }
+}];
+
+var shuttleStopCoordinates = [ [ -73.986229, 40.755983000933206 ], [ -73.979189, 40.752769000933171 ] ];
+var shuttlePath;
+var shuttlePathLength;
+var sTrain;
+
 L.mapbox.accessToken = 'pk.eyJ1IjoibWpwcnVkZSIsImEiOiJiVG8yR2VrIn0.jtdF6eqGIKKs0To4p0mu0Q';
 var map = L.mapbox.map('map', 'mjprude.kcf5kl75', {
               maxZoom: maxZoom,
@@ -9,17 +30,11 @@ var map = L.mapbox.map('map', 'mjprude.kcf5kl75', {
             })
             .setView([ 40.75583970971843, -73.90090942382812 ], startingZoom);
 
-var shuttleStationCoordinates = [ [ -73.986229, 40.755983000933206 ], [ -73.979189, 40.752769000933171 ] ];
-var originTerminus;
-var shuttlePath;
-var shuttlePathLength;
-var oneTrainStations;
-var oneTrainPath;
-var sTrain;
 // ******************* SVG OVERLAY GENERATION ***********************
 var svg = d3.select(map.getPanes().markerPane).append("svg");
 // The "g" element to which we append thigns
 var staticGroup = svg.append("g").attr("class", "leaflet-zoom-hide");
+// var dynamicGroup = svg.append("g").attr("class", "leaflet-zoom-hide");
 
 // ******************* SCALES AND SUCH ******************************
 var stopZoomScale = d3.scale.linear()
@@ -36,6 +51,7 @@ var routePathZoomScale = d3.scale.linear()
 
 
 // ******************* Projection abilities *************************
+<<<<<<< HEAD
 
   function animate(percentComplete, duration, timeUntilDeparture) {
     timeUntilDeparture = timeUntilDeparture || 0
@@ -71,6 +87,8 @@ var routePathZoomScale = d3.scale.linear()
   }
 
 
+=======
+>>>>>>> 089e0c09c63dfc2619ebc9f18fb1bc8de614e696
 // Line projection
 var transform = d3.geo.transform({
     point: projectPoint
@@ -106,7 +124,6 @@ function stopApplyLatLngToLayer(d) {
     var x = d.coordinates[0];
     return map.latLngToLayerPoint(new L.LatLng(y, x)); 
 };
-
 
 // Map resize functions
 // Gets map bounds to use for adjusting page resize
@@ -166,7 +183,7 @@ map.on('move', positionReset);
 function zoomReset() {
   var currentZoom = map.getZoom();
 
-  // Resize station circles
+  // Resize Stop circles
   staticGroup.selectAll('.stops')
               .attr('r', stopZoomScale(currentZoom))
               .attr('stroke-width', stopStrokeZoomScale(currentZoom));
@@ -177,6 +194,7 @@ function zoomReset() {
                 return ( (2 * (stopZoomScale(currentZoom)) * Math.PI)/2 + ', ' + (2 * (stopZoomScale(currentZoom)) * Math.PI)/2 );
               });
 
+  shuttlePathLength = shuttlePath.node().getTotalLength()
   // Resize lines
   staticGroup.selectAll('.routePath')
               .attr('stroke-width', routePathZoomScale(currentZoom));
@@ -186,20 +204,19 @@ function zoomReset() {
 map.on('viewreset', zoomReset)
 
 
-// ********************** LOAD JSON - STATIC DATA (STATIONS AND LINES) ********************
+// ********************** LOAD JSON - STATIC DATA (STOPS AND LINES) ********************
 d3.json("/irt_routes_and_stops.json", function (json) {
 
   // Add routes to map
   var routes = json.routes;
-  console.log(routes.length);
-  for (var i = 0; i < routes.length; i++){
-    var className = "route-" + routes[i].route_id;
-    var pathId = "path-" + i;
-    staticGroup.append('g')
+  var routeGroup = staticGroup.append('g')
               .attr('class', 'routeGroup')
               .attr('opacity', .5);
 
-    d3.select('.routeGroup').selectAll(pathId)
+  for (var i = 0; i < routes.length; i++){
+    var className = "route-" + routes[i].route_id;
+    var pathId = "path-" + i;
+    routeGroup.selectAll(pathId)
               .data([routes[i].path_coordinates])
               .enter()
               .append('path')
@@ -212,10 +229,12 @@ d3.json("/irt_routes_and_stops.json", function (json) {
               .attr('stroke-width', routePathZoomScale(startingZoom));    
   }
 
-  // Add stations to map
+  var stopGroup = staticGroup.append('g')
+              .attr('class', 'stopGroup')
+
+  // Add Stops to map
   var stops = json.stops;
-  console.log(stops.length);
-  staticGroup.selectAll('stops')
+  stopGroup.selectAll('stops')
             .data(stops)
             .enter()
             .append('circle')
@@ -228,7 +247,7 @@ d3.json("/irt_routes_and_stops.json", function (json) {
             .attr('stroke-width', stopStrokeZoomScale(startingZoom));
 
   // ...and the overlays necessary for the dash effect
-  staticGroup.selectAll('stopOverlays')
+  stopGroup.selectAll('stopOverlays')
             .data(stops)
             .enter()
             .append('circle')
@@ -244,20 +263,70 @@ d3.json("/irt_routes_and_stops.json", function (json) {
             })
             .attr('stroke-width', stopStrokeZoomScale(startingZoom));
 
+  shuttlePath = d3.select('#path-22');
+
   // call positionReset and zoomReset to populate the stops and lines and such...
   positionReset();
   zoomReset();
     
   
-});
+});// end of static JSON call
 
-$(function(){
+
+// ************************ ANIMATION **************************************
+function animateSingle(){
+  var trains = staticGroup.selectAll('trains')
+                          .data(fakeJSON, function(d){ return d.trainId; })
+    
+  trains.enter()
+    .append('circle')
+    .attr('class', 'trains')
+    .attr('r', 5)
+    .attr('id', function(d){ return 'train-' + d.trainId;})
+    .style('fill', 'blue')
+    .attr("transform", function(d) { return "translate(" + getStartPointOne(d).x+"," + getStartPointOne(d).y + ")" });
+
+  function getStartPointOne(d){
+    var path = d3.select('#' + d.tripOne.path);
+    return path.node().getPointAtLength(path.node().getTotalLength() * d.tripOne.percentComplete);
+  }
   
+  trains.transition()
+        .delay(function(d){ return d.tripOne.timeUntilDeparture; })
+        .duration(function(d){ return d.tripOne.duration / (1 - d.tripOne.percentComplete )})
+        .ease('linear')
+        .attrTween('transform', function(d){
+          var path = d3.select('#' + d.tripOne.path);
+          return tweenTrain(path, d.tripOne.percentComplete);
+        })
+        .transition()
+        .duration(function(d){ return d.tripTwo.timeUntilDeparture; })
+        .attrTween('transform', function(d){
+          var path = d3.select('#' + d.tripTwo.path);
+          return holdTrain(path);
+        })
+        .transition()
+        .duration(function(d){ return d.tripTwo.duration})
+        .ease('linear')
+        .attrTween('transform', function(d){
+          var path = d3.select('#' + d.tripTwo.path);
+          return tweenTrain(path, d.tripTwo.percentComplete);
+        });
 
+  function tweenTrain(path, percentComplete) {
+    return function(t) {
+      var p = path.node().getPointAtLength(t * (path.node().getTotalLength()) + percentComplete * (path.node().getTotalLength()));
+      return 'translate(' + p.x + ',' + p.y + ')';
+    }
+  }
 
-
-})
-
+  function holdTrain(path) {
+    return function(t) {
+      var startPoint = path.node().getPointAtLength(0);
+      return 'translate(' + startPoint.x + ',' + startPoint.y + ')';
+    }
+  }
+}
   
 console.log(" ,<-------------->,");
 console.log("/                  \\\ ");
@@ -269,3 +338,36 @@ console.log("|    ()|'..'|()    |");
 console.log("|      |    |      |");
 console.log("'+-----======-----+'");
 console.log("    ||        ||");
+// ********************* ANIMATION **************
+//   function animate(percentComplete, duration, timeUntilDeparture){
+//     timeUntilDeparture = timeUntilDeparture || 0
+//     var startPoint = shuttlePath.node().getPointAtLength(shuttlePathLength * percentComplete);
+//     d3.select('#marker').remove();
+
+//     sTrain = staticGroup.append('circle')
+//                             .attr('r',5)
+//                             .attr("id", "marker")
+//                             .style('fill', 'grey')
+//                             .attr("transform", "translate("+ startPoint.x+","+startPoint.y+")");
+
+//     function transition(path) {
+//       shuttlePath.transition()
+//           .duration(duration / (1 - percentComplete))
+//           .ease('linear')
+//           .attrTween('custom', tweenDash)     
+//     }
+
+//     function tweenDash() {
+//       // var i = d3.interpolateString("0," + l, l + "," + l); // interpolation of stroke-dasharray style attr
+//       // map.on('viewReset', function(){ l = shuttlePath.node().getTotalLength(); })
+//       return function(t) {
+//         var p = shuttlePath.node().getPointAtLength(t * shuttlePathLength + percentComplete * shuttlePathLength);
+//         sTrain.attr("transform", "translate(" + p.x + "," + p.y + ")");//move marker
+//         // return i(t);
+//         // if (t >= 1 - percentComplete) {
+//         //   setTimeout(function(){ d3.select('#marker').style('opacity', '0'); },0);
+//         // }
+//       }
+//     }
+//     setTimeout(function() { svg.select('path.shuttlePath').call(transition) },timeUntilDeparture)
+//   }

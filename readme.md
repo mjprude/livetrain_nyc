@@ -1,4 +1,23 @@
-# Using MTA real-time arrival data
+---
+# Live Train
+---
+<i>Visualizing the NYC subway system in real time</i><br>
+http://www.livetrain.nyc
+
+
+## About
+The primary goal of this project is to, with as much accuracy as possible, map out the current location of every train in the New York City subway system. Because, at present, the MTA only provides real-time arrival data for the IRT (<i>1, 2, 3, 4, 5,</i> and <i>6</i> trains) and <i>L</i> trains, those are the only trains shown on the map. This visualization is aimed at both commuters, who may find this information useful to their commutes, and at the general public, who we hope will appreciate the activity and complexity of the largest rapid-trasit system in the world (by number of stations) and busiest in the Western hemisphere.
+
+This project was conceived, developed, and maintained by Michael Prude and Ted Mahoney as their final project for the Web Development Intensive Course at General Assembly, a 12-week program in full-stack development.
+
+## Technologies Used
+- Ruby
+- Sinatra
+- D3
+- Leaflet/Mapbox
+- Google Protocol Buffers
+
+## Using MTA real-time arrival data
 The MTA provides it's real-time subway arrival data in a google protocol buffer format. To use this, follow the instructions below:
 
 Explaination of installation:
@@ -19,33 +38,13 @@ https://developers.google.com/transit/gtfs-realtime/gtfs-realtime-proto
 https://github.com/jonthornton/MtaSanitizer/blob/master/stations.json
 
 ### -Curl the API into a file (with your developer key):
-`curl http://datamine.mta.info/mta_esi.php?key=<developerkey> -o /tmp/mtafeed
+`curl http://datamine.mta.info/mta_esi.php?key=<developerkey> -o /tmp/mtafeed`
 
 ### -Decode the data using protobuffers 
 ##### Protoc is from the compiled Google Protocol Buffers & gtfs-realtime.proto is the proto definition (configuration specific to the MTA's use of of protobuffers)
 
 `$ cat /tmp/mtafeed | /usr/local/bin/protoc -I /tmp /tmp/gtfs-realtime.proto  --decode=transit_realtime.FeedMessage > /tmp/decodedmtafeed
 `
-
-Let's break that down:
-
-```bash
-cat
-```
-Display the info to the terminal (just to get a sense of the world)
-```bash
-/tmp/mtafeed |
-```
-This is the file we created when we curled the API earlier. Pipe this into...
-```bash
-/tmp/protobuf-2.6.0/src/protoc -I 
-```
-The /tmp directory is presumably a terrible place to install our protocol buffer.  Will install this elsewhere.
-```bash
-/tmp /tmp/gtfs-realtime.proto  --decode=transit_realtime.FeedMessage > /tmp/decodedmtafeed
-```
-Not totally sure what all these things do. `/tmp` -not sure, followed by `/tmp/gtfs-realtime.proto` - the file containing MTA-specific definintions, `--decode=transit_realtime.FeedMessage >` - presumably this is where the actual decoding occurs, and `/tmp/decodedmtafeed` - the output file with the decoded data.
-
 ### -Parsing Protocol Buffers using Ruby
 
 This process relies on a gem called ruby-protocol-buffers:

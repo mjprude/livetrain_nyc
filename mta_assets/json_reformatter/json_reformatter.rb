@@ -68,4 +68,21 @@ stop_filter(route_ids)
 reformat_routes
 reformat_stops
 
+def add_reverse_shuttle
+  shuttle_hash = @return_hash['routes'].select {|route| route['route_id'] == 'GS'}[0].clone
+  shuttle_hash['path_coordinates'] = shuttle_hash['path_coordinates'].reverse
+  shuttle_hash['route_id'] = 'GSN'
+  @return_hash['routes'] << shuttle_hash
+end
+
+add_reverse_shuttle
+
 write_file(@return_hash, './irt_routes_and_stops.json')
+
+# def add_reverse_shuttle
+#   shuttle_hash_array = @return_hash['routes'].select {|route| route['route_id'] == 'GS'}.map do |route|
+#     shuttle_hash['path_coordinates'] = shuttle_hash['path_coordinates'].reverse
+#     shuttle_hash['route_id'] = 'GSN'
+#   end
+#   @return_hash['routes'] << shuttle_hash_array[0]
+# end
