@@ -311,7 +311,17 @@ function animateSingle(){
     }
   }
 }
-
+  
+console.log(" ,<-------------->,");
+console.log("/                  \\\ ");
+console.log("| ,---,,----,,---, |");
+console.log("| |   ||    ||(1)| |");
+console.log("| '---'|    |'---' |");
+console.log("|    ()|'..'|()    |");
+console.log("|    ()|'..'|()    |");
+console.log("|      |    |      |");
+console.log("'+-----======-----+'");
+console.log("    ||        ||");
 // ********************* ANIMATION **************
 //   function animate(percentComplete, duration, timeUntilDeparture){
 //     timeUntilDeparture = timeUntilDeparture || 0
