@@ -9,6 +9,22 @@ var map = L.mapbox.map('map', 'mjprude.kcf5kl75', {
             })
             .setView([ 40.75583970971843, -73.90090942382812 ], startingZoom);
 
+var fakeJSON = [{
+  trainId: '1',
+  tripOne: {
+    path: 'path-22',
+    percentComplete: 0.25,
+    duration: 10000,
+    timeUntilDeparture: 0,
+  },
+  tripTwo: {
+    path: 'path-22',
+    percentComplete: 0,
+    duration: 10000,
+    timeUntilDeparture: 0,
+  }
+}];
+
 var shuttleStopCoordinates = [ [ -73.986229, 40.755983000933206 ], [ -73.979189, 40.752769000933171 ] ];
 var shuttlePath;
 var shuttlePathLength;
@@ -17,6 +33,7 @@ var sTrain;
 var svg = d3.select(map.getPanes().markerPane).append("svg");
 // The "g" element to which we append thigns
 var staticGroup = svg.append("g").attr("class", "leaflet-zoom-hide");
+// var dynamicGroup = svg.append("g").attr("class", "leaflet-zoom-hide");
 
 // ******************* SCALES AND SUCH ******************************
 var stopZoomScale = d3.scale.linear()
@@ -34,50 +51,40 @@ var routePathZoomScale = d3.scale.linear()
 
 // ******************* Projection abilities *************************
 
+function animateSingle(){
+  var trains = staticGroup.selectAll('trains')
+                          .data(fakeJSON, function(d){ return d.trainId; })
+    
+  trains.enter()
+    .append('circle')
+    .attr('class', 'trains')
+    .attr('r', 5)
+    .attr('id', function(d){ return 'train-' + d.trainId;})
+    .style('fill', 'blue')
+    .attr("transform", function(d) { return "translate(" + getStartPointOne(d).x+"," + getStartPointOne(d).y + ")" });
 
-// ********************* ANIMATION **************
-  function animate(percentComplete, duration, timeUntilDeparture){
-    debugger
-    timeUntilDeparture = timeUntilDeparture || 0
-    var startPoint = shuttlePath.node().getPointAtLength(shuttlePathLength * percentComplete);
-    d3.select('#marker').remove();
-
-    sTrain = staticGroup.append('circle')
-                            .attr('r',5)
-                            .attr("id", "marker")
-                            .style('fill', 'grey')
-                            .attr("transform", "translate("+ startPoint.x+","+startPoint.y+")");
-
-    function transition(path) {
-      shuttlePath.transition()
-          .duration(duration / (1 - percentComplete))
-          .ease('linear')
-          .attrTween('custom', tweenDash)     
-    }
-
-    function tweenDash() {
-      // var i = d3.interpolateString("0," + l, l + "," + l); // interpolation of stroke-dasharray style attr
-      // map.on('viewReset', function(){ l = shuttlePath.node().getTotalLength(); })
-      debugger
-      return function(t) {
-        var p = shuttlePath.node().getPointAtLength(t * shuttlePathLength + percentComplete * shuttlePathLength);
-        sTrain.attr("transform", "translate(" + p.x + "," + p.y + ")");//move marker
-        // return i(t);
-        if (t >= 1 - percentComplete) {
-          setTimeout(function(){ d3.select('#marker').style('opacity', '0'); },0);
-        }
-      }
-    }
-    setTimeout(function() { svg.select('path.shuttlePath').call(transition) },timeUntilDeparture)
+  function getStartPointOne(d){
+    var path = d3.select('#' + d.tripOne.path);
+    return path.node().getPointAtLength(path.node().getTotalLength() * d.tripOne.percentComplete);
   }
+  
+  trains.transition()
+        .delay(function(d){ return d.tripOne.timeUntilDeparture; })
+        .duration(function(d){ return d.tripOne.duration / (1 - d.tripOne.percentComplete )})
+        .ease('linear')
+        .attrTween('transform', function(d){
+          var path = d3.select('#' + d.tripOne.path);
+          return tweenTrain(path, d.tripOne.percentComplete);
+        })
+        .transition();
 
-  function animateSingle(path, percentComplete, duration, timeUntilDeparture){
-    var timeUntilDeparture = timeUntilDeparture || 0;
-    var startPoint = path.node().getPointAtLength(path.node().getTotalLength() * percentComplete);
-    var train = this
-
-    debugger;
+  function tweenTrain(path, percentComplete) {
+    return function(t) {
+      var p = path.node().getPointAtLength(t * (path.node().getTotalLength()) + percentComplete * (path.node().getTotalLength()));
+      return 'translate(' + p.x + ',' + p.y + ')';
+    }
   }
+}
 
 
 // Line projection
@@ -200,7 +207,6 @@ d3.json("/irt_routes_and_stops.json", function (json) {
 
   // Add routes to map
   var routes = json.routes;
-  console.log(routes.length);
   var routeGroup = staticGroup.append('g')
               .attr('class', 'routeGroup')
               .attr('opacity', .5);
@@ -226,7 +232,6 @@ d3.json("/irt_routes_and_stops.json", function (json) {
 
   // Add Stops to map
   var stops = json.stops;
-  console.log(stops.length);
   stopGroup.selectAll('stops')
             .data(stops)
             .enter()
@@ -264,3 +269,37 @@ d3.json("/irt_routes_and_stops.json", function (json) {
     
   
 });
+
+// ********************* ANIMATION **************
+//   function animate(percentComplete, duration, timeUntilDeparture){
+//     timeUntilDeparture = timeUntilDeparture || 0
+//     var startPoint = shuttlePath.node().getPointAtLength(shuttlePathLength * percentComplete);
+//     d3.select('#marker').remove();
+
+//     sTrain = staticGroup.append('circle')
+//                             .attr('r',5)
+//                             .attr("id", "marker")
+//                             .style('fill', 'grey')
+//                             .attr("transform", "translate("+ startPoint.x+","+startPoint.y+")");
+
+//     function transition(path) {
+//       shuttlePath.transition()
+//           .duration(duration / (1 - percentComplete))
+//           .ease('linear')
+//           .attrTween('custom', tweenDash)     
+//     }
+
+//     function tweenDash() {
+//       // var i = d3.interpolateString("0," + l, l + "," + l); // interpolation of stroke-dasharray style attr
+//       // map.on('viewReset', function(){ l = shuttlePath.node().getTotalLength(); })
+//       return function(t) {
+//         var p = shuttlePath.node().getPointAtLength(t * shuttlePathLength + percentComplete * shuttlePathLength);
+//         sTrain.attr("transform", "translate(" + p.x + "," + p.y + ")");//move marker
+//         // return i(t);
+//         // if (t >= 1 - percentComplete) {
+//         //   setTimeout(function(){ d3.select('#marker').style('opacity', '0'); },0);
+//         // }
+//       }
+//     }
+//     setTimeout(function() { svg.select('path.shuttlePath').call(transition) },timeUntilDeparture)
+//   }
