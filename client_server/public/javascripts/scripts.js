@@ -19,14 +19,14 @@ var sTrain;
 // ******************* SVG OVERLAY GENERATION ***********************
 var svg = d3.select(map.getPanes().markerPane).append("svg");
 // The "g" element to which we append thigns
-var kennyPowers = svg.append("g").attr("class", "leaflet-zoom-hide");
+var staticGroup = svg.append("g").attr("class", "leaflet-zoom-hide");
 
 // ******************* SCALES AND SUCH ******************************
-var stationZoomScale = d3.scale.linear()
+var stopZoomScale = d3.scale.linear()
                               .domain([ minZoom, maxZoom])
                               .range([1, 10]);                             
 
-var stationStrokeZoomScale = d3.scale.linear()
+var stopStrokeZoomScale = d3.scale.linear()
                               .domain([ minZoom, maxZoom])
                               .range([ 1, 5]);
 
@@ -42,7 +42,7 @@ var routePathZoomScale = d3.scale.linear()
     var startPoint = shuttlePath.node().getPointAtLength(shuttlePathLength * percentComplete);
     d3.select('#marker').remove();
 
-    sTrain = kennyPowers.append('circle')
+    sTrain = staticGroup.append('circle')
                             .attr('r',5)
                             .attr("id", "marker")
                             .style('fill', 'grey')
@@ -86,10 +86,10 @@ function projectPoint(x, y) {
 var toLine = d3.svg.line()
     .interpolate("linear")
     .x(function(d) {
-        return applyLatLngToLayer(d).x
+        return applyLatLngToLayer(d).x;
     })
     .y(function(d) {
-        return applyLatLngToLayer(d).y
+        return applyLatLngToLayer(d).y;
     });
 
 
@@ -98,7 +98,14 @@ function applyLatLngToLayer(d) {
     var y = d[1];
     var x = d[0];
     return map.latLngToLayerPoint(new L.LatLng(y, x));
-}
+};
+
+// Use to position stops
+function stopApplyLatLngToLayer(d) {
+    var y = d.coordinates[1];
+    var x = d.coordinates[0];
+    return map.latLngToLayerPoint(new L.LatLng(y, x)); 
+};
 
 
 // Map resize functions
@@ -107,8 +114,7 @@ function getBounds(){
   var northBound = map.getBounds().getNorth();
   var westBound = map.getBounds().getWest();
   return applyLatLngToLayer([ westBound, northBound ]);
-}
-
+};
 
 // ******************* Handling user map movements ****************
 
@@ -130,28 +136,22 @@ function positionReset() {
       .style('transform', function(){
         return 'translate3d(' + mapAnchorPoints.x + 'px,' + mapAnchorPoints.y + "px, 0px)";
       });
-    // "Untranslate" the group that holds the station coordinates and path
-    kennyPowers.style('transform', function(){
+    // "Untranslate" the group that holds the stop coordinates and path
+    staticGroup.style('transform', function(){
       return 'translate3d(' + -mapAnchorPoints.x + 'px,' + -mapAnchorPoints.y + "px, 0px)";
     });
   }
 
-  // Update line path
-  shuttlePath.attr("d", toLine);
-  oneTrainPath.attr("d", toLine);
+  // Update STATIC routePaths
+  d3.selectAll('.routePath').attr('d', toLine);
 
-  shuttlePathLength = shuttlePath.node().getTotalLength();
-
-  // Update station positions
-  d3.selectAll('.stations').attr('transform', function(d){
-    return 'translate(' + applyLatLngToLayer(d).x + "," + applyLatLngToLayer(d).y + ")";
+  // Update STOP positions and OVERLAYS
+  d3.selectAll('.stops').attr('transform', function(d){
+    return 'translate(' + stopApplyLatLngToLayer(d).x + ',' + stopApplyLatLngToLayer(d).y + ")";
   });
-
-  // d3.selectAll('#marker').attr('transform', function(d) {
-  //   var y = shuttleStationCoordinates[0][0];
-  //   var x = shuttleStationCoordinates[0][1];
-  //   return 'translate(' + map.latLngToLayerPoint(new L.LatLng(y, x)).x + "," + map.latLngToLayerPoint(new L.LatLng(y, x)).x + ")";
-  // });
+  d3.selectAll('.stopOverlays').attr('transform', function(d){
+    return 'translate(' + stopApplyLatLngToLayer(d).x + ',' + stopApplyLatLngToLayer(d).y + ")";
+  });
 
   anchorMapOverlay();
 }
@@ -162,103 +162,94 @@ map.on('resize', positionReset);
 map.on('move', positionReset);
 
 
-// Handle marker and path resizing on map zoom
+// ************** Handle marker and path resizing on user map zoom ***********************
 function zoomReset() {
   var currentZoom = map.getZoom();
 
   // Resize station circles
-  kennyPowers.selectAll('.stations')
-              .attr('r', stationZoomScale(currentZoom))
-              .attr('stroke-width', stationStrokeZoomScale(currentZoom));
+  staticGroup.selectAll('.stops')
+              .attr('r', stopZoomScale(currentZoom))
+              .attr('stroke-width', stopStrokeZoomScale(currentZoom));
+  staticGroup.selectAll('.stopOverlays')
+              .attr('r', stopZoomScale(currentZoom))
+              .attr('stroke-width', stopStrokeZoomScale(currentZoom))
+              .attr('stroke-dasharray', function(){ 
+                return ( (2 * (stopZoomScale(currentZoom)) * Math.PI)/2 + ', ' + (2 * (stopZoomScale(currentZoom)) * Math.PI)/2 );
+              });
+
   // Resize lines
-  kennyPowers.selectAll('.routePath')
+  staticGroup.selectAll('.routePath')
               .attr('stroke-width', routePathZoomScale(currentZoom));
 }
 
 // Event listener for zoom event
 map.on('viewreset', zoomReset)
 
-d3.json("/subway_routes_geojson.json", function (json) {
-   // Filters feed data to pull out the shuttle route 
-   // (this actually doesn't do anything right now since the json 
-    // only contains the shuttle points)
-   function getRoutePathById(route_id){
-    return json.features.filter(function(d) {
-        return d.properties.route_id === route_id;
-      });
-   }
 
+// ********************** LOAD JSON - STATIC DATA (STATIONS AND LINES) ********************
+d3.json("/irt_routes_and_stops.json", function (json) {
 
+  // Add routes to map
+  var routes = json.routes;
+  console.log(routes.length);
+  for (var i = 0; i < routes.length; i++){
+    var className = "route-" + routes[i].route_id;
+    var pathId = "path-" + i;
+    staticGroup.append('g')
+              .attr('class', 'routeGroup')
+              .attr('opacity', .5);
 
-  shuttlePath = kennyPowers.selectAll(".shuttlePath")
-    .data([getRoutePathById("GS")[0].geometry.coordinates])
-    .enter()
-    .append("path")
-    .attr("class", "shuttlePath routePath")
-    .attr('fill', 'none')
-    .attr('stroke', 'grey')
-    .style('opacity', .5)
-    .attr('stroke-width', routePathZoomScale(startingZoom));
+    d3.select('.routeGroup').selectAll(pathId)
+              .data([routes[i].path_coordinates])
+              .enter()
+              .append('path')
+              .attr('id', pathId)
+              .attr('class', 'routePath ' + className)
+              .attr('fill', 'none')
+              // .attr('stroke', 'rgb' + routes[i].color)
+              .attr('stroke', 'grey')
+              .style('opacity', 1)
+              .attr('stroke-width', routePathZoomScale(startingZoom));    
+  }
 
-  oneTrainPath = kennyPowers.selectAll('.oneTrainPath')
-    .data([getRoutePathById("1")[0].geometry.coordinates[0], getRoutePathById("1")[0].geometry.coordinates[1] ])
-    .enter()
-    .append('path')
-    .attr('class', 'oneTrainPath routePath')
-    .attr('fill', 'none')
-    .attr('stroke', 'red')
-    .style('opacity', .5)
-    .attr('stroke-width', routePathZoomScale(startingZoom));
+  // Add stations to map
+  var stops = json.stops;
+  console.log(stops.length);
+  staticGroup.selectAll('stops')
+            .data(stops)
+            .enter()
+            .append('circle')
+            .attr('r', stopZoomScale(startingZoom))
+            .attr('id', function(d){ return d.stop_id; })
+            .attr('class', 'stops')
+            .attr('opacity', 1)
+            .attr('fill', 'white')
+            .attr('stroke', function(d){ return 'rgb' + d.colors[0]; })
+            .attr('stroke-width', stopStrokeZoomScale(startingZoom));
 
+  // ...and the overlays necessary for the dash effect
+  staticGroup.selectAll('stopOverlays')
+            .data(stops)
+            .enter()
+            .append('circle')
+            .attr('r', stopZoomScale(startingZoom))
+            .attr('class', 'stopOverlays')
+            .attr('fill', 'none')
+            .attr('stroke', function(d) {
+              if (d.colors.length > 1){
+                return 'rgb' + d.colors[1];
+              } else {
+                return 'rgb' + d.colors[0];
+              }
+            })
+            .attr('stroke-width', stopStrokeZoomScale(startingZoom));
 
-  // Append stations
-  originTerminus = kennyPowers.selectAll(".stations")
-                                  .data(shuttleStationCoordinates)
-                                  .enter()
-                                  .append('circle')
-                                  .attr('class', 'station-GS stations')
-                                  .attr('r', stationZoomScale(startingZoom))
-                                  .style('fill', 'white')
-                                  .style('opacity', .5)
-                                  .attr('stroke', 'grey')
-                                  .attr('stroke-width', stationStrokeZoomScale(startingZoom));
-
-  //call positionReset to populate the lines and such...
+  // call positionReset and zoomReset to populate the stops and lines and such...
   positionReset();
+  zoomReset();
     
-  // }
+  
 });
-
-d3.json("/subway_stops_geojson.json", function (json) {
-
-   function getStationsById(route_id){
-    var filteredResults = json.features.filter(function(feature) {
-        return feature.properties.Routes_ALL.indexOf(route_id) > -1;
-      });
-    var stations = [];
-    for (var i = 0; i < filteredResults.length; i++ ) {
-      stations.push(filteredResults[i].geometry.coordinates);
-    }
-    return stations;
-   }
-  oneTrainStationCoordinates = getStationsById('1');
-
-  oneTrainStations = kennyPowers.selectAll('.station-1')
-                                .data(oneTrainStationCoordinates)
-                                .enter()
-                                .append('circle')
-                                .attr('class', 'station-1 stations')
-                                .attr('r', stationZoomScale(startingZoom))
-                                .style('fill', 'white')
-                                .style('opacity', .5)
-                                .attr('stroke', 'red')
-                                .attr('stroke-width', stationStrokeZoomScale(startingZoom));
-
-  positionReset();
-
-});
-
-
 
 $(function(){
   
