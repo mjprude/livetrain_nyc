@@ -37,7 +37,7 @@ var routePathZoomScale = d3.scale.linear()
 
 // ******************* Projection abilities *************************
 
-  function animate(percentComplete, duration, timeUntilDeparture){
+  function animate(percentComplete, duration, timeUntilDeparture) {
     timeUntilDeparture = timeUntilDeparture || 0
     var startPoint = shuttlePath.node().getPointAtLength(shuttlePathLength * percentComplete);
     d3.select('#marker').remove();
@@ -258,3 +258,14 @@ $(function(){
 
 })
 
+  
+console.log(" ,<-------------->,");
+console.log("/                  \\\ ");
+console.log("| ,---,,----,,---, |");
+console.log("| |   ||    ||(1)| |");
+console.log("| '---'|    |'---' |");
+console.log("|    ()|'..'|()    |");
+console.log("|    ()|'..'|()    |");
+console.log("|      |    |      |");
+console.log("'+-----======-----+'");
+console.log("    ||        ||");
