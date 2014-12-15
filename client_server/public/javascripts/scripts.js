@@ -2,26 +2,19 @@ var startingZoom = 12;
 var maxZoom = 19;
 var minZoom = 9;
 
-L.mapbox.accessToken = 'pk.eyJ1IjoibWpwcnVkZSIsImEiOiJiVG8yR2VrIn0.jtdF6eqGIKKs0To4p0mu0Q';
-var map = L.mapbox.map('map', 'mjprude.kcf5kl75', {
-              maxZoom: maxZoom,
-              minZoom: minZoom,
-            })
-            .setView([ 40.75583970971843, -73.90090942382812 ], startingZoom);
-
 var fakeJSON = [{
   trainId: '1',
   tripOne: {
     path: 'path-22',
-    percentComplete: 0.25,
-    duration: 10000,
+    percentComplete: 0,
+    duration: 5000,
     timeUntilDeparture: 0,
   },
   tripTwo: {
-    path: 'path-22',
+    path: 'path-24',
     percentComplete: 0,
-    duration: 10000,
-    timeUntilDeparture: 0,
+    duration: 5000,
+    timeUntilDeparture: 3000,
   }
 }];
 
@@ -29,6 +22,14 @@ var shuttleStopCoordinates = [ [ -73.986229, 40.755983000933206 ], [ -73.979189,
 var shuttlePath;
 var shuttlePathLength;
 var sTrain;
+
+L.mapbox.accessToken = 'pk.eyJ1IjoibWpwcnVkZSIsImEiOiJiVG8yR2VrIn0.jtdF6eqGIKKs0To4p0mu0Q';
+var map = L.mapbox.map('map', 'mjprude.kcf5kl75', {
+              maxZoom: maxZoom,
+              minZoom: minZoom,
+            })
+            .setView([ 40.75583970971843, -73.90090942382812 ], startingZoom);
+
 // ******************* SVG OVERLAY GENERATION ***********************
 var svg = d3.select(map.getPanes().markerPane).append("svg");
 // The "g" element to which we append thigns
@@ -50,43 +51,6 @@ var routePathZoomScale = d3.scale.linear()
 
 
 // ******************* Projection abilities *************************
-
-function animateSingle(){
-  var trains = staticGroup.selectAll('trains')
-                          .data(fakeJSON, function(d){ return d.trainId; })
-    
-  trains.enter()
-    .append('circle')
-    .attr('class', 'trains')
-    .attr('r', 5)
-    .attr('id', function(d){ return 'train-' + d.trainId;})
-    .style('fill', 'blue')
-    .attr("transform", function(d) { return "translate(" + getStartPointOne(d).x+"," + getStartPointOne(d).y + ")" });
-
-  function getStartPointOne(d){
-    var path = d3.select('#' + d.tripOne.path);
-    return path.node().getPointAtLength(path.node().getTotalLength() * d.tripOne.percentComplete);
-  }
-  
-  trains.transition()
-        .delay(function(d){ return d.tripOne.timeUntilDeparture; })
-        .duration(function(d){ return d.tripOne.duration / (1 - d.tripOne.percentComplete )})
-        .ease('linear')
-        .attrTween('transform', function(d){
-          var path = d3.select('#' + d.tripOne.path);
-          return tweenTrain(path, d.tripOne.percentComplete);
-        })
-        .transition();
-
-  function tweenTrain(path, percentComplete) {
-    return function(t) {
-      var p = path.node().getPointAtLength(t * (path.node().getTotalLength()) + percentComplete * (path.node().getTotalLength()));
-      return 'translate(' + p.x + ',' + p.y + ')';
-    }
-  }
-}
-
-
 // Line projection
 var transform = d3.geo.transform({
     point: projectPoint
@@ -268,7 +232,63 @@ d3.json("/irt_routes_and_stops.json", function (json) {
   zoomReset();
     
   
-});
+});// end of static JSON call
+
+
+// ************************ ANIMATION **************************************
+function animateSingle(){
+  var trains = staticGroup.selectAll('trains')
+                          .data(fakeJSON, function(d){ return d.trainId; })
+    
+  trains.enter()
+    .append('circle')
+    .attr('class', 'trains')
+    .attr('r', 5)
+    .attr('id', function(d){ return 'train-' + d.trainId;})
+    .style('fill', 'blue')
+    .attr("transform", function(d) { return "translate(" + getStartPointOne(d).x+"," + getStartPointOne(d).y + ")" });
+
+  function getStartPointOne(d){
+    var path = d3.select('#' + d.tripOne.path);
+    return path.node().getPointAtLength(path.node().getTotalLength() * d.tripOne.percentComplete);
+  }
+  
+  trains.transition()
+        .delay(function(d){ return d.tripOne.timeUntilDeparture; })
+        .duration(function(d){ return d.tripOne.duration / (1 - d.tripOne.percentComplete )})
+        .ease('linear')
+        .attrTween('transform', function(d){
+          var path = d3.select('#' + d.tripOne.path);
+          return tweenTrain(path, d.tripOne.percentComplete);
+        })
+        .transition()
+        .duration(function(d){ return d.tripTwo.timeUntilDeparture; })
+        .attrTween('transform', function(d){
+          var path = d3.select('#' + d.tripTwo.path);
+          return holdTrain(path);
+        })
+        .transition()
+        .duration(function(d){ return d.tripTwo.duration})
+        .ease('linear')
+        .attrTween('transform', function(d){
+          var path = d3.select('#' + d.tripTwo.path);
+          return tweenTrain(path, d.tripTwo.percentComplete);
+        });
+
+  function tweenTrain(path, percentComplete) {
+    return function(t) {
+      var p = path.node().getPointAtLength(t * (path.node().getTotalLength()) + percentComplete * (path.node().getTotalLength()));
+      return 'translate(' + p.x + ',' + p.y + ')';
+    }
+  }
+
+  function holdTrain(path) {
+    return function(t) {
+      var startPoint = path.node().getPointAtLength(0);
+      return 'translate(' + startPoint.x + ',' + startPoint.y + ')';
+    }
+  }
+}
 
 // ********************* ANIMATION **************
 //   function animate(percentComplete, duration, timeUntilDeparture){
