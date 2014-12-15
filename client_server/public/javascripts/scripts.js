@@ -51,44 +51,6 @@ var routePathZoomScale = d3.scale.linear()
 
 
 // ******************* Projection abilities *************************
-<<<<<<< HEAD
-
-  function animate(percentComplete, duration, timeUntilDeparture) {
-    timeUntilDeparture = timeUntilDeparture || 0
-    var startPoint = shuttlePath.node().getPointAtLength(shuttlePathLength * percentComplete);
-    d3.select('#marker').remove();
-
-    sTrain = staticGroup.append('circle')
-                            .attr('r',5)
-                            .attr("id", "marker")
-                            .style('fill', 'grey')
-                            .attr("transform", "translate("+ startPoint.x+","+startPoint.y+")");
-
-    function transition(path) {
-      shuttlePath.transition()
-          .duration(duration / (1 - percentComplete))
-          .ease('linear')
-          .attrTween('custom', tweenDash)     
-    }
-
-    function tweenDash() {
-      // var i = d3.interpolateString("0," + l, l + "," + l); // interpolation of stroke-dasharray style attr
-      // map.on('viewReset', function(){ l = shuttlePath.node().getTotalLength(); })
-      return function(t) {
-        var p = shuttlePath.node().getPointAtLength(t * shuttlePathLength + percentComplete * shuttlePathLength);
-        sTrain.attr("transform", "translate(" + p.x + "," + p.y + ")");//move marker
-        // return i(t);
-        if (t >= 1 - percentComplete) {
-          setTimeout(function(){ d3.select('#marker').style('opacity', '0'); },0);
-        }
-      }
-    }
-    setTimeout(function() { svg.select('path.shuttlePath').call(transition) },timeUntilDeparture)
-  }
-
-
-=======
->>>>>>> 089e0c09c63dfc2619ebc9f18fb1bc8de614e696
 // Line projection
 var transform = d3.geo.transform({
     point: projectPoint
