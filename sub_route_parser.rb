@@ -18,8 +18,8 @@ def route
   data = JSON.parse(route)
 end
 
-def get_stops_by_line(line, direction='S')
-  all_stops = stops.map do |stop|
+def get_stops_by_line(line)
+  stops.map do |stop|
     stop_hash = Hash.new
     if stop['properties']['Routes_ALL'] && stop['properties']['Routes_ALL'].include?(line.to_s.upcase)
       stop_id = stop['properties']['STOP_ID']
@@ -27,11 +27,6 @@ def get_stops_by_line(line, direction='S')
     end
     stop_hash == {} ? nil : stop_hash
   end.compact
-
-  return_hash = Hash[line] = direction
-  all_stops.each do |stop|
-    return_hash[lin]
-  end
 end
 
 {
@@ -84,16 +79,12 @@ end
 
 def insert_stops_into_line(line, direction='S')
   shape = get_shape_by_line(line, direction)
-  stops = get_stops_by_line(line, direction)
+  stops = get_stops_by_line(line)
 
   stops.each do |stop|
     stop_name, stop_point = stop.first
 
-    if shape.include?(stop_point)
-      stop_index = shape.index(stop_point)
-      shape.insert(stop_index, stop_point)
-    else
-
+    if !shape.include?(stop_point)
       closest_value = shape.min_by{ |point| distance_between(point, stop_point) }
       closest_index = shape.index(closest_value)
 
@@ -103,9 +94,9 @@ def insert_stops_into_line(line, direction='S')
 
         point_distance = distance_between(closest_value, point_north)
         if stop_distance > point_distance
-          shape.insert(closest_index, stop_point, stop_point)
+          shape.insert(closest_index, stop_point)
         else
-          shape.insert(closest_index + 1, stop_point, stop_point)
+          shape.insert(closest_index + 1, stop_point)
         end
 
       elsif closest_index == (shape.length - 1)
@@ -120,6 +111,8 @@ def insert_stops_into_line(line, direction='S')
       end
     end
   end
+  # ignore Neried branch of 5 train...
+  line.to_s == '5' && shape.pop
   shape
 end
 
@@ -212,6 +205,21 @@ def return_line_object(line, direction='S', stop_name=nil)
   shape = get_shape_by_line(line, direction)
   all_stops = get_stops_by_line(stop_name, direction)
   all_stops.each{ |stop| subdivide_shape_by_stop(shape, stop)}
+end
+
+def sub_path(line, origin, destination)
+  stops = get_stops_by_line(line)
+  shape = insert_stops_into_line(line)
+  orig_point = stops.select{|stop| stop.keys[0] == origin.to_s }[0].values[0]
+  dest_point = stops.select{|stop| stop.keys[0] == destination.to_s }[0].values[0]
+  orig_index = shape.index(orig_point)
+  dest_index = shape.index(dest_point)
+
+  if orig_index > dest_index
+    return shape[dest_index..orig_index].reverse
+  else
+    return shape[orig_index..dest_index]
+  end
 end
 
 # 5 train branches, requires special handling...
