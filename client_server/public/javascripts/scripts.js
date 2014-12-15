@@ -2,21 +2,38 @@ var startingZoom = 12;
 var maxZoom = 19;
 var minZoom = 9;
 
-var fakeJSON = [{
+var fakeJSON = [
+{
   trainId: '1',
   tripOne: {
     path: 'path-22',
     percentComplete: 0,
-    duration: 5000,
-    timeUntilDeparture: 0,
+    duration: 90000,
+    timeUntilDeparture: 5000,
   },
   tripTwo: {
     path: 'path-24',
     percentComplete: 0,
-    duration: 5000,
-    timeUntilDeparture: 3000,
+    duration: 90000,
+    timeUntilDeparture: 0,
   }
-}];
+},
+{
+  trainId: '2',
+  tripOne: {
+    path: 'path-24',
+    percentComplete: .5,
+    duration: 90000,
+    timeUntilDeparture: 0,
+  },
+  tripTwo: {
+    path: 'path-22',
+    percentComplete: 0,
+    duration: 90000,
+    timeUntilDeparture: 2000,
+  }
+}
+];
 
 var shuttleStopCoordinates = [ [ -73.986229, 40.755983000933206 ], [ -73.979189, 40.752769000933171 ] ];
 var shuttlePath;
@@ -254,8 +271,13 @@ function animateSingle(){
   }
   
   trains.transition()
-        .delay(function(d){ return d.tripOne.timeUntilDeparture; })
-        .duration(function(d){ return d.tripOne.duration / (1 - d.tripOne.percentComplete )})
+        .duration(function(d){ return d.tripOne.timeUntilDeparture; })
+        .attrTween('transform', function(d){
+          var path = d3.select('#' + d.tripOne.path);
+          return holdTrain(path);
+        })
+        .transition()
+        .duration(function(d){ return d.tripOne.duration })
         .ease('linear')
         .attrTween('transform', function(d){
           var path = d3.select('#' + d.tripOne.path);
@@ -277,7 +299,7 @@ function animateSingle(){
 
   function tweenTrain(path, percentComplete) {
     return function(t) {
-      var p = path.node().getPointAtLength(t * (path.node().getTotalLength()) + percentComplete * (path.node().getTotalLength()));
+      var p = path.node().getPointAtLength(t * (path.node().getTotalLength() * (1 - percentComplete) ) + (percentComplete * (path.node().getTotalLength()) ) );
       return 'translate(' + p.x + ',' + p.y + ')';
     }
   }
