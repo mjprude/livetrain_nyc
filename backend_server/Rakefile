@@ -72,6 +72,43 @@ namespace :mta do
 
     remove_alerts_and_vehicle_positions
 
+    @feed_timestamp = MTA::Feed.mta_timestamp(@transit_realtime_data)
+
+    @transit_realtime_data[:entity].each do |entity|
+
+      trip = Trip.create({
+          mta_timestamp: @feed_timestamp,
+          mta_trip_id: MTA::Entity.mta_trip_id(@raw_trip),
+          stops_remaining: MTA::Entity.stops_remaining(@raw_trip),
+          route: MTA::Entity.route(@raw_trip),
+          direction: MTA::Entity.direction(@raw_trip),
+        })
+
+      entity[:trip_update][:stop_time_update].each do |stop_update|
+        Stop.create({
+          trip_id: @test_trip.id,
+          stop_id: MTA::Stop.stop_id(stop_update),
+          arrival_time: MTA::Stop.departure_time(stop_update),
+          departure_time: MTA::Stop.arrival_time(stop_update),
+          })
+      end
+
+    end
+
+
+
+    # @raw_trip = @transit_realtime_data[:entity][0]
+
+
+    # @raw_trip[:trip_update][:stop_time_update].each do |stop_update|
+    #   Stop.create({
+    #       trip_id: @test_trip.id,
+    #       stop_id: MTA::Stop.stop_id(stop_update),
+    #       arrival_time: MTA::Stop.departure_time(stop_update),
+    #       departure_time: MTA::Stop.arrival_time(stop_update),
+    #     })
+    # end
+
     binding.pry
   end
 
