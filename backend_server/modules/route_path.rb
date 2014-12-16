@@ -1,17 +1,17 @@
 module RoutePath
   require 'JSON'
 
-  def stops
-    stops = File.read('mta_assets/subway_stops_geojson.json')
+  def self.stops
+    stops = File.read('./../mta_assets/subway_stops_geojson.json')
     JSON.parse(stops)['features']
   end
 
-  def route
-    route = File.read('mta_assets/subway_routes_geojson.json')
+  def self.route
+    route = File.read('./../mta_assets/subway_routes_geojson.json')
     data = JSON.parse(route)
   end
 
-  def get_stops_by_line(line)
+  def self.get_stops_by_line(line)
     stops.map do |stop|
       stop_hash = Hash.new
       if stop['properties']['Routes_ALL'] && stop['properties']['Routes_ALL'].include?(line.to_s.upcase)
@@ -22,7 +22,7 @@ module RoutePath
     end.compact
   end
 
-  def get_shape_by_line(line)
+  def self.get_shape_by_line(line)
     route['features'].map do |feature|
       if feature['properties']['route_id'] == line.to_s
         feature['geometry']['coordinates']
@@ -30,7 +30,7 @@ module RoutePath
     end.compact.flatten(1)
   end
 
-  def distance_between(point1, point2)
+  def self.distance_between(point1, point2)
     begin
       (point1[1] - point2[1]).abs + (point1[0] - point2[0]).abs
     rescue
@@ -39,7 +39,7 @@ module RoutePath
     end
   end
 
-  def insert_stops_into_line(line, direction='S')
+  def self.insert_stops_into_line(line, direction='S')
     shape = get_shape_by_line(line, direction)
     stops = get_stops_by_line(line)
 
@@ -72,13 +72,13 @@ module RoutePath
     shape
   end
 
-  def get_stop_by_point(stops, coordinates, direction='S')
+  def self.get_stop_by_point(stops, coordinates, direction='S')
     stops.find{|stop| stop.values[0] == coordinates && stop.keys[0][-1] == direction}
   end
 
-  def sub_path(line, origin, destination, all_lines=['1','2','3','4','5','6','L'])
+  def self.sub_path(line, origin, destination, all_lines=['1','2','3','4','5','6','L'])
     stops = get_stops_by_line(line)
-    shape = insert_stops_into_line(line)
+    shape = get_shape_by_line(line)
     orig_point = stops.select{|stop| stop.keys[0] == origin.to_s }
     dest_point = stops.select{|stop| stop.keys[0] == destination.to_s }
 
