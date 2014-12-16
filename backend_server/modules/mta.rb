@@ -1,4 +1,48 @@
 module MTA
+  class Feed
+
+    # Use for trip generation
+    def self.mta_timestamp(feed_hash)
+      feed_hash[:header][:timestamp]
+    end
+
+    def self.mta_trip_id(feed_entity)
+      feed_entity[:trip_update][:trip][:trip_id]
+    end
+
+    def self.route(feed_entity)
+      feed_entity[:trip_update][:trip][:route_id]
+    end
+
+    def start_date
+      feed_entity[:trip_update][:trip][:route_id]
+    end
+
+    def self.stops_remaining(feed_entity)
+      feed_entity[:trip_update][:trip][:stop_time_update].count
+    end
+
+    def self.direction(feed_entity)
+      feed_entity[:trip_update][:trip][:stop_time_update][0][:stop_id][-1]
+    end
+
+    # Use for stop generation
+    def self.stop_id(stop_time_update)
+      stop_time_update[:stop_id]
+    end
+
+    def self.departure_time(stop_time_update)
+      stop_time_update[:departure] ? stop_time_update[:arrival][:time] || nil
+    end
+
+    def self.arrival_time(stop_time_update)
+      stop_time_update[:departure] ? stop_time_update[:arrival][:time] || nil
+    end
+
+
+
+  end
+
   class FeedParser
 
     def self.raw_feed

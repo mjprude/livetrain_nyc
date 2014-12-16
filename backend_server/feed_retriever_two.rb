@@ -1,6 +1,7 @@
 require './mta_assets/gtfs-realtime.pb.rb'
 require './mta_assets/nyct-subway.pb.rb'
 require './modules/mta.rb'
+require './connection.rb'
 require 'httparty'
 require 'json'
 require 'pry'
@@ -9,9 +10,6 @@ require 'pry'
 # Use this file to retrieve MTA feed data every 30 seconds
 # Turn off the program using ctrl+c
 ##########################################################
-
-@feedA = true
-
 # loop do
   current_time = Time.now
   date, time, zone = current_time.to_s.split(' ')
@@ -29,6 +27,8 @@ require 'pry'
 
   remove_alerts_and_vehicle_positions
 
+
+
   binding.pry
 
   # Dir.glob("./mta_assets/feeds/#{@feedA ? 'feedA' : 'feedB'}/*.json") do |file|
@@ -37,6 +37,5 @@ require 'pry'
   # f = File.open(string, "a+")
   # f.write(JSON.generate(transit_realtime_data))
   # f.close
-  # @feedA = !@feedA
   # sleep 30
 # end
