@@ -4,6 +4,7 @@ module MTA
     def self.mta_timestamp(feed_hash)
       feed_hash[:header][:timestamp]
     end
+
   end
 
   class Entity
@@ -35,7 +36,7 @@ module MTA
     end
 
     def self.departure_time(stop_time_update)
-      stop_time_update[:departure] ? stop_time_update[:arrival][:time] : nil
+      stop_time_update[:departure] ? stop_time_update[:departure][:time] : nil
     end
 
     def self.arrival_time(stop_time_update)

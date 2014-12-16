@@ -50,64 +50,59 @@ end
 namespace :mta do
 
   ##########################################################
-  # Use this task to retrieve MTA feed data every 30 seconds
+  # Use this task to retrieve MTA feed data
   ##########################################################
   desc 'run feed retriever'
   task :feed do
-    # loop do
 
-    current_time = Time.now
-    date, time, zone = current_time.to_s.split(' ')
-    string = "./mta_assets/feeds/#{@feedA ? 'feedA' : 'feedB'}/" + date + "_" + time.gsub(':', '.') + "_" + 'realtime.json'
-
-    @transit_realtime_data = TransitRealtime::FeedMessage.parse(HTTParty.get("http://datamine.mta.info/mta_esi.php?key=#{ENV['MTA_REALTIME_API_KEY']}&feed_id=1")).to_hash
-    ###
-    ### Maybe come up with a way to handle situations where transit_realtime_data is not available?
-    ###
-
+    # ************ Helper Methods *************
     def remove_alerts_and_vehicle_positions
       trip_updates = @transit_realtime_data[:entity].select {|entity| entity[:trip_update]}
       @transit_realtime_data[:entity] = trip_updates
     end
 
-    remove_alerts_and_vehicle_positions
-
-    @feed_timestamp = MTA::Feed.mta_timestamp(@transit_realtime_data)
-
-    @transit_realtime_data[:entity].each do |entity|
-
-      trip = Trip.create({
-          mta_timestamp: @feed_timestamp,
-          mta_trip_id: MTA::Entity.mta_trip_id(@raw_trip),
-          stops_remaining: MTA::Entity.stops_remaining(@raw_trip),
-          route: MTA::Entity.route(@raw_trip),
-          direction: MTA::Entity.direction(@raw_trip),
-        })
-
+    def create_stops_from_entity(entity, trip_id)
       entity[:trip_update][:stop_time_update].each do |stop_update|
         Stop.create({
-          trip_id: @test_trip.id,
+          trip_id: trip_id,
           stop_id: MTA::Stop.stop_id(stop_update),
-          arrival_time: MTA::Stop.departure_time(stop_update),
-          departure_time: MTA::Stop.arrival_time(stop_update),
+          arrival_time: MTA::Stop.arrival_time(stop_update),
+          departure_time: MTA::Stop.departure_time(stop_update),
           })
       end
-
     end
 
+    # Get the raw data
+    @transit_realtime_data = TransitRealtime::FeedMessage.parse(HTTParty.get("http://datamine.mta.info/mta_esi.php?key=#{ENV['MTA_REALTIME_API_KEY']}&feed_id=1")).to_hash
+    ### Maybe come up with a way to handle situations where transit_realtime_data is not available?
+    remove_alerts_and_vehicle_positions
 
+    # Pull out the timestamp of the retrieved feed
+    @feed_timestamp = MTA::Feed.mta_timestamp(@transit_realtime_data)
 
-    # @raw_trip = @transit_realtime_data[:entity][0]
-
-
-    # @raw_trip[:trip_update][:stop_time_update].each do |stop_update|
-    #   Stop.create({
-    #       trip_id: @test_trip.id,
-    #       stop_id: MTA::Stop.stop_id(stop_update),
-    #       arrival_time: MTA::Stop.departure_time(stop_update),
-    #       departure_time: MTA::Stop.arrival_time(stop_update),
-    #     })
-    # end
+    # Use the feed to update all entities
+    @transit_realtime_data[:entity].each do |entity|
+      # Check to see if the update applies to any trips currently in the db
+      if existing_trip = Trip.find_by({mta_trip_id: MTA::Entity.mta_trip_id(entity)})
+        unless existing_trip.mta_timestamp == @feed_timestamp
+          existing_stops = existing_trip.stops
+          existing_stops.each do |stop|
+            stop.destroy
+          end
+          create_stops_from_entity(entity, existing_trip.id)
+        end
+      else
+        # If the trip doesn't exist yet, create it
+        trip = Trip.create({
+            mta_timestamp: @feed_timestamp,
+            mta_trip_id: MTA::Entity.mta_trip_id(entity),
+            stops_remaining: MTA::Entity.stops_remaining(entity),
+            route: MTA::Entity.route(entity),
+            direction: MTA::Entity.direction(entity),
+          })
+        create_stops_from_entity(entity, trip.id)
+      end
+    end
 
     binding.pry
   end
