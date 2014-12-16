@@ -8,13 +8,13 @@ var fakeJSON = [
   tripOne: {
     path: 'path-22',
     percentComplete: 0,
-    duration: 90000,
-    timeUntilDeparture: 5000,
+    duration: 5000,
+    timeUntilDeparture: 3000,
   },
   tripTwo: {
     path: 'path-24',
     percentComplete: 0,
-    duration: 90000,
+    duration: 5000,
     timeUntilDeparture: 0,
   }
 },
@@ -23,13 +23,13 @@ var fakeJSON = [
   tripOne: {
     path: 'path-24',
     percentComplete: .5,
-    duration: 90000,
+    duration: 5000,
     timeUntilDeparture: 0,
   },
   tripTwo: {
     path: 'path-22',
     percentComplete: 0,
-    duration: 90000,
+    duration: 5000,
     timeUntilDeparture: 2000,
   }
 }
@@ -256,7 +256,12 @@ d3.json("/irt_routes_and_stops.json", function (json) {
 function animateSingle(){
   var trains = staticGroup.selectAll('trains')
                           .data(fakeJSON, function(d){ return d.trainId; })
-    
+  
+  // Append current (invisible) train paths
+  // YOUR CODE HERE
+
+
+  // Draw new trains
   trains.enter()
     .append('circle')
     .attr('class', 'trains')
@@ -270,6 +275,7 @@ function animateSingle(){
     return path.node().getPointAtLength(path.node().getTotalLength() * d.tripOne.percentComplete);
   }
   
+  // Animate all the trains
   trains.transition()
         .duration(function(d){ return d.tripOne.timeUntilDeparture; })
         .attrTween('transform', function(d){
