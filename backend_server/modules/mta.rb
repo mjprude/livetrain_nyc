@@ -32,11 +32,11 @@ module MTA
     end
 
     def self.departure_time(stop_time_update)
-      stop_time_update[:departure] ? stop_time_update[:arrival][:time] || nil
+      stop_time_update[:departure] ? stop_time_update[:arrival][:time] : nil
     end
 
     def self.arrival_time(stop_time_update)
-      stop_time_update[:departure] ? stop_time_update[:arrival][:time] || nil
+      stop_time_update[:arrival] ? stop_time_update[:arrival][:time] : nil
     end
 
 
