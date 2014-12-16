@@ -109,6 +109,7 @@ namespace :mta do
 
   def db_to_array
     Trip.all.map do |trip|
+      current_time = Time.now
       stops = trip.stops.map do |stop|
         {
           stop_id: stop.stop_id,
@@ -129,6 +130,7 @@ namespace :mta do
   # f.write(JSON.generate(db_to_array))
   # f.close
 
+  binding.pry
 
   end
 
