@@ -5,7 +5,7 @@ require 'json'
 require 'pry'
 
 ##########################################################
-# Use this file to retrieve MTA feed data every 35 seconds
+# Use this file to retrieve MTA feed data every 30 seconds
 # Turn off the program using ctrl+c
 ##########################################################
 
