@@ -81,6 +81,9 @@ namespace :mta do
     # Pull out the timestamp of the retrieved feed
     @feed_timestamp = MTA::Feed.mta_timestamp(@transit_realtime_data)
 
+    # Pull out all mta_trip_ids from feed into an array.  Then iterate through each current trip, check to see if the id is included in the updates array.
+    # Deal with the last station info at this point.
+
     # Use the feed to update all entities
     @transit_realtime_data[:entity].each do |entity|
       if entity[:trip_update]
@@ -130,7 +133,7 @@ namespace :mta do
   # f.write(JSON.generate(db_to_array))
   # f.close
 
-  binding.pry
+  # binding.pry
 
   end
 
