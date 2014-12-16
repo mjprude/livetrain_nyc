@@ -9,7 +9,7 @@ class CreateStopsTable < ActiveRecord::Migration
       t.integer :time_north
       t.integer :time_south
       t.integer :delay
-# all times in secons
+      # all times in secons
       t.timestamps
     end
   end
