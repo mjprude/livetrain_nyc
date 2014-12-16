@@ -107,8 +107,33 @@ namespace :mta do
       end
     end
 
-    # binding.pry
+  def db_to_array
+    Trip.all.map do |trip|
+      stops = trip.stops.map do |stop|
+        {
+          stop_id: stop.stop_id,
+          arrival_time: stop.arrival_time,
+          departure_time: stop.departure_time,
+        }
+      end
+      {
+        trip_id: trip.mta_trip_id,
+        timetable: stops,
+      }
+    end
   end
 
+  # json_file_name = "./mta_assets/feeds/live_feed/live_feed.json"
 
+  # f = File.open(json_file_name, "w")
+  # f.write(JSON.generate(db_to_array))
+  # f.close
+
+
+  end
+
+  desc 'get feed file'
+  task :read do
+
+  end
 end
