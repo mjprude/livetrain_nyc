@@ -56,10 +56,10 @@ namespace :mta do
   task :feed do
 
     # ************ Helper Methods *************
-    def remove_alerts_and_vehicle_positions
-      trip_updates = @transit_realtime_data[:entity].select {|entity| entity[:trip_update]}
-      @transit_realtime_data[:entity] = trip_updates
-    end
+    # def remove_alerts_and_vehicle_positions
+    #   trip_updates = @transit_realtime_data[:entity].select {|entity| entity[:trip_update]}
+    #   @transit_realtime_data[:entity] = trip_updates
+    # end
 
     def create_stops_from_entity(entity, trip_id)
       entity[:trip_update][:stop_time_update].each do |stop_update|
@@ -75,36 +75,39 @@ namespace :mta do
     # Get the raw data
     @transit_realtime_data = TransitRealtime::FeedMessage.parse(HTTParty.get("http://datamine.mta.info/mta_esi.php?key=#{ENV['MTA_REALTIME_API_KEY']}&feed_id=1")).to_hash
     ### Maybe come up with a way to handle situations where transit_realtime_data is not available?
-    remove_alerts_and_vehicle_positions
+
+    # remove_alerts_and_vehicle_positions
 
     # Pull out the timestamp of the retrieved feed
     @feed_timestamp = MTA::Feed.mta_timestamp(@transit_realtime_data)
 
     # Use the feed to update all entities
     @transit_realtime_data[:entity].each do |entity|
-      # Check to see if the update applies to any trips currently in the db
-      if existing_trip = Trip.find_by({mta_trip_id: MTA::Entity.mta_trip_id(entity)})
-        unless existing_trip.mta_timestamp == @feed_timestamp
-          existing_stops = existing_trip.stops
-          existing_stops.each do |stop|
-            stop.destroy
+      if entity[:trip_update]
+        # Check to see if the update applies to any trips currently in the db
+        if existing_trip = Trip.find_by({mta_trip_id: MTA::Entity.mta_trip_id(entity)})
+          unless existing_trip.mta_timestamp == @feed_timestamp
+            existing_stops = existing_trip.stops
+            existing_stops.each do |stop|
+              stop.destroy
+            end
+            create_stops_from_entity(entity, existing_trip.id)
           end
-          create_stops_from_entity(entity, existing_trip.id)
+        else
+          # If the trip doesn't exist yet, create it
+          trip = Trip.create({
+              mta_timestamp: @feed_timestamp,
+              mta_trip_id: MTA::Entity.mta_trip_id(entity),
+              stops_remaining: MTA::Entity.stops_remaining(entity),
+              route: MTA::Entity.route(entity),
+              direction: MTA::Entity.direction(entity),
+            })
+          create_stops_from_entity(entity, trip.id)
         end
-      else
-        # If the trip doesn't exist yet, create it
-        trip = Trip.create({
-            mta_timestamp: @feed_timestamp,
-            mta_trip_id: MTA::Entity.mta_trip_id(entity),
-            stops_remaining: MTA::Entity.stops_remaining(entity),
-            route: MTA::Entity.route(entity),
-            direction: MTA::Entity.direction(entity),
-          })
-        create_stops_from_entity(entity, trip.id)
       end
     end
 
-    binding.pry
+    # binding.pry
   end
 
 
