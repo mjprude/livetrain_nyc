@@ -14,6 +14,17 @@ Dir[ROOT_PATH+"/lib/*.rb"].each{ |file| require file }
 Dir[ROOT_PATH+"/helpers/*.rb"].each{ |file| require file }
 
 namespace :db do
+
+  desc 'Deletes all trips and stops from database'
+  task :clear_trips do
+    conn = PG.connect({
+      dbname: 'mta_realtime'
+      })
+    conn.exec('DELETE FROM trips;')
+    conn.exec('DELETE FROM stops;')
+    conn.close
+  end
+
 end
 
 desc "Show Routes for This File"
