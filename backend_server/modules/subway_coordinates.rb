@@ -1,6 +1,5 @@
-module RoutePath
+module SubwayCoordinates
   require 'JSON'
-
   def self.stops
     stops = File.read('./../mta_assets/subway_stops_geojson.json')
     JSON.parse(stops)['features']
