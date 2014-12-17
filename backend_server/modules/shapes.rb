@@ -1,12 +1,14 @@
 module Shapes
   require 'JSON'
+  require 'pry'
+
   def self.stops
-    stops = File.read('./../mta_assets/subway_stops_geojson.json')
+    stops = File.read(ROOT_PATH + '/mta_assets/subway_stops_geojson.json')
     JSON.parse(stops)['features']
   end
 
   def self.route
-    route = File.read('./../mta_assets/subway_routes_geojson.json')
+    route = File.read(ROOT_PATH + '/mta_assets/subway_routes_geojson.json')
     data = JSON.parse(route)
   end
 
@@ -96,7 +98,7 @@ module Shapes
 
     rescue
       all_lines.delete(line.to_s)
-      line != 'L' && sub_path(all_lines[0], origin, destination, all_lines)
+      line != 'L' && get_path(all_lines[0], origin, destination, all_lines)
     end
   end
 
