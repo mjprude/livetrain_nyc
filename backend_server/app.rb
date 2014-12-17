@@ -44,35 +44,43 @@ def jsonifier
     Trip.where(route: route).each do |trip|
 
       future_stops = trip.stops.where('arrival_time > ?',  Time.now.to_i).order('arrival_time ASC')
-      stop1 = future_stops[0]
-      stop2 = future_stops[1] || stop1
-      stop3 = future_stops[2] || stop2
-
       last_stop = trip.stops.where('departure_time < ?',  Time.now.to_i).order('departure_time DESC').first
-      last_stop ||= stop1
+      last_stop ||= trip.stops.where('departure_time > ?',  Time.now.to_i).order('departure_time ASC').first
+      stop1 = future_stops[0] || last_stop
 
-      route_obj[trip.mta_trip_id] = {
-        direction: trip.direction,
-        updated: trip.mta_timestamp,
+      # stop2 = future_stops[1] || stop1
+      # stop3 = future_stops[2] || stop2
 
-        lastStop: last_stop.stop_id,
-        lastDeparture: last_stop.departure_time,
 
-        stop1: stop1.stop_id,
-        path1: Shapes.get_path(route, last_stop.stop_id, stop1.stop_id),
-        arrival1: stop1.arrival_time,
-        departure1: stop1.departure_time,
+      begin
+      if stop1 && last_stop
+        route_obj[trip.mta_trip_id] = {
+          direction: trip.direction,
+          updated: trip.mta_timestamp,
 
-        stop2: stop2.stop_id,
-        path2: Shapes.get_path(route, stop1.stop_id, stop2.stop_id),
-        arrival2: stop2.arrival_time,
-        departure2: stop2.departure_time,
+          lastStop: last_stop.stop_id,
+          lastDeparture: last_stop.departure_time,
 
-        stop3: stop3.stop_id,
-        path3: Shapes.get_path(route, stop2.stop_id, stop3.stop_id),
-        arrival3: stop3.arrival_time,
-        departure3: stop3.departure_time,
-      }
+          stop1: stop1.stop_id,
+          path1: Shapes.get_path(route, last_stop.stop_id, stop1.stop_id),
+          arrival1: stop1.arrival_time,
+          departure1: stop1.departure_time,
+
+          # stop2: stop2.stop_id,
+          # path2: Shapes.get_path(route, stop1.stop_id, stop2.stop_id),
+          # arrival2: stop2.arrival_time,
+          # departure2: stop2.departure_time,
+
+          # stop3: stop3.stop_id,
+          # path3: Shapes.get_path(route, stop2.stop_id, stop3.stop_id),
+          # arrival3: stop3.arrival_time,
+          # departure3: stop3.departure_time,
+        }
+      end
+    rescue Exception => e
+      e
+      binding.pry
+    end
     end
     route_obj
   end
@@ -116,3 +124,5 @@ binding.pry
 # "091400_1..N" => {
 
 # }
+
+# about to leave the terminal: departure time in future, no last stop
