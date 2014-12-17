@@ -95,12 +95,18 @@ namespace :mta do
     # Pull out the timestamp of the retrieved feed
     @feed_timestamp = MTA::Feed.mta_timestamp(@transit_realtime_data)
 
+
+
+
     # Pull out count of trip_update Feed Entities
     @updated_trips = @transit_realtime_data[:entity].count {|entity| entity[:trip_update] }
 
     # Then iterate through each current trip in db
     @num_created_trips = 0 # PURELY FOR DEBUGGING !!!
     @num_updated_trips = 0 # PURELY FOR DEBUGGING !!!
+
+
+
 
     # Use the feed to update all entities
     @transit_realtime_data[:entity].each do |entity|
@@ -138,6 +144,10 @@ namespace :mta do
       end
     end
 
+    Trip.select do |trip|
+
+    end
+
     # Use this in case you need to debug the cleanup...
 
     # @suggested_deletions = []
@@ -153,10 +163,7 @@ namespace :mta do
     puts "Updated trips: #{@num_updated_trips}"
     puts "Deleted trips: #{@deletions}"
     puts "     DB trips: #{Trip.all.count}"
-  end
 
-  desc 'get feed file'
-  task :read do
-
+    binding.pry
   end
 end
