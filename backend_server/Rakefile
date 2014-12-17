@@ -56,10 +56,10 @@ namespace :mta do
   task :feed do
 
     # ************ Helper Methods *************
-    # def remove_alerts_and_vehicle_positions
-    #   trip_updates = @transit_realtime_data[:entity].select {|entity| entity[:trip_update]}
-    #   @transit_realtime_data[:entity] = trip_updates
-    # end
+    def remove_alerts_and_vehicle_positions
+      trip_updates = @transit_realtime_data[:entity].select {|entity| entity[:trip_update]}
+      @transit_realtime_data[:entity] = trip_updates
+    end
 
     def create_stops_from_entity(entity, trip_id)
       entity[:trip_update][:stop_time_update].each do |stop_update|
@@ -76,39 +76,61 @@ namespace :mta do
     @transit_realtime_data = TransitRealtime::FeedMessage.parse(HTTParty.get("http://datamine.mta.info/mta_esi.php?key=#{ENV['MTA_REALTIME_API_KEY']}&feed_id=1")).to_hash
     ### Maybe come up with a way to handle situations where transit_realtime_data is not available?
 
-    # remove_alerts_and_vehicle_positions
+    remove_alerts_and_vehicle_positions
 
     # Pull out the timestamp of the retrieved feed
     @feed_timestamp = MTA::Feed.mta_timestamp(@transit_realtime_data)
 
-    # Pull out all mta_trip_ids from feed into an array.  Then iterate through each current trip, check to see if the id is included in the updates array.
-    # Deal with the last station info at this point.
+    # Pull out all mta_trip_ids from feed Trip Update entities into an array.
+    @updated_trip_ids = @transit_realtime_data[:entity].map {|entity| MTA::Entity.mta_trip_id(entity) if entity[:trip_update]}.compact
+    # Then iterate through each current trip, check to see if the id is included in the updates array.
+    @updated_trips = []
 
-    # Use the feed to update all entities
-    @transit_realtime_data[:entity].each do |entity|
-      if entity[:trip_update]
-        # Check to see if the update applies to any trips currently in the db
-        if existing_trip = Trip.find_by({mta_trip_id: MTA::Entity.mta_trip_id(entity)})
-          unless existing_trip.mta_timestamp == @feed_timestamp
-            existing_stops = existing_trip.stops
-            existing_stops.each do |stop|
-              stop.destroy
+    def parse_it_real_good
+      Trip.all.each do |trip|
+        unless trip.mta_timestamp == @feed_timestamp
+          # Is there an updated stop timetable for this trip?
+          if @updated_trip_ids.include?(trip.mta_trip_id)
+            @updated_trips << trip.mta_trip_id
+            # Update remaining stops in db
+            trip.stops.each do |stop|
+              if
             end
-            create_stops_from_entity(entity, existing_trip.id)
+          else
+
           end
-        else
-          # If the trip doesn't exist yet, create it
-          trip = Trip.create({
-              mta_timestamp: @feed_timestamp,
-              mta_trip_id: MTA::Entity.mta_trip_id(entity),
-              stops_remaining: MTA::Entity.stops_remaining(entity),
-              route: MTA::Entity.route(entity),
-              direction: MTA::Entity.direction(entity),
-            })
-          create_stops_from_entity(entity, trip.id)
         end
       end
+      # Deal with the last station info at this point.
     end
+
+
+
+    # # Use the feed to update all entities
+    # @transit_realtime_data[:entity].each do |entity|
+    #   if entity[:trip_update]
+    #     # Check to see if the update applies to any trips currently in the db
+    #     if existing_trip = Trip.find_by({mta_trip_id: MTA::Entity.mta_trip_id(entity)})
+    #       unless existing_trip.mta_timestamp == @feed_timestamp
+    #         existing_stops = existing_trip.stops
+    #         existing_stops.each do |stop|
+    #           stop.destroy
+    #         end
+    #         create_stops_from_entity(entity, existing_trip.id)
+    #       end
+    #     else
+    #       # If the trip doesn't exist yet, create it
+    #       trip = Trip.create({
+    #           mta_timestamp: @feed_timestamp,
+    #           mta_trip_id: MTA::Entity.mta_trip_id(entity),
+    #           stops_remaining: MTA::Entity.stops_remaining(entity),
+    #           route: MTA::Entity.route(entity),
+    #           direction: MTA::Entity.direction(entity),
+    #         })
+    #       create_stops_from_entity(entity, trip.id)
+    #     end
+    #   end
+    # end
 
   def db_to_array
     Trip.all.map do |trip|
@@ -127,13 +149,7 @@ namespace :mta do
     end
   end
 
-  # json_file_name = "./mta_assets/feeds/live_feed/live_feed.json"
-
-  # f = File.open(json_file_name, "w")
-  # f.write(JSON.generate(db_to_array))
-  # f.close
-
-  # binding.pry
+  binding.pry
 
   end
 
