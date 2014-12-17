@@ -144,6 +144,16 @@ namespace :mta do
       end
     end
 
+    future_trips = Trip.select do |trip|
+      current_time = Time.now.to_i
+      future_departures = trip.stops.where('departure_time > ?',  current_time).order('departure_time ASC')
+      if future_departures.empty?
+        false
+      else
+        future_departures.first.departure_time - Time.now.to_i > 400
+      end
+    end
+
     # Use this in case you need to debug the cleanup...
 
     # @suggested_deletions = []
@@ -159,10 +169,7 @@ namespace :mta do
     puts "Updated trips: #{@num_updated_trips}"
     puts "Deleted trips: #{@deletions}"
     puts "     DB trips: #{Trip.all.count}"
-  end
 
-  desc 'get feed file'
-  task :read do
-
+    binding.pry
   end
 end
