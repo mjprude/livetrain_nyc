@@ -109,6 +109,10 @@ namespace :mta do
         if existing_trip = Trip.find_by({mta_trip_id: MTA::Entity.mta_trip_id(entity)})
           unless existing_trip.mta_timestamp == @feed_timestamp
             @num_updated_trips += 1 # PURELY FOR DEBUGGING !!!
+            existing_trip.update({
+              mta_timestamp: @feed_timestamp,
+              stops_remaining: MTA::Entity.stops_remaining(entity)
+              })
             update_existing_stops(entity, existing_trip)
           end
         else
@@ -126,45 +130,30 @@ namespace :mta do
       end
     end
 
-  binding.pry
+    @deletions = 0
+    Trip.where('stops_remaining < ?', 3).each do |trip|
+      if Time.now.to_i > trip.mta_timestamp + 120
+        @deletions += 1
 
-    # def parse_it_real_good
-    #   Trip.all.each do |trip|
-    #     unless trip.mta_timestamp == @feed_timestamp
-    #       # Is there an updated stop timetable for this trip?
-    #       if new_trip_update = @updated_trips.find {|trip_update_entity| MTA:Entity.mta_trip_id(trip_update_entity) == trip.mta_trip_id}
-    #         @num_updated_trips << trip.mta_trip_id # PURELY FOR DEBUGGING !!!
-    #         # Iterate through stop_updates to update stops in db
-    #         new_trip_update.each do |stop_update|
+      end
+    end
 
-    #         end
-    #       else
+    # Use this in case you need to debug the cleanup...
 
-    #       end
-    #     end
-    #   end
-    #   # Deal with the last station info at this point.
-    # end
-
-
-    # def db_to_array
-    #   Trip.all.map do |trip|
-    #     current_time = Time.now
-    #     stops = trip.stops.map do |stop|
-    #       {
-    #         stop_id: stop.stop_id,
-    #         arrival_time: stop.arrival_time,
-    #         departure_time: stop.departure_time,
-    #       }
-    #     end
-    #     {
-    #       trip_id: trip.mta_trip_id,
-    #       timetable: stops,
-    #     }
+    # @suggested_deletions = []
+    # @possible_deletions = Trip.where('stops_remaining < ?', 3)
+    # @possible_deletions.each do |possible_deletion|
+    #   if Time.now.to_i > possible_deletion.mta_timestamp + 120
+    #     @suggested_deletions << possible_deletion
     #   end
     # end
 
+    puts "Total MTA Updates: #{@updated_trips.count}"
+    puts "Created trips: #{@num_created_trips}"
+    puts "Updated trips: #{@num_updated_trips}"
+    puts "Deleted trips: #{@deletions.count}"
 
+    binding.pry
   end
 
   desc 'get feed file'
