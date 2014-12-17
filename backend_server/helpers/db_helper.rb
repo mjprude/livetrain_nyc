@@ -15,7 +15,8 @@ def update_json
     begin
       if stop1 && last_stop
 
-        route_obj[trip.mta_trip_id] = {
+        route_obj = {
+          trip_id: 't' + trip.mta_trip_id.gsub('.', '_'),
           route: trip.route,
           direction: trip.direction,
           updated: trip.mta_timestamp,
