@@ -130,6 +130,7 @@ var fakeJSON = [
     timeUntilDeparture: 2000,
   }
 }
+
 ];
 
 var shuttleStopCoordinates = [ [ -73.986229, 40.755983000933206 ], [ -73.979189, 40.752769000933171 ] ];
