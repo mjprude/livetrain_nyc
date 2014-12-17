@@ -121,7 +121,5 @@ module MTA
       returned_hash['entity'] = convert_entities(feed['entity'])
       returned_hash
     end
-
-
   end
 end
