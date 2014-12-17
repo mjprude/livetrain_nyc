@@ -65,7 +65,6 @@ namespace :mta do
   ##########################################################
   desc 'run feed retriever'
   task :feed do
-
     # ************ Helper Methods *************
     def create_stops_from_entity(entity, trip)
       entity[:trip_update][:stop_time_update].each do |stop_update|
@@ -80,13 +79,24 @@ namespace :mta do
 
     def update_existing_stops(entity, trip)
       entity[:trip_update][:stop_time_update].each do |stop_update|
-        stop = trip.stops.find_by({stop_id: MTA::Stop.stop_id(stop_update)})
-        stop.update({
-          arrival_time: MTA::Stop.arrival_time(stop_update),
-          departure_time: MTA::Stop.departure_time(stop_update),
-        })
+        if stop = trip.stops.find_by({stop_id: MTA::Stop.stop_id(stop_update)})
+          stop.update({
+            arrival_time: MTA::Stop.arrival_time(stop_update),
+            departure_time: MTA::Stop.departure_time(stop_update),
+          })
+        end
       end
     end
+
+    def new_trip_start_time(feed_entity)
+      if upcoming_departure_timestamp = MTA::Stop.departure_time(feed_entity[:trip_update][:stop_time_update][0])
+        upcoming_departure_timestamp
+      else
+        @feed_timestamp
+      end
+    end
+
+    # *************** FEED RETRIEVAL PROCESS ******************
 
     # Get the raw data
     @transit_realtime_data = TransitRealtime::FeedMessage.parse(HTTParty.get("http://datamine.mta.info/mta_esi.php?key=#{ENV['MTA_REALTIME_API_KEY']}&feed_id=1")).to_hash
@@ -95,17 +105,11 @@ namespace :mta do
     # Pull out the timestamp of the retrieved feed
     @feed_timestamp = MTA::Feed.mta_timestamp(@transit_realtime_data)
 
-
-
-
-    # Pull out count of trip_update Feed Entities
+    # PURELY FOR DEBUGGING !!!
     @updated_trips = @transit_realtime_data[:entity].count {|entity| entity[:trip_update] }
-
-    # Then iterate through each current trip in db
-    @num_created_trips = 0 # PURELY FOR DEBUGGING !!!
-    @num_updated_trips = 0 # PURELY FOR DEBUGGING !!!
-    @trips_examined = 0
-
+    @num_created_trips = 0
+    @num_updated_trips = 0
+    @start_times_updated = 0
 
     # Use the feed to update all entities
     @transit_realtime_data[:entity].each do |entity|
@@ -113,14 +117,22 @@ namespace :mta do
         # Check to see if the update applies to any trips currently in the db
         if existing_trip = Trip.find_by({mta_trip_id: MTA::Entity.mta_trip_id(entity)})
           unless existing_trip.mta_timestamp == @feed_timestamp
-            @num_updated_trips += 1 # PURELY FOR DEBUGGING !!!
-            existing_trip.update({
-              mta_timestamp: @feed_timestamp,
-              stops_remaining: MTA::Entity.stops_remaining(entity)
-              })
+            if existing_trip.start_time > @feed_timestamp
+              existing_trip.update({
+                  mta_timestamp: @feed_timestamp,
+                  stops_remaining: MTA::Entity.stops_remaining(entity),
+                  start_time: MTA::Stop.departure_time(entity[:trip_update][:stop_time_update][0])
+                })
+              @start_times_updated += 1 # PURELY FOR DEBUGGING !!!
+            else
+              existing_trip.update({
+                  mta_timestamp: @feed_timestamp,
+                  stops_remaining: MTA::Entity.stops_remaining(entity),
+                })
+            end
             update_existing_stops(entity, existing_trip)
+            @num_updated_trips += 1 # PURELY FOR DEBUGGING !!!
           end
-          @trips_examined += 1 # PURELY FOR DEBUGGING !!!
         else
           # If the trip doesn't exist yet, create it
           @num_created_trips += 1 # PURELY FOR DEBUGGING !!!
@@ -130,18 +142,10 @@ namespace :mta do
               stops_remaining: MTA::Entity.stops_remaining(entity),
               route: MTA::Entity.route(entity),
               direction: MTA::Entity.direction(entity),
-              future_trip: future_trip?(entity),
+              start_time: new_trip_start_time(entity)
             })
           create_stops_from_entity(entity, new_trip)
         end
-      end
-    end
-
-    def future_trip?(feed_entity)
-      if upcoming_departure_timestamp = MTA::Stop.departure_time(feed_entity[:trip_update][:stop_time_update][0])
-        (upcoming_departure_timestamp - Time.now.to_i) > 360
-      else
-        false
       end
     end
 
@@ -154,33 +158,11 @@ namespace :mta do
       end
     end
 
-    future_trips = Trip.select do |trip|
-      current_time = Time.now.to_i
-      future_departures = trip.stops.where('departure_time > ?',  current_time).order('departure_time ASC')
-      if future_departures.empty?
-        false
-      else
-        future_departures.first.departure_time - Time.now.to_i > 360
-      end
-    end
-
-    # Use this in case you need to debug the cleanup...
-
-    # @suggested_deletions = []
-    # @possible_deletions = Trip.where('stops_remaining < ?', 3)
-    # @possible_deletions.each do |possible_deletion|
-    #   if Time.now.to_i > possible_deletion.mta_timestamp + 120
-    #     @suggested_deletions << possible_deletion
-    #   end
-    # end
-
     puts "Total MTA Updates: #{@updated_trips}"
     puts " Created trips: #{@num_created_trips}"
     puts " Updated trips: #{@num_updated_trips}"
     puts " Deleted trips: #{@deletions}"
-    puts "Examined trips: #{@trips_examined}"
+    puts "Start Time Upd: #{@start_times_updated}"
     puts "      DB trips: #{Trip.all.count}"
-
-    binding.pry
   end
 end
