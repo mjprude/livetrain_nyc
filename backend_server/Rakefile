@@ -104,8 +104,7 @@ namespace :mta do
     # Then iterate through each current trip in db
     @num_created_trips = 0 # PURELY FOR DEBUGGING !!!
     @num_updated_trips = 0 # PURELY FOR DEBUGGING !!!
-
-
+    @trips_examined = 0
 
 
     # Use the feed to update all entities
@@ -121,6 +120,7 @@ namespace :mta do
               })
             update_existing_stops(entity, existing_trip)
           end
+          @trips_examined += 1 # PURELY FOR DEBUGGING !!!
         else
           # If the trip doesn't exist yet, create it
           @num_created_trips += 1 # PURELY FOR DEBUGGING !!!
@@ -130,12 +130,22 @@ namespace :mta do
               stops_remaining: MTA::Entity.stops_remaining(entity),
               route: MTA::Entity.route(entity),
               direction: MTA::Entity.direction(entity),
+              future_trip: future_trip?(entity),
             })
           create_stops_from_entity(entity, new_trip)
         end
       end
     end
 
+    def future_trip?(feed_entity)
+      if upcoming_departure_timestamp = MTA::Stop.departure_time(feed_entity[:trip_update][:stop_time_update][0])
+        (upcoming_departure_timestamp - Time.now.to_i) > 360
+      else
+        false
+      end
+    end
+
+    # Delete completed trips from the db
     @deletions = 0
     Trip.where('stops_remaining < ?', 3).each do |trip|
       if Time.now.to_i > trip.mta_timestamp + 120
@@ -150,7 +160,7 @@ namespace :mta do
       if future_departures.empty?
         false
       else
-        future_departures.first.departure_time - Time.now.to_i > 400
+        future_departures.first.departure_time - Time.now.to_i > 360
       end
     end
 
@@ -165,10 +175,11 @@ namespace :mta do
     # end
 
     puts "Total MTA Updates: #{@updated_trips}"
-    puts "Created trips: #{@num_created_trips}"
-    puts "Updated trips: #{@num_updated_trips}"
-    puts "Deleted trips: #{@deletions}"
-    puts "     DB trips: #{Trip.all.count}"
+    puts " Created trips: #{@num_created_trips}"
+    puts " Updated trips: #{@num_updated_trips}"
+    puts " Deleted trips: #{@deletions}"
+    puts "Examined trips: #{@trips_examined}"
+    puts "      DB trips: #{Trip.all.count}"
 
     binding.pry
   end
