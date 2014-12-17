@@ -1,7 +1,7 @@
 module Shapes
   require 'JSON'
   require 'pry'
-  binding.pry
+
   def self.stops
     stops = File.read(ROOT_PATH + '/mta_assets/subway_stops_geojson.json')
     JSON.parse(stops)['features']
