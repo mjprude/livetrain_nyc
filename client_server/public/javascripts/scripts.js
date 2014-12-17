@@ -2,6 +2,103 @@ var startingZoom = 12;
 var maxZoom = 19;
 var minZoom = 9;
 
+function update() {
+  $.ajax({
+  url: 'http://localhost:9292/api/update',
+  dataType: 'JSON',
+  success: function(d) {
+    debugger
+  }
+})  
+}
+
+function animate(trains) {
+  var trains = staticGroup.selectAll('trains')
+                          .data(trains, function(d){ return d.trip_id; })
+  
+  // Append current (invisible) train paths
+  var tripsGroup = staticGroup.append('g')
+              .attr('class', 'routeGroup')
+              .attr('opacity', .5);
+
+  trains.forEach( function(train) {
+    tripsGroup.selectAll(trip_id)
+              .data([train.path1])
+              .enter()
+              .append('path')
+              .attr('id', 'path_' + train.trip_id)
+              .attr('class', 'routePath ' + train.route)
+              .attr('fill', 'none')
+              // .attr('stroke', 'rgb' + routes[i].color)
+              .attr('stroke', 'none');
+  });
+
+
+  // Draw new trains
+  trains.enter()
+    .append('circle')
+    .attr('class', 'trains')
+    .attr('r', 5)
+    .attr('id', function(d){ return 'train_' + d.trip_id;})
+    .style('fill', 'blue')
+    .attr("transform", function(d) { return "translate(" + getStartPoint(d).x+"," + getStartPoint(d).y + ")" });
+
+  function getStartPoint(d) {
+    var path = d3.select('#path_' + d.trip_id);
+    var l = path.node().getTotalLength()
+    var pc = percentComplete(d.last_departure, d.arrival1);
+    return path.node().getPointAtLength(l * pc);
+  }
+
+  function percentComplete(departure, arrival) {
+    totalTime = (arrival - departure);
+    currentTime = new Date().getTime();
+    return (1 - (arrival - currentTime)/totalTime);
+  }
+  
+  // Animate all the trains
+  trains.transition()
+        .duration(function(d){ return holdTime(d); })
+        .attrTween('transform', function(d){
+          var path = d3.select('#path_' + d.trip_id);
+          return holdTrain(path);
+        })
+        .transition()
+        .duration(function(d){ return d.tripOne.duration })
+        .ease('linear')
+        .attrTween('transform', function(d){
+          var path = d3.select('#path_' + d.trip_id);
+          return tweenTrain(path, d.tripOne.percentComplete);
+        });
+
+  function tweenTrain(path, percentComplete) {
+    return function(t) {
+      var p = path.node().getPointAtLength(t * (path.node().getTotalLength() * (1 - percentComplete) ) + (percentComplete * (path.node().getTotalLength()) ) );
+      return 'translate(' + p.x + ',' + p.y + ')';
+    }
+  }
+
+  function holdTime(train) {
+    now = new Date().getTime();
+    return (now > train.departure1) ? (now - train.departure1) : 0; 
+  }
+
+  function holdTrain(path) {
+    return function(t) {
+      var startPoint = path.node().getPointAtLength(0);
+      return 'translate(' + startPoint.x + ',' + startPoint.y + ')';
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
 var fakeJSON = [
 {
   trainId: '1',
