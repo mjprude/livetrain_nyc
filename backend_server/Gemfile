@@ -8,4 +8,5 @@ gem 'pg'
 gem 'json'
 gem 'httparty'
 gem 'ruby-protocol-buffers'
+gem 'varint'
 gem 'whenever', :require => false
