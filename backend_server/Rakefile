@@ -134,7 +134,6 @@ namespace :mta do
     Trip.where('stops_remaining < ?', 3).each do |trip|
       if Time.now.to_i > trip.mta_timestamp + 120
         @deletions += 1
-
       end
     end
 
