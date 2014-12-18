@@ -1,43 +1,6 @@
-
 var startingZoom = 12;
 var maxZoom = 19;
 var minZoom = 9;
-
-
-
-var fakeJSON = [
-{
-  trainId: '1',
-  tripOne: {
-    path: 'path-22',
-    percentComplete: 0,
-    duration: 5000,
-    timeUntilDeparture: 3000,
-  },
-  tripTwo: {
-    path: 'path-24',
-    percentComplete: 0,
-    duration: 5000,
-    timeUntilDeparture: 0,
-  }
-},
-{
-  trainId: '2',
-  tripOne: {
-    path: 'path-24',
-    percentComplete: .5,
-    duration: 5000,
-    timeUntilDeparture: 0,
-  },
-  tripTwo: {
-    path: 'path-22',
-    percentComplete: 0,
-    duration: 5000,
-    timeUntilDeparture: 2000,
-  }
-}
-
-];
 
 L.mapbox.accessToken = 'pk.eyJ1IjoibWpwcnVkZSIsImEiOiJiVG8yR2VrIn0.jtdF6eqGIKKs0To4p0mu0Q';
 var map = L.mapbox.map('map', 'mjprude.kcf5kl75', {
