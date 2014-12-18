@@ -55,7 +55,7 @@ var map = L.mapbox.map('map', 'mjprude.kcf5kl75', {
 var svg = d3.select(map.getPanes().markerPane).append("svg");
 // The "g" element to which we append thigns
 var staticGroup = svg.append("g").attr("class", "leaflet-zoom-hide");
-// var dynamicGroup = svg.append("g").attr("class", "leaflet-zoom-hide");
+var dynamicGroup = svg.append("g").attr("class", "leaflet-zoom-hide");
 
 // ******************* SCALES AND SUCH ******************************
 var stopZoomScale = d3.scale.linear()
@@ -71,18 +71,16 @@ var routePathZoomScale = d3.scale.linear()
                               .range([1, 6]);
 
 
-// ******************* Projection abilities *************************
+// ******************* Projection functions *************************
 // Line projection
-var transform = d3.geo.transform({
-    point: projectPoint
-});
+// var transform = d3.geo.transform({
+//     point: projectPoint
+// });
 
-var d3path = d3.geo.path().projection(transform);
-
-function projectPoint(x, y) {
-    var point = map.latLngToLayerPoint(new L.LatLng(y, x));
-    this.stream.point(point.x, point.y);
-}
+// function projectPoint(x, y) {
+//     var point = map.latLngToLayerPoint(new L.LatLng(y, x));
+//     this.stream.point(point.x, point.y);
+// }
 
 var toLine = d3.svg.line()
     .interpolate("linear")
@@ -91,8 +89,7 @@ var toLine = d3.svg.line()
     })
     .y(function(d) {
         return applyLatLngToLayer(d).y;
-    });
-
+    }); 
 
 // Point Projection function
 function applyLatLngToLayer(d) {
@@ -143,8 +140,11 @@ function positionReset() {
   }
 
   // Update STATIC routePaths
-  d3.selectAll('.routePath').attr('d', toLine);
   d3.selectAll('.railsPath').attr('d', toLine);
+
+  d3.selectAll('.routePath').attr('d', function(d){ 
+    return toLine(d.path_coordinates); 
+  });
 
   // Update STOP positions and OVERLAYS
   d3.selectAll('.stops').attr('transform', function(d){
@@ -163,7 +163,8 @@ map.on('resize', positionReset);
 map.on('move', positionReset);
 
 
-// ************** Handle marker and path resizing on user map zoom ***********************
+// ************************* ZOOM RESET ************************************************
+//(Handle marker and path resizing on user map zoom)
 function zoomReset() {
   var currentZoom = map.getZoom();
 
@@ -178,7 +179,7 @@ function zoomReset() {
                 return ( (2 * (stopZoomScale(currentZoom)) * Math.PI)/2 + ', ' + (2 * (stopZoomScale(currentZoom)) * Math.PI)/2 );
               });
 
-  shuttlePathLength = shuttlePath.node().getTotalLength()
+  // shuttlePathLength = shuttlePath.node().getTotalLength()
   // Resize lines
   staticGroup.selectAll('.routePath')
               .attr('stroke-width', routePathZoomScale(currentZoom));
@@ -200,26 +201,20 @@ d3.json("/irt_routes_and_stops.json", function (json) {
               .attr('class', 'routeGroup')
               .attr('opacity', .5);
 
-  for (var i = 0; i < routes.length; i++){
-    var className = "route-" + routes[i].route_id;
-    var pathId = "path-" + i;
-    routeGroup.selectAll(pathId)
-              .data([routes[i].path_coordinates])
-              .enter()
-              .append('path')
-              .attr('id', pathId)
-              .attr('class', 'routePath ' + className)
-              .attr('fill', 'none')
-              // .attr('stroke', 'rgb' + routes[i].color)
-              .attr('stroke', 'grey')
-              .style('opacity', 1)
-              .attr('stroke-width', routePathZoomScale(startingZoom));    
-  }
+  routeGroup.selectAll('.routePath')
+            .data(routes)
+            .enter()
+            .append('path')
+            .attr('class', 'routePath')
+            .attr('fill', 'none')
+            .attr('stroke', 'grey')
+            .style('opacity', 1)
+            .attr('stroke-width', routePathZoomScale(startingZoom))
 
+  // Add Stops to map
   var stopGroup = staticGroup.append('g')
               .attr('class', 'stopGroup')
 
-  // Add Stops to map
   var stops = json.stops;
   stopGroup.selectAll('stops')
             .data(stops)
@@ -233,7 +228,7 @@ d3.json("/irt_routes_and_stops.json", function (json) {
             .attr('stroke', function(d){ return 'rgb' + d.colors[0]; })
             .attr('stroke-width', stopStrokeZoomScale(startingZoom));
 
-  // ...and the overlays necessary for the dash effect
+  // ...and the overlays necessary for the semi-circle effect
   stopGroup.selectAll('stopOverlays')
             .data(stops)
             .enter()
@@ -250,97 +245,14 @@ d3.json("/irt_routes_and_stops.json", function (json) {
             })
             .attr('stroke-width', stopStrokeZoomScale(startingZoom));
 
-  shuttlePath = d3.select('#path-22');
-
   // call positionReset and zoomReset to populate the stops and lines and such...
   positionReset();
   zoomReset();
-    
-  
 });// end of static JSON call
-
-
-// ************************ ANIMATION **************************************
-function animateSingle(){
-  var trains = staticGroup.selectAll('trains')
-                          .data(fakeJSON, function(d){ return d.trainId; })
-  
-  // Append current (invisible) train paths
-  // YOUR CODE HERE
-
-
-  // Draw new trains
-  trains.enter()
-    .append('circle')
-    .attr('class', 'trains')
-    .attr('r', 5)
-    .attr('id', function(d){ return 'train-' + d.trainId;})
-    .style('fill', 'blue')
-    .attr("transform", function(d) { return "translate(" + getStartPointOne(d).x+"," + getStartPointOne(d).y + ")" });
-
-  function getStartPointOne(d){
-    var path = d3.select('#' + d.tripOne.path);
-    return path.node().getPointAtLength(path.node().getTotalLength() * d.tripOne.percentComplete);
-  }
-  
-  // Animate all the trains
-  trains.transition()
-        .duration(function(d){ return d.tripOne.timeUntilDeparture; })
-        .attrTween('transform', function(d){
-          var path = d3.select('#' + d.tripOne.path);
-          return holdTrain(path);
-        })
-        .transition()
-        .duration(function(d){ return d.tripOne.duration })
-        .ease('linear')
-        .attrTween('transform', function(d){
-          var path = d3.select('#' + d.tripOne.path);
-          return tweenTrain(path, d.tripOne.percentComplete);
-        })
-        .transition()
-        .duration(function(d){ return d.tripTwo.timeUntilDeparture; })
-        .attrTween('transform', function(d){
-          var path = d3.select('#' + d.tripTwo.path);
-          return holdTrain(path);
-        })
-        .transition()
-        .duration(function(d){ return d.tripTwo.duration})
-        .ease('linear')
-        .attrTween('transform', function(d){
-          var path = d3.select('#' + d.tripTwo.path);
-          return tweenTrain(path, d.tripTwo.percentComplete);
-        });
-
-  function tweenTrain(path, percentComplete) {
-    return function(t) {
-      var p = path.node().getPointAtLength(t * (path.node().getTotalLength() * (1 - percentComplete) ) + (percentComplete * (path.node().getTotalLength()) ) );
-      return 'translate(' + p.x + ',' + p.y + ')';
-    }
-  }
-
-  function holdTrain(path) {
-    return function(t) {
-      var startPoint = path.node().getPointAtLength(0);
-      return 'translate(' + startPoint.x + ',' + startPoint.y + ')';
-    }
-  }
-}
-
-
-function update() {
-  $.ajax({
-    url: 'http://localhost:8080/api/update',
-    dataType: 'JSON',
-    success: animate
-  });
-}
-
 
 
 
 // //////////////  ANIMATION FOR REAL \\\\\\\\\\\\\\\\ \\
-
-
 function animate(data) {
   console.dir(data);
   
@@ -362,7 +274,6 @@ function animate(data) {
 
   var trainsGroup = staticGroup.append('g')
                           .attr('class', 'trainsGroup')
-
 
   // Draw new trains
   var trains = trainsGroup.selectAll('.trains')
@@ -388,7 +299,7 @@ function animate(data) {
     return (1 - (arrival - currentTime)/totalTime);
   }
   
-positionReset();
+  positionReset();
 
   // Animate all the trains
   trains
@@ -434,27 +345,6 @@ positionReset();
   positionReset();
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   
 console.log(" ,<-------------->,");
 console.log("/                  \\\ ");
@@ -466,7 +356,83 @@ console.log("|    ()|'..'|()    |");
 console.log("|      |    |      |");
 console.log("'+-----======-----+'");
 console.log("    ||        ||");
-// ********************* ANIMATION **************
+
+
+// ************************ ANIMATION 2 **************************************
+// function animateSingle(){
+//   var trains = staticGroup.selectAll('trains')
+//                           .data(fakeJSON, function(d){ return d.trainId; })
+  
+//   // Append current (invisible) train paths
+//   // YOUR CODE HERE
+
+
+//   // Draw new trains
+//   trains.enter()
+//     .append('circle')
+//     .attr('class', 'trains')
+//     .attr('r', 5)
+//     .attr('id', function(d){ return 'train-' + d.trainId;})
+//     .style('fill', 'blue')
+//     .attr("transform", function(d) { return "translate(" + getStartPointOne(d).x+"," + getStartPointOne(d).y + ")" });
+
+//   function getStartPointOne(d){
+//     var path = d3.select('#' + d.tripOne.path);
+//     return path.node().getPointAtLength(path.node().getTotalLength() * d.tripOne.percentComplete);
+//   }
+  
+//   // Animate all the trains
+//   trains.transition()
+//         .duration(function(d){ return d.tripOne.timeUntilDeparture; })
+//         .attrTween('transform', function(d){
+//           var path = d3.select('#' + d.tripOne.path);
+//           return holdTrain(path);
+//         })
+//         .transition()
+//         .duration(function(d){ return d.tripOne.duration })
+//         .ease('linear')
+//         .attrTween('transform', function(d){
+//           var path = d3.select('#' + d.tripOne.path);
+//           return tweenTrain(path, d.tripOne.percentComplete);
+//         })
+//         .transition()
+//         .duration(function(d){ return d.tripTwo.timeUntilDeparture; })
+//         .attrTween('transform', function(d){
+//           var path = d3.select('#' + d.tripTwo.path);
+//           return holdTrain(path);
+//         })
+//         .transition()
+//         .duration(function(d){ return d.tripTwo.duration})
+//         .ease('linear')
+//         .attrTween('transform', function(d){
+//           var path = d3.select('#' + d.tripTwo.path);
+//           return tweenTrain(path, d.tripTwo.percentComplete);
+//         });
+
+//   function tweenTrain(path, percentComplete) {
+//     return function(t) {
+//       var p = path.node().getPointAtLength(t * (path.node().getTotalLength() * (1 - percentComplete) ) + (percentComplete * (path.node().getTotalLength()) ) );
+//       return 'translate(' + p.x + ',' + p.y + ')';
+//     }
+//   }
+
+//   function holdTrain(path) {
+//     return function(t) {
+//       var startPoint = path.node().getPointAtLength(0);
+//       return 'translate(' + startPoint.x + ',' + startPoint.y + ')';
+//     }
+//   }
+// }
+
+// function update() {
+//   $.ajax({
+//     url: 'http://localhost:8080/api/update',
+//     dataType: 'JSON',
+//     success: animate
+//   });
+// }
+
+// ********************* ANIMATION 1 **************
 //   function animate(percentComplete, duration, timeUntilDeparture){
 //     timeUntilDeparture = timeUntilDeparture || 0
 //     var startPoint = shuttlePath.node().getPointAtLength(shuttlePathLength * percentComplete);
