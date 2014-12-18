@@ -36,14 +36,6 @@ var routePathZoomScale = d3.scale.linear()
 
 // ******************* Projection functions *************************
 // Line projection
-// var transform = d3.geo.transform({
-//     point: projectPoint
-// });
-
-// function projectPoint(x, y) {
-//     var point = map.latLngToLayerPoint(new L.LatLng(y, x));
-//     this.stream.point(point.x, point.y);
-// }
 
 var toLine = d3.svg.line()
     .interpolate("linear")
@@ -315,7 +307,7 @@ function animate(data) {
         .ease('linear')
         .attrTween('transform', function(d){
           var path = d3.select('#firstRail-' + d.trip_id);
-          return tweenTrain(path, 0);//percentComplete(d.lastDeparture, d.arrival1));
+          return tweenTrain(path, percentComplete(d.lastDeparture, d.arrival1));
         })
         .transition()
         .duration(function(d){ 
