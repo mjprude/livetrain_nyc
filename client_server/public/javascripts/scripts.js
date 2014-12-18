@@ -36,7 +36,6 @@ var routePathZoomScale = d3.scale.linear()
 
 // ******************* Projection functions *************************
 // Line projection
-
 var toLine = d3.svg.line()
     .interpolate("linear")
     .x(function(d) {
@@ -231,18 +230,6 @@ d3.json("/irt_routes_and_stops.json", function (json) {
 function animate(data) {
   console.dir(data);
 
-  // data.forEach( function(trip) {
-  //   railsGroup.selectAll('#rail-' + trip.trip_id)
-  //             .data([trip.path1])
-  //             .enter()
-  //             .append('path')
-  //             .attr('id', 'rail-' + trip.trip_id)
-  //             .attr('class', 'railsPath ' + trip.route)
-  //             .attr('stroke', 'gray')
-  //             .attr('fill', 'none')
-  //             .attr('stroke-width', 3);
-  // });
-
   var firstRails = railsGroup.selectAll('.firstRails')
                              .data(data, function(d){ return d.trip_id; });
 
@@ -254,8 +241,11 @@ function animate(data) {
             .attr('stroke-width', 3);
 
   // exit stuff TBD
-  // firstRails.exit();
-            // .remove()
+  firstRails.exit()
+            .transition()
+            .duration(5000)
+            .remove();
+
 
   var secondRails = railsGroup.selectAll('.secondRails')
                              .data(data, function(d){ return d.trip_id; });
@@ -267,9 +257,14 @@ function animate(data) {
             .attr('fill', 'none')
             .attr('stroke-width', 3);
 
+  secondRails.exit()
+            .transition()
+            .duration(5000)
+            .remove();
+
   // Draw new trains
   var trains = trainsGroup.selectAll('.trains')
-    .data(data, function(d){ return d.trip_id; });
+                          .data(data, function(d){ return d.trip_id; });
   
   trains.enter()
         .append('circle')
@@ -277,14 +272,12 @@ function animate(data) {
         .attr('r', stopZoomScale(currentZoom))
         .attr('id', function(d){ return 'train-' + d.trip_id; })
         .style('fill', '#EE352E');
-        // .attr("transform", function(d) { return "translate(" + getStartPoint(d).x+"," + getStartPoint(d).y + ")" });
 
-  // function getStartPoint(d) {
-  //   var path = d3.select('#firstRail-' + d.trip_id);
-  //   var l = path.node().getTotalLength();
-  //   var pc = percentComplete(d.last_departure, d.arrival1);
-  //   return path.node().getPointAtLength(l * pc);
-  // }
+  trains.exit()
+        .transition()
+        .duration(5000)
+        .attr('opacity', 0)
+        .remove();
 
   function percentComplete(departure, arrival) {
     totalTime = (arrival - departure);
