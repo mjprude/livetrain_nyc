@@ -39,11 +39,6 @@ var fakeJSON = [
 
 ];
 
-var shuttleStopCoordinates = [ [ -73.986229, 40.755983000933206 ], [ -73.979189, 40.752769000933171 ] ];
-var shuttlePath;
-var shuttlePathLength;
-var sTrain;
-
 L.mapbox.accessToken = 'pk.eyJ1IjoibWpwcnVkZSIsImEiOiJiVG8yR2VrIn0.jtdF6eqGIKKs0To4p0mu0Q';
 var map = L.mapbox.map('map', 'mjprude.kcf5kl75', {
               maxZoom: maxZoom,
@@ -113,8 +108,7 @@ function getBounds(){
   return applyLatLngToLayer([ westBound, northBound ]);
 };
 
-// ******************* Handling user map movements ****************
-
+// **************************** HANDLE USER MAP MOVEMENTS *******************************
 // Handle path and marker positions on all mouse events 
 function positionReset() {
 
@@ -140,11 +134,18 @@ function positionReset() {
   }
 
   // Update STATIC routePaths
-  d3.selectAll('.railsPath').attr('d', toLine);
-
   d3.selectAll('.routePath').attr('d', function(d){ 
     return toLine(d.path_coordinates); 
   });
+  
+  // Update DYNAMIC Rail paths
+  d3.selectAll('.firstRails').attr('d', function(d){
+    return toLine(d.path1)
+  });
+  d3.selectAll('.secondRails').attr('d', function(d){
+    return toLine(d.path2)
+  });
+
 
   // Update STOP positions and OVERLAYS
   d3.selectAll('.stops').attr('transform', function(d){
@@ -163,8 +164,7 @@ map.on('resize', positionReset);
 map.on('move', positionReset);
 
 
-// ************************* ZOOM RESET ************************************************
-//(Handle marker and path resizing on user map zoom)
+//(Handle marker and path pixel resizing on user map zoom)
 function zoomReset() {
   var currentZoom = map.getZoom();
 
@@ -179,13 +179,14 @@ function zoomReset() {
                 return ( (2 * (stopZoomScale(currentZoom)) * Math.PI)/2 + ', ' + (2 * (stopZoomScale(currentZoom)) * Math.PI)/2 );
               });
 
-  // shuttlePathLength = shuttlePath.node().getTotalLength()
   // Resize lines
   staticGroup.selectAll('.routePath')
               .attr('stroke-width', routePathZoomScale(currentZoom));
 
-  staticGroup.selectAll('.railsPath')
+  dynamicGroup.selectAll('.firstRails')
               .attr('stroke-width', routePathZoomScale(currentZoom));
+  dynamicGroup.selectAll('.secondRails')
+              .attr('stroke-width', routePathZoomScale(currentZoom));              
 }
 
 // Event listener for zoom event
@@ -255,40 +256,67 @@ d3.json("/irt_routes_and_stops.json", function (json) {
 // //////////////  ANIMATION FOR REAL \\\\\\\\\\\\\\\\ \\
 function animate(data) {
   console.dir(data);
+
+  // data.forEach( function(trip) {
+  //   railsGroup.selectAll('#rail-' + trip.trip_id)
+  //             .data([trip.path1])
+  //             .enter()
+  //             .append('path')
+  //             .attr('id', 'rail-' + trip.trip_id)
+  //             .attr('class', 'railsPath ' + trip.route)
+  //             .attr('stroke', 'gray')
+  //             .attr('fill', 'none')
+  //             .attr('stroke-width', 3);
+  // });
   
   // Append current (invisible) train paths
-  var railsGroup = staticGroup.append('g')
-              .attr('class', 'railsGroup')
+  var railsGroup = dynamicGroup.append('g')
+                               .attr('class', 'railsGroup');
 
-  data.forEach( function(trip) {
-    railsGroup.selectAll('#rail-' + trip.trip_id)
-              .data([trip.path1])
-              .enter()
-              .append('path')
-              .attr('id', 'rail-' + trip.trip_id)
-              .attr('class', 'railsPath ' + trip.route)
-              .attr('stroke', 'gray')
-              .attr('fill', 'none')
-              .attr('stroke-width', 3);
-  });
+  var firstRails = railsGroup.selectAll('.firstRails')
+                             .data(data, function(d){ return d.trip_id; });
 
-  var trainsGroup = staticGroup.append('g')
-                          .attr('class', 'trainsGroup')
+  firstRails.enter()
+            .append('path')
+            .attr('class', 'firstRails')
+            .attr('id', function(d){ return 'firstRail-' + d.trip_id })
+            .attr('stroke', 'gray')
+            .attr('fill', 'none')
+            .attr('stroke-width', 3);
+
+  // exit stuff TBD
+  firstRails.exit();
+            // .remove()
+
+  var secondRails = railsGroup.selectAll('.secondRails')
+                             .data(data, function(d){ return d.trip_id; });
+
+  secondRails.enter()
+            .append('path')
+            .attr('class', 'secondRails')
+            .attr('id', function(d){ return 'secondRail-' + d.trip_id })
+            .attr('stroke', 'orange')
+            .attr('fill', 'none')
+            .attr('stroke-width', 3);
+
+  var trainsGroup = dynamicGroup.append('g')
+                          .attr('class', 'trainsGroup');
 
   // Draw new trains
   var trains = trainsGroup.selectAll('.trains')
-    .data(data, function(d){ return d.trip_id; })
-    .enter()
-    .append('circle')
-    .attr('class', 'trains')
-    .attr('r', 5)
-    .attr('id', function(d){ return 'train_' + d.trip_id;})
-    .style('fill', 'red')
-    .attr("transform", function(d) { return "translate(" + getStartPoint(d).x+"," + getStartPoint(d).y + ")" });
+    .data(data, function(d){ return d.trip_id; });
+  
+  trains.enter()
+        .append('circle')
+        .attr('class', 'trains')
+        .attr('r', 5)
+        .attr('id', function(d){ return 'train_' + d.trip_id;})
+        .style('fill', 'red')
+        .attr("transform", function(d) { return "translate(" + getStartPoint(d).x+"," + getStartPoint(d).y + ")" });
 
   function getStartPoint(d) {
     var path = d3.select('#rail-' + d.trip_id);
-    var l = path.node().getTotalLength()
+    var l = path.node().getTotalLength();
     var pc = percentComplete(d.last_departure, d.arrival1);
     return path.node().getPointAtLength(l * pc);
   }
@@ -302,8 +330,7 @@ function animate(data) {
   positionReset();
 
   // Animate all the trains
-  trains
-  .transition()
+  trains.transition()
         .duration(function(d){ return holdTime(d); })
         .attrTween('transform', function(d){
           var path = d3.select('#rail-' + d.trip_id);
@@ -326,7 +353,7 @@ function animate(data) {
 
   function duration(d) {
     var now = new Date().getTime();
-    console.log((d.arrival1 * 1000) - now)
+    console.log((d.arrival1 * 1000) - now);
     return ((d.arrival1 * 1000) - now);
   }
 
