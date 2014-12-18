@@ -101,8 +101,6 @@ module Shapes
       line != 'L' && get_path(all_lines[0], origin, destination, all_lines)
     end
   end
-
-
 # live_lines = [1, 2, 3, 4, 5, 6, 'L']
 
 # f = File.open('lines_with_stops_inserted.rb', 'w+')
