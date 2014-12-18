@@ -34,7 +34,7 @@ def update_json
       all_trains << route_obj
     end
   end
-  all_trains.to_json
+  all_trains.compact.to_json
 end
 
 end
