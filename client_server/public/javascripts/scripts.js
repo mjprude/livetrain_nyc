@@ -1,101 +1,7 @@
+
 var startingZoom = 12;
 var maxZoom = 19;
 var minZoom = 9;
-
-function update() {
-  $.ajax({
-  url: 'http://localhost:9292/api/update',
-  dataType: 'JSON',
-  success: function(d) {
-    debugger
-  }
-})  
-}
-
-function animate(trains) {
-  var trains = staticGroup.selectAll('trains')
-                          .data(trains, function(d){ return d.trip_id; })
-  
-  // Append current (invisible) train paths
-  var tripsGroup = staticGroup.append('g')
-              .attr('class', 'routeGroup')
-              .attr('opacity', .5);
-
-  trains.forEach( function(train) {
-    tripsGroup.selectAll(trip_id)
-              .data([train.path1])
-              .enter()
-              .append('path')
-              .attr('id', 'path_' + train.trip_id)
-              .attr('class', 'routePath ' + train.route)
-              .attr('fill', 'none')
-              // .attr('stroke', 'rgb' + routes[i].color)
-              .attr('stroke', 'none');
-  });
-
-
-  // Draw new trains
-  trains.enter()
-    .append('circle')
-    .attr('class', 'trains')
-    .attr('r', 5)
-    .attr('id', function(d){ return 'train_' + d.trip_id;})
-    .style('fill', 'blue')
-    .attr("transform", function(d) { return "translate(" + getStartPoint(d).x+"," + getStartPoint(d).y + ")" });
-
-  function getStartPoint(d) {
-    var path = d3.select('#path_' + d.trip_id);
-    var l = path.node().getTotalLength()
-    var pc = percentComplete(d.last_departure, d.arrival1);
-    return path.node().getPointAtLength(l * pc);
-  }
-
-  function percentComplete(departure, arrival) {
-    totalTime = (arrival - departure);
-    currentTime = new Date().getTime();
-    return (1 - (arrival - currentTime)/totalTime);
-  }
-  
-  // Animate all the trains
-  trains.transition()
-        .duration(function(d){ return holdTime(d); })
-        .attrTween('transform', function(d){
-          var path = d3.select('#path_' + d.trip_id);
-          return holdTrain(path);
-        })
-        .transition()
-        .duration(function(d){ return d.tripOne.duration })
-        .ease('linear')
-        .attrTween('transform', function(d){
-          var path = d3.select('#path_' + d.trip_id);
-          return tweenTrain(path, d.tripOne.percentComplete);
-        });
-
-  function tweenTrain(path, percentComplete) {
-    return function(t) {
-      var p = path.node().getPointAtLength(t * (path.node().getTotalLength() * (1 - percentComplete) ) + (percentComplete * (path.node().getTotalLength()) ) );
-      return 'translate(' + p.x + ',' + p.y + ')';
-    }
-  }
-
-  function holdTime(train) {
-    now = new Date().getTime();
-    return (now > train.departure1) ? (now - train.departure1) : 0; 
-  }
-
-  function holdTrain(path) {
-    return function(t) {
-      var startPoint = path.node().getPointAtLength(0);
-      return 'translate(' + startPoint.x + ',' + startPoint.y + ')';
-    }
-  }
-}
-
-
-
-
-
-
 
 
 
@@ -238,6 +144,7 @@ function positionReset() {
 
   // Update STATIC routePaths
   d3.selectAll('.routePath').attr('d', toLine);
+  d3.selectAll('.railsPath').attr('d', toLine);
 
   // Update STOP positions and OVERLAYS
   d3.selectAll('.stops').attr('transform', function(d){
@@ -274,6 +181,9 @@ function zoomReset() {
   shuttlePathLength = shuttlePath.node().getTotalLength()
   // Resize lines
   staticGroup.selectAll('.routePath')
+              .attr('stroke-width', routePathZoomScale(currentZoom));
+
+  staticGroup.selectAll('.railsPath')
               .attr('stroke-width', routePathZoomScale(currentZoom));
 }
 
@@ -415,6 +325,136 @@ function animateSingle(){
     }
   }
 }
+
+
+function update() {
+  $.ajax({
+    url: 'http://localhost:8080/api/update',
+    dataType: 'JSON',
+    success: animate
+  });
+}
+
+
+
+
+// //////////////  ANIMATION FOR REAL \\\\\\\\\\\\\\\\ \\
+
+
+function animate(data) {
+  console.dir(data);
+  
+  // Append current (invisible) train paths
+  var railsGroup = staticGroup.append('g')
+              .attr('class', 'railsGroup')
+
+  data.forEach( function(trip) {
+    railsGroup.selectAll('#rail-' + trip.trip_id)
+              .data([trip.path1])
+              .enter()
+              .append('path')
+              .attr('id', 'rail-' + trip.trip_id)
+              .attr('class', 'railsPath ' + trip.route)
+              .attr('stroke', 'gray')
+              .attr('fill', 'none')
+              .attr('stroke-width', 3);
+  });
+
+  var trainsGroup = staticGroup.append('g')
+                          .attr('class', 'trainsGroup')
+
+
+  // Draw new trains
+  var trains = trainsGroup.selectAll('.trains')
+    .data(data, function(d){ return d.trip_id; })
+    .enter()
+    .append('circle')
+    .attr('class', 'trains')
+    .attr('r', 5)
+    .attr('id', function(d){ return 'train_' + d.trip_id;})
+    .style('fill', 'red')
+    .attr("transform", function(d) { return "translate(" + getStartPoint(d).x+"," + getStartPoint(d).y + ")" });
+
+  function getStartPoint(d) {
+    var path = d3.select('#rail-' + d.trip_id);
+    var l = path.node().getTotalLength()
+    var pc = percentComplete(d.last_departure, d.arrival1);
+    return path.node().getPointAtLength(l * pc);
+  }
+
+  function percentComplete(departure, arrival) {
+    totalTime = (arrival - departure);
+    currentTime = new Date().getTime();
+    return (1 - (arrival - currentTime)/totalTime);
+  }
+  
+positionReset();
+
+  // Animate all the trains
+  trains
+  .transition()
+        .duration(function(d){ return holdTime(d); })
+        .attrTween('transform', function(d){
+          var path = d3.select('#rail-' + d.trip_id);
+          return holdTrain(path);
+        })
+        .transition()
+        .duration(function(d){ return duration(d) })
+        .ease('linear')
+        .attrTween('transform', function(d){
+          var path = d3.select('#rail-' + d.trip_id);
+          return tweenTrain(path, 0);//percentComplete(d.lastDeparture, d.arrival1));
+        });
+
+  function tweenTrain(path, percentComplete) {
+    return function(t) {  
+      var p = path.node().getPointAtLength(t * (path.node().getTotalLength() * (1 - percentComplete) ) + (percentComplete * (path.node().getTotalLength()) ) );
+      return 'translate(' + p.x + ',' + p.y + ')';
+    }
+  }
+
+  function duration(d) {
+    var now = new Date().getTime();
+    console.log((d.arrival1 * 1000) - now)
+    return ((d.arrival1 * 1000) - now);
+  }
+
+  function holdTime(d) {
+    var now = new Date().getTime();
+    return (now > d.departure1) ? (now - (d.departure1 * 1000)) : 0; 
+  }
+
+  function holdTrain(path) {
+    return function(t) {
+      var startPoint = path.node().getPointAtLength(0);
+      return 'translate(' + startPoint.x + ',' + startPoint.y + ')';
+    }
+  }
+
+  positionReset();
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   
 console.log(" ,<-------------->,");
 console.log("/                  \\\ ");
