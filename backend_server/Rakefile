@@ -135,16 +135,18 @@ namespace :mta do
           end
         else
           # If the trip doesn't exist yet, create it
-          @num_created_trips += 1 # PURELY FOR DEBUGGING !!!
-          new_trip = Trip.create({
-              mta_timestamp: @feed_timestamp,
-              mta_trip_id: MTA::Entity.mta_trip_id(entity),
-              stops_remaining: MTA::Entity.stops_remaining(entity),
-              route: MTA::Entity.route(entity),
-              direction: MTA::Entity.direction(entity),
-              start_time: new_trip_start_time(entity)
-            })
-          create_stops_from_entity(entity, new_trip)
+          if !entity[:trip_update][:stop_time_update].empty?
+            new_trip = Trip.create({
+                mta_timestamp: @feed_timestamp,
+                mta_trip_id: MTA::Entity.mta_trip_id(entity),
+                stops_remaining: MTA::Entity.stops_remaining(entity),
+                route: MTA::Entity.route(entity),
+                direction: MTA::Entity.direction(entity),
+                start_time: new_trip_start_time(entity)
+              })
+            create_stops_from_entity(entity, new_trip)
+            @num_created_trips += 1 # PURELY FOR DEBUGGING !!!
+          end
         end
       end
     end
