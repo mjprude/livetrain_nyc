@@ -121,7 +121,7 @@ namespace :mta do
               existing_trip.update({
                   mta_timestamp: @feed_timestamp,
                   stops_remaining: MTA::Entity.stops_remaining(entity),
-                  start_time: MTA::Stop.departure_time(entity[:trip_update][:stop_time_update][0])
+                  start_time: MTA::Stop.departure_time(entity[:trip_update][:stop_time_update][0]) ? MTA::Stop.departure_time(entity[:trip_update][:stop_time_update][0]) : @feed_timestamp
                 })
               @start_times_updated += 1 # PURELY FOR DEBUGGING !!!
             else

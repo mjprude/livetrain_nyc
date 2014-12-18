@@ -71,6 +71,13 @@ function getBounds(){
   return applyLatLngToLayer([ westBound, northBound ]);
 };
 
+function update() {
+  $.ajax({
+    url: 'http://localhost:8080/api/update',
+    dataType: 'JSON',
+    success: animate
+  });
+}
 // **************************** HANDLE USER MAP MOVEMENTS *******************************
 // Handle path and marker positions on all mouse events 
 function positionReset() {
@@ -94,6 +101,9 @@ function positionReset() {
     staticGroup.style('transform', function(){
       return 'translate3d(' + -mapAnchorPoints.x + 'px,' + -mapAnchorPoints.y + "px, 0px)";
     });
+    dynamicGroup.style('transform', function(){
+      return 'translate3d(' + -mapAnchorPoints.x + 'px,' + -mapAnchorPoints.y + "px, 0px)";
+    });
   }
 
   // Update STATIC routePaths
@@ -106,7 +116,9 @@ function positionReset() {
     return toLine(d.path1)
   });
   d3.selectAll('.secondRails').attr('d', function(d){
-    return toLine(d.path2)
+    if (d.path2) {
+      return toLine(d.path2);
+    }
   });
 
 
@@ -248,7 +260,7 @@ function animate(data) {
             .attr('stroke-width', 3);
 
   // exit stuff TBD
-  firstRails.exit();
+  // firstRails.exit();
             // .remove()
 
   var secondRails = railsGroup.selectAll('.secondRails')
@@ -273,16 +285,16 @@ function animate(data) {
         .append('circle')
         .attr('class', 'trains')
         .attr('r', 5)
-        .attr('id', function(d){ return 'train_' + d.trip_id;})
-        .style('fill', 'red')
-        .attr("transform", function(d) { return "translate(" + getStartPoint(d).x+"," + getStartPoint(d).y + ")" });
+        .attr('id', function(d){ return 'train-' + d.trip_id;})
+        .style('fill', 'red');
+        // .attr("transform", function(d) { return "translate(" + getStartPoint(d).x+"," + getStartPoint(d).y + ")" });
 
-  function getStartPoint(d) {
-    var path = d3.select('#rail-' + d.trip_id);
-    var l = path.node().getTotalLength();
-    var pc = percentComplete(d.last_departure, d.arrival1);
-    return path.node().getPointAtLength(l * pc);
-  }
+  // function getStartPoint(d) {
+  //   var path = d3.select('#firstRail-' + d.trip_id);
+  //   var l = path.node().getTotalLength();
+  //   var pc = percentComplete(d.last_departure, d.arrival1);
+  //   return path.node().getPointAtLength(l * pc);
+  // }
 
   function percentComplete(departure, arrival) {
     totalTime = (arrival - departure);
@@ -291,19 +303,20 @@ function animate(data) {
   }
   
   positionReset();
+  zoomReset();
 
   // Animate all the trains
   trains.transition()
         .duration(function(d){ return holdTime(d); })
         .attrTween('transform', function(d){
-          var path = d3.select('#rail-' + d.trip_id);
+          var path = d3.select('#firstRail-' + d.trip_id);
           return holdTrain(path);
         })
         .transition()
         .duration(function(d){ return duration(d) })
         .ease('linear')
         .attrTween('transform', function(d){
-          var path = d3.select('#rail-' + d.trip_id);
+          var path = d3.select('#firstRail-' + d.trip_id);
           return tweenTrain(path, 0);//percentComplete(d.lastDeparture, d.arrival1));
         });
 
@@ -412,14 +425,6 @@ console.log("    ||        ||");
 //       return 'translate(' + startPoint.x + ',' + startPoint.y + ')';
 //     }
 //   }
-// }
-
-// function update() {
-//   $.ajax({
-//     url: 'http://localhost:8080/api/update',
-//     dataType: 'JSON',
-//     success: animate
-//   });
 // }
 
 // ********************* ANIMATION 1 **************
