@@ -91,7 +91,7 @@ var toLine = d3.svg.line()
     })
     .y(function(d) {
         return applyLatLngToLayer(d).y;
-    });
+    }); 
 
 
 // Point Projection function
@@ -143,8 +143,17 @@ function positionReset() {
   }
 
   // Update STATIC routePaths
+
   d3.selectAll('.routePath').attr('d', toLine);
   d3.selectAll('.railsPath').attr('d', toLine);
+
+  // d3.selectAll('.routePath').attr('d', function(d){ 
+  //   return toLine(d.path_coordinates); 
+  // });
+  // d3.selectAll('.routePath').attr('d', function(d){ 
+  //   return toLine(d.path_coordinates); 
+  // });
+
 
   // Update STOP positions and OVERLAYS
   d3.selectAll('.stops').attr('transform', function(d){
@@ -178,7 +187,7 @@ function zoomReset() {
                 return ( (2 * (stopZoomScale(currentZoom)) * Math.PI)/2 + ', ' + (2 * (stopZoomScale(currentZoom)) * Math.PI)/2 );
               });
 
-  shuttlePathLength = shuttlePath.node().getTotalLength()
+  // shuttlePathLength = shuttlePath.node().getTotalLength()
   // Resize lines
   staticGroup.selectAll('.routePath')
               .attr('stroke-width', routePathZoomScale(currentZoom));
@@ -199,22 +208,33 @@ d3.json("/irt_routes_and_stops.json", function (json) {
   var routeGroup = staticGroup.append('g')
               .attr('class', 'routeGroup')
               .attr('opacity', .5);
+  
+  // for (var i = 0; i < routes.length; i++){
+  //   var className = "route-" + routes[i].route_id;
+  //   var pathId = "path-" + i;
+  //   routeGroup.selectAll(pathId)
+  //             .data([routes[i].path_coordinates])
+  //             .enter()
+  //             .append('path')
+  //             .attr('id', pathId)
+  //             .attr('class', 'routePath ' + className)
+  //             .attr('fill', 'none')
+  //             // .attr('stroke', 'rgb' + routes[i].color)
+  //             .attr('stroke', 'grey')
+  //             .style('opacity', 1)
+  //             .attr('stroke-width', routePathZoomScale(startingZoom));    
+  // }
 
-  for (var i = 0; i < routes.length; i++){
-    var className = "route-" + routes[i].route_id;
-    var pathId = "path-" + i;
-    routeGroup.selectAll(pathId)
-              .data([routes[i].path_coordinates])
-              .enter()
-              .append('path')
-              .attr('id', pathId)
-              .attr('class', 'routePath ' + className)
-              .attr('fill', 'none')
-              // .attr('stroke', 'rgb' + routes[i].color)
-              .attr('stroke', 'grey')
-              .style('opacity', 1)
-              .attr('stroke-width', routePathZoomScale(startingZoom));    
-  }
+  routeGroup.selectAll('.routePath')
+            .data(routes)
+            .enter()
+            .append('path')
+            .attr('class', 'routePath')
+            .attr('fill', 'none')
+            .attr('stroke', 'grey')
+            .style('opacity', 1)
+            .attr('stroke-width', routePathZoomScale(startingZoom))
+
 
   var stopGroup = staticGroup.append('g')
               .attr('class', 'stopGroup')
