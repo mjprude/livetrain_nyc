@@ -55,7 +55,7 @@ var map = L.mapbox.map('map', 'mjprude.kcf5kl75', {
 var svg = d3.select(map.getPanes().markerPane).append("svg");
 // The "g" element to which we append thigns
 var staticGroup = svg.append("g").attr("class", "leaflet-zoom-hide");
-// var dynamicGroup = svg.append("g").attr("class", "leaflet-zoom-hide");
+var dynamicGroup = svg.append("g").attr("class", "leaflet-zoom-hide");
 
 // ******************* SCALES AND SUCH ******************************
 var stopZoomScale = d3.scale.linear()
@@ -76,8 +76,6 @@ var routePathZoomScale = d3.scale.linear()
 var transform = d3.geo.transform({
     point: projectPoint
 });
-
-var d3path = d3.geo.path().projection(transform);
 
 function projectPoint(x, y) {
     var point = map.latLngToLayerPoint(new L.LatLng(y, x));
@@ -486,6 +484,7 @@ console.log("|    ()|'..'|()    |");
 console.log("|      |    |      |");
 console.log("'+-----======-----+'");
 console.log("    ||        ||");
+
 // ********************* ANIMATION **************
 //   function animate(percentComplete, duration, timeUntilDeparture){
 //     timeUntilDeparture = timeUntilDeparture || 0
