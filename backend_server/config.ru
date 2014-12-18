@@ -1,3 +1,4 @@
 require './app.rb'
 require 'pry'
-Rack::Handler::Thin.run Sinatra::Application
+run Sinatra::Application
+#Rack::Handler::Thin.run Sinatra::Application
