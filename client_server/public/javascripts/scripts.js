@@ -158,6 +158,8 @@ function zoomReset() {
               .attr('stroke-dasharray', function(){ 
                 return ( (2 * (stopZoomScale(currentZoom)) * Math.PI)/2 + ', ' + (2 * (stopZoomScale(currentZoom)) * Math.PI)/2 );
               });
+  staticGroup.selectAll('.trains')
+              .attr('r', stopZoomScale(currentZoom));
 
   // Resize lines
   staticGroup.selectAll('.routePath')
@@ -280,7 +282,7 @@ function animate(data) {
   trains.enter()
         .append('circle')
         .attr('class', 'trains')
-        .attr('r', 5)
+        .attr('r', stopZoomScale(currentZoom))
         .attr('id', function(d){ return 'train-' + d.trip_id; })
         .style('fill', '#EE352E');
         // .attr("transform", function(d) { return "translate(" + getStartPoint(d).x+"," + getStartPoint(d).y + ")" });
