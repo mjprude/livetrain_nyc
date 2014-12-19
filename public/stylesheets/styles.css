@@ -5,9 +5,45 @@ body {
 
 #map {
   position:absolute;
-  top:0; 
+  top: 0; 
   bottom:0; 
-  width:100%; 
+  height: 100%;
+  width:100%;
+  z-index: 1; 
+}
+
+.leaflet-top {
+  padding-top: 100px;
+}
+
+.header {
+  background-color: black;
+  color: white;
+  vertical-align: middle;
+  height: 50px;
+  z-index: 2;
+  margin: 0;
+  padding: 0;
+  padding-left: 50px;
+  padding-top: 10px;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; 
+  font-weight: 300;
+}
+
+.header {
+  /*cursor: default;*/
+}
+
+h1 {
+  margin: 0;
+  padding: 0;
+}
+
+.header span {
+  font-size: .5em;
 }
 
 /* Stops & Overlays */
