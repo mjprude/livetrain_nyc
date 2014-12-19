@@ -69,7 +69,7 @@ function getBounds(){
 
 function update() {
   $.ajax({
-    url: 'http://livetrainapi.herokuapp.com/api/update',
+    url: 'http://localhost:9292/api/update',
     dataType: 'JSON',
     success: animate
   });
@@ -149,7 +149,7 @@ function zoomReset() {
               .attr('stroke-dasharray', function(){ 
                 return ( (2 * (stopZoomScale(currentZoom)) * Math.PI)/2 + ', ' + (2 * (stopZoomScale(currentZoom)) * Math.PI)/2 );
               });
-  staticGroup.selectAll('.trains')
+  dynamicGroup.selectAll('.trains')
               .attr('r', stopZoomScale(currentZoom));
 
   // Resize lines
@@ -255,8 +255,8 @@ function animate(data) {
   
   trains.enter()
         .append('circle')
-        .attr('class', function(d){ return 'trains ' + d.route })
-        .attr('r', stopZoomScale(currentZoom))
+        .attr('class', function(d){ return 'trains route-' + d.route })
+        .attr('r', stopZoomScale(startingZoom))
         .attr('id', function(d){ return 'train-' + d.trip_id; });
 
   trains.exit()
