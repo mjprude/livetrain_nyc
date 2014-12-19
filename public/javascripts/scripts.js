@@ -149,17 +149,15 @@ function zoomReset() {
               .attr('stroke-dasharray', function(){ 
                 return ( (2 * (stopZoomScale(currentZoom)) * Math.PI)/2 + ', ' + (2 * (stopZoomScale(currentZoom)) * Math.PI)/2 );
               });
-  staticGroup.selectAll('.trains')
+  dynamicGroup.selectAll('.trains')
               .attr('r', stopZoomScale(currentZoom));
 
   // Resize lines
   staticGroup.selectAll('.routePath')
               .attr('stroke-width', routePathZoomScale(currentZoom));
 
-  dynamicGroup.selectAll('.firstRails')
-              .attr('stroke-width', routePathZoomScale(currentZoom));
-  dynamicGroup.selectAll('.secondRails')
-              .attr('stroke-width', routePathZoomScale(currentZoom));              
+  dynamicGroup.selectAll('.rails')
+              .attr('stroke-width', routePathZoomScale(currentZoom));           
 }
 
 // Event listener for zoom event
@@ -173,16 +171,12 @@ d3.json("/irt_routes_and_stops.json", function (json) {
   var routes = json.routes;
   var routeGroup = staticGroup.append('g')
               .attr('class', 'routeGroup')
-              .attr('opacity', .5);
 
   routeGroup.selectAll('.routePath')
             .data(routes)
             .enter()
             .append('path')
             .attr('class', 'routePath')
-            .attr('fill', 'none')
-            .attr('stroke', 'grey')
-            .style('opacity', 1)
             .attr('stroke-width', routePathZoomScale(startingZoom))
 
   // Add Stops to map
@@ -190,26 +184,23 @@ d3.json("/irt_routes_and_stops.json", function (json) {
               .attr('class', 'stopGroup')
 
   var stops = json.stops;
-  stopGroup.selectAll('stops')
+  stopGroup.selectAll('.stops')
             .data(stops)
             .enter()
             .append('circle')
             .attr('r', stopZoomScale(startingZoom))
             .attr('id', function(d){ return d.stop_id; })
             .attr('class', 'stops')
-            .attr('opacity', 1)
-            .attr('fill', 'white')
             .attr('stroke', function(d){ return 'rgb' + d.colors[0]; })
             .attr('stroke-width', stopStrokeZoomScale(startingZoom));
 
   // ...and the overlays necessary for the semi-circle effect
-  stopGroup.selectAll('stopOverlays')
+  stopGroup.selectAll('.stopOverlays')
             .data(stops)
             .enter()
             .append('circle')
             .attr('r', stopZoomScale(startingZoom))
             .attr('class', 'stopOverlays')
-            .attr('fill', 'none')
             .attr('stroke', function(d) {
               if (d.colors.length > 1){
                 return 'rgb' + d.colors[1];
@@ -235,10 +226,8 @@ function animate(data) {
 
   firstRails.enter()
             .append('path')
-            .attr('class', 'firstRails')
-            .attr('id', function(d){ return 'firstRail-' + d.trip_id })
-            .attr('fill', 'none')
-            .attr('stroke-width', 3);
+            .attr('class', 'firstRails rails')
+            .attr('id', function(d){ return 'firstRail-' + d.trip_id });
 
   // exit stuff TBD
   firstRails.exit()
@@ -252,10 +241,8 @@ function animate(data) {
 
   secondRails.enter()
             .append('path')
-            .attr('class', 'secondRails')
-            .attr('id', function(d){ return 'secondRail-' + d.trip_id })
-            .attr('fill', 'none')
-            .attr('stroke-width', 3);
+            .attr('class', 'secondRails rails')
+            .attr('id', function(d){ return 'secondRail-' + d.trip_id });
 
   secondRails.exit()
             .transition()
@@ -268,10 +255,9 @@ function animate(data) {
   
   trains.enter()
         .append('circle')
-        .attr('class', 'trains')
-        .attr('r', stopZoomScale(currentZoom))
-        .attr('id', function(d){ return 'train-' + d.trip_id; })
-        .style('fill', '#EE352E');
+        .attr('class', function(d){ return 'trains route-' + d.route })
+        .attr('r', stopZoomScale(startingZoom))
+        .attr('id', function(d){ return 'train-' + d.trip_id; });
 
   trains.exit()
         .transition()

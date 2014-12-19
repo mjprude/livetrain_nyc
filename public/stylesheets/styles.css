@@ -1,0 +1,48 @@
+body { 
+  margin: 0; 
+  padding: 0; 
+}
+
+#map {
+  position:absolute;
+  top:0; 
+  bottom:0; 
+  width:100%; 
+}
+
+/* Stops & Overlays */
+.stops {
+  fill: white;
+}
+
+.stopOverlays {
+  fill: none;
+}
+
+/* Routes (The Visible Stuff) */
+.routeGroup {
+  opacity: .5;
+}
+
+.routePath {
+  fill: none;
+  stroke: grey;
+}
+
+/* Rails (The Invisible Stuff) */
+.rails {
+  fill: none;
+}
+
+/* Trains */
+.trains {
+
+}
+
+.route-1 {
+  fill: #EE352E;
+}
+
+.route-6 {
+  fill: green;
+}
