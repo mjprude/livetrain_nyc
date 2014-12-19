@@ -73,7 +73,7 @@ function getBounds(){
 
 function update() {
   $.ajax({
-    url: 'http://localhost:9292/api/updates',
+    url: 'https://livetrainapi.herokuapp.com/api/update',
     dataType: 'JSON',
     success: animate
   });
@@ -381,7 +381,7 @@ console.log("    ||        ||");
 $(function() {
   setInterval(function(){
     update();
-  },90000);
+  },30000);
   $($('.leaflet-top')[0]).css('padding-top', '50px');
 });
 
