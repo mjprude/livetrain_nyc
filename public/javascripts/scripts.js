@@ -23,11 +23,15 @@ var trainsGroup = dynamicGroup.append('g')
 // ******************* SCALES AND SUCH ******************************
 var stopZoomScale = d3.scale.linear()
                               .domain([ minZoom, maxZoom])
-                              .range([1, 10]);                             
+                              .range([2, 10]);                             
 
 var stopStrokeZoomScale = d3.scale.linear()
                               .domain([ minZoom, maxZoom])
-                              .range([ 1, 5]);
+                              .range([ 1, 3]);
+
+var trainZoomScale = d3.scale.linear()
+                              .domain([ minZoom, maxZoom])
+                              .range([1, 6]);                              
 
 var routePathZoomScale = d3.scale.linear()
                               .domain([ minZoom, maxZoom])
@@ -69,7 +73,7 @@ function getBounds(){
 
 function update() {
   $.ajax({
-    url: 'http://localhost:9292/api/update',
+    url: 'https://livetrainapi.herokuapp.com/api/update',
     dataType: 'JSON',
     success: animate
   });
@@ -150,7 +154,7 @@ function zoomReset() {
                 return ( (2 * (stopZoomScale(currentZoom)) * Math.PI)/2 + ', ' + (2 * (stopZoomScale(currentZoom)) * Math.PI)/2 );
               });
   dynamicGroup.selectAll('.trains')
-              .attr('r', stopZoomScale(currentZoom));
+              .attr('r', trainZoomScale(currentZoom));
 
   // Resize lines
   staticGroup.selectAll('.routePath')
@@ -256,7 +260,7 @@ function animate(data) {
   trains.enter()
         .append('circle')
         .attr('class', function(d){ return 'trains route-' + d.route })
-        .attr('r', stopZoomScale(startingZoom))
+        .attr('r', trainZoomScale(startingZoom))
         .attr('id', function(d){ return 'train-' + d.trip_id; });
 
   trains.exit()
