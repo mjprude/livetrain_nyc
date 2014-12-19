@@ -379,6 +379,7 @@ console.log("    ||        ||");
 
 
 $(function() {
+  update();
   setInterval(function(){
     update();
   },30000);
