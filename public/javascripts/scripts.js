@@ -69,7 +69,7 @@ function getBounds(){
 
 function update() {
   $.ajax({
-    url: 'http://livetrainapi.herokuapp.com/api/update',
+    url: 'https://livetrainapi.herokuapp.com/api/update',
     dataType: 'JSON',
     success: animate
   });
