@@ -195,7 +195,7 @@ d3.json("/irt_routes_and_stops.json", function (json) {
             .attr('r', stopZoomScale(startingZoom))
             .attr('id', function(d){ return d.stop_id; })
             .attr('class', 'stops')
-            .attr('stroke', function(d){ return 'rgb' + d.colors[0]; })
+            .attr('stroke', function(d){ return d.colors[0]; })
             .attr('stroke-width', stopStrokeZoomScale(startingZoom));
 
   // ...and the overlays necessary for the semi-circle effect
@@ -207,9 +207,9 @@ d3.json("/irt_routes_and_stops.json", function (json) {
             .attr('class', 'stopOverlays')
             .attr('stroke', function(d) {
               if (d.colors.length > 1){
-                return 'rgb' + d.colors[1];
+                return d.colors[1];
               } else {
-                return 'rgb' + d.colors[0];
+                return d.colors[0];
               }
             })
             .attr('stroke-width', stopStrokeZoomScale(startingZoom));
@@ -377,6 +377,13 @@ console.log("|      |    |      |");
 console.log("'+-----======-----+'");
 console.log("    ||        ||");
 
+
+$(function() {
+  setInterval(function(){
+    update();
+  },90000);
+  $($('.leaflet-top')[0]).css('padding-top', '50px');
+});
 
 // ************************ ANIMATION 2 **************************************
 // function animateSingle(){
