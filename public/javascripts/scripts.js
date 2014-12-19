@@ -73,7 +73,7 @@ function getBounds(){
 
 function update() {
   $.ajax({
-    url: 'https://livetrainapi.herokuapp.com/api/update',
+    url: 'http://localhost:9292/api/updates',
     dataType: 'JSON',
     success: animate
   });
@@ -269,10 +269,11 @@ function animate(data) {
         .attr('opacity', 0)
         .remove();
 
+  // Remember, arrivals are in the db as s, current time is ms
   function percentComplete(departure, arrival) {
     totalTime = (arrival - departure);
     currentTime = new Date().getTime();
-    return (1 - (arrival - currentTime)/totalTime);
+    return (1 - ( (arrival * 1000) - currentTime) / (totalTime * 1000) );
   }
   
   positionReset();
