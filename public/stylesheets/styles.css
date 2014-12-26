@@ -13,10 +13,10 @@ body {
 }
 
 .leaflet-top {
-  padding-top: 100px;
+  top: 80px;
 }
 
-.header {
+.header, .construction{
   background-color: black;
   color: white;
   vertical-align: middle;
@@ -35,6 +35,21 @@ body {
 
 .header {
   /*cursor: default;*/
+}
+
+.construction {
+  background-color: #acacac;
+  color: black;
+  top: 50px;
+  height: 35px;
+  vertical-align: top;
+  padding-top: 0px;
+}
+
+.construction h4 {
+  margin-top: 10px;
+  width: 870px;
+  border-bottom: 3px solid red;
 }
 
 h1 {
