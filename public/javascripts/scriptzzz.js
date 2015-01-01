@@ -1,11 +1,15 @@
 var startingZoom = 12;
 var maxZoom = 19;
-var minZoom = 9;
+var minZoom = 11;
+var northEastBounds = L.latLng(40.950344022008075, -73.69285583496094);
+var southWestBounds = L.latLng(40.54511315470123, -74.18724060058594);
+var maxBounds = L.latLngBounds(southWestBounds, northEastBounds);
 
-L.mapbox.accessToken = 'pk.eyJ1IjoibWpwcnVkZSIsImEiOiJiVG8yR2VrIn0.jtdF6eqGIKKs0To4p0mu0Q';
-var map = L.mapbox.map('map', 'mjprude.kcf5kl75', {
+L.mapbox.accessToken = 'pk.eyJ1IjoidGVkd2FyZG1haCIsImEiOiJqSkh3Uzc4In0.jXPGVTjh6dIKOd_FHtAxOA';
+var map = L.mapbox.map('map', 'tedwardmah.kjdgk1i3', {
               maxZoom: maxZoom,
               minZoom: minZoom,
+              maxBounds: maxBounds,
             })
             .setView([ 40.75583970971843, -73.90090942382812 ], startingZoom);
 
@@ -23,11 +27,15 @@ var trainsGroup = dynamicGroup.append('g')
 // ******************* SCALES AND SUCH ******************************
 var stopZoomScale = d3.scale.linear()
                               .domain([ minZoom, maxZoom])
-                              .range([2, 10]);                             
+                              .range([2, 10]);
 
 var stopStrokeZoomScale = d3.scale.linear()
                               .domain([ minZoom, maxZoom])
-                              .range([ 1, 3]);
+                              .range([1, 3]);
+
+var padZoomScale = d3.scale.linear()
+                              .domain([ minZoom, maxZoom])
+                              .range([6, 26]);                                                               
 
 var trainZoomScale = d3.scale.linear()
                               .domain([ minZoom, maxZoom])
@@ -78,6 +86,7 @@ function update() {
     success: animate
   });
 }
+
 // **************************** HANDLE USER MAP MOVEMENTS *******************************
 // Handle path and marker positions on all mouse events 
 function positionReset() {
@@ -129,6 +138,9 @@ function positionReset() {
   d3.selectAll('.stopOverlays').attr('transform', function(d){
     return 'translate(' + stopApplyLatLngToLayer(d).x + ',' + stopApplyLatLngToLayer(d).y + ")";
   });
+  d3.selectAll('.tooltip-pads').attr('transform', function(d){
+    return 'translate(' + stopApplyLatLngToLayer(d).x + ',' + stopApplyLatLngToLayer(d).y + ")";
+  });
 
   anchorMapOverlay();
 }
@@ -153,6 +165,8 @@ function zoomReset() {
               .attr('stroke-dasharray', function(){ 
                 return ( (2 * (stopZoomScale(currentZoom)) * Math.PI)/2 + ', ' + (2 * (stopZoomScale(currentZoom)) * Math.PI)/2 );
               });
+  staticGroup.selectAll('.tooltip-pads')
+              .attr('r', padZoomScale(currentZoom));
   dynamicGroup.selectAll('.trains')
               .attr('r', trainZoomScale(currentZoom));
 
@@ -213,6 +227,16 @@ d3.json("/irt_routes_and_stops.json", function (json) {
               }
             })
             .attr('stroke-width', stopStrokeZoomScale(startingZoom));
+
+  stopGroup.selectAll('.tooltip-pads')
+            .data(stops)
+            .enter()
+            .append('circle')
+            .attr('opacity', 0)
+            .attr('class', 'tooltip-pads')
+            .attr('r', padZoomScale(startingZoom))            
+            .on('mouseover', showStationTooltip)
+            .on('mouseout', hideStationTooltip);
 
   // call positionReset and zoomReset to populate the stops and lines and such...
   positionReset();
@@ -365,6 +389,47 @@ function animate(data) {
   positionReset();
 
 }
+
+// ******************************* Station Tooltip *******************************
+function showStationTooltip(d){
+  console.log('Show the thing!');
+  // var mousePosition = d3.mouse( d3.select('#map')[0][0] );
+  // d3.select('#station-tooltip').style('top', function(){
+  //                               return mousePosition[1] + 'px';
+  //                             })
+  //                             .style('left', function(){
+  //                               return mousePosition[0] + 'px';
+  //                             })
+  //                             .text(d.stop_name)
+  //                             .classed('hidden', false);
+
+                              
+d3.select('#station-tooltip').text(d.stop_name)
+                             .style('top', function(){
+                                return (stopApplyLatLngToLayer(d).y - window.getBounds().y) + 'px';
+                              })
+                             .style('left', function(){
+                                console.log(window.outerWidth);
+                                console.log($(this).width());
+                                console.log(stopApplyLatLngToLayer(d).x);
+                                console.log(window.getBounds().x);
+                                var windowWidth = window.outerWidth;
+                                var currentBounds = window.getBounds();
+                                if ( ( $(this).width() + stopApplyLatLngToLayer(d).x - window.getBounds().x ) > window.outerWidth) {
+                                  console.log('This should be on the left...');
+                                  return (stopApplyLatLngToLayer(d).x - window.getBounds().x - ($(this).width())) + 'px'
+                                } else  {
+                                  return (stopApplyLatLngToLayer(d).x - window.getBounds().x) + 'px';
+                                }
+                              })
+                             .classed('hidden', false);
+
+}
+
+function hideStationTooltip(d){
+  console.log('Hide the thing!');
+  d3.select('#station-tooltip').classed('hidden', true);
+}
   
 console.log(" ,<-------------->,");
 console.log("/                  \\\ ");
@@ -379,10 +444,12 @@ console.log("    ||        ||");
 
 
 $(function() {
-  update();
-  setInterval(function(){
-    update();
-  },30000);
+  d3.select('#map').append('div').attr('id', 'station-tooltip').append('h3').text('Station Stuff');
+
+  // update();
+  // setInterval(function(){
+  //   update();
+  // },30000);
   $($('.leaflet-top')[0]).css('padding-top', '50px');
 });
 

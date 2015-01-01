@@ -97,3 +97,26 @@ h1 {
 .route-6 {
   fill: green;
 }
+
+/* Station Tooltip stuff */
+
+#station-tooltip {
+  position: absolute;
+  min-width: 10px;
+  height: auto;
+  padding: 10px;
+  color: white;
+  background-color: rgba(0, 0, 0, .75);
+  border-radius: 5px;
+  pointer-events:none;
+}
+
+#station-tooltip.hidden {
+  display: none;
+}
+
+
+
+
+
+
