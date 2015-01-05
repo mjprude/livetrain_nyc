@@ -81,7 +81,7 @@ function getBounds(){
 
 function update() {
   $.ajax({
-    url: 'http://localhost:5000/api/update',
+    url: 'http://localhost:9292/api/update',
     dataType: 'JSON',
     success: animate
   });
@@ -409,17 +409,31 @@ d3.select('#station-tooltip').text(d.stop_name)
                                 return (stopApplyLatLngToLayer(d).y - window.getBounds().y) + 'px';
                               })
                              .style('left', function(){
-                                console.log(window.outerWidth);
-                                console.log($(this).width());
-                                console.log(stopApplyLatLngToLayer(d).x);
-                                console.log(window.getBounds().x);
+                                // console.log(window.outerWidth);
+                                // console.log($(this).width());
+                                // console.log(stopApplyLatLngToLayer(d).x);
+                                // console.log(window.getBounds().x);
                                 var windowWidth = window.outerWidth;
                                 var currentBounds = window.getBounds();
                                 if ( ( $(this).width() + stopApplyLatLngToLayer(d).x - window.getBounds().x ) > window.outerWidth) {
                                   console.log('This should be on the left...');
-                                  return (stopApplyLatLngToLayer(d).x - window.getBounds().x - ($(this).width())) + 'px'
+                                  return (stopApplyLatLngToLayer(d).x - window.getBounds().x - ($(this).width() + 25 ) ) + 'px';
                                 } else  {
-                                  return (stopApplyLatLngToLayer(d).x - window.getBounds().x) + 'px';
+                                  return (stopApplyLatLngToLayer(d).x - window.getBounds().x) + 10 + 'px';
+                                }
+                              })
+                             .style('top', function(){
+                                console.log(window.outerHeight);
+                                console.log($(this).height());
+                                console.log(stopApplyLatLngToLayer(d).y);
+                                console.log(window.getBounds().y);
+                                var windowHeight = window.outerHeight;
+                                var currentBounds = window.getBounds();
+                                if ( ( $(this).height() + stopApplyLatLngToLayer(d).y - window.getBounds().y ) > window.outerWidth) {
+                                  console.log('This should be on the top...');
+                                  return (stopApplyLatLngToLayer(d).y - window.getBounds().y - ($(this).height() + 30 ) ) + 'px';
+                                } else  {
+                                  return (stopApplyLatLngToLayer(d).y - window.getBounds().y) + 10 + 'px';
                                 }
                               })
                              .classed('hidden', false);
