@@ -80,7 +80,7 @@ h1 {
   stroke: grey;
 }
 
-/* Rails (The Invisible Stuff) */
+/* Rails (The Invisible Stuff) */ 
 .rails {
   fill: none;
 }
@@ -102,7 +102,8 @@ h1 {
 
 #station-tooltip {
   position: absolute;
-  min-width: 10px;
+  min-width: 125px;
+  text-align: center;
   height: auto;
   padding: 10px;
   color: white;
