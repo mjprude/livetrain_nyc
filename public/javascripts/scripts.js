@@ -81,7 +81,7 @@ function getBounds(){
 
 function update() {
   $.ajax({
-    url: 'http://livetrainapi.herokuapp.com',
+    url: 'http://104.131.206.60/',
     dataType: 'JSON',
     success: animate
   });
