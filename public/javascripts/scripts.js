@@ -5,8 +5,8 @@ var northEastBounds = L.latLng(40.950344022008075, -73.69285583496094);
 var southWestBounds = L.latLng(40.54511315470123, -74.18724060058594);
 var maxBounds = L.latLngBounds(southWestBounds, northEastBounds);
 
-L.mapbox.accessToken = 'pk.eyJ1IjoidGVkd2FyZG1haCIsImEiOiJqSkh3Uzc4In0.jXPGVTjh6dIKOd_FHtAxOA';
-var map = L.mapbox.map('map', 'tedwardmah.kjdgk1i3', {
+L.mapbox.accessToken = 'pk.eyJ1IjoibWpwcnVkZSIsImEiOiJiVG8yR2VrIn0.jtdF6eqGIKKs0To4p0mu0Q';
+var map = L.mapbox.map('map', 'mjprude.kcf5kl75', {
               maxZoom: maxZoom,
               minZoom: minZoom,
               maxBounds: maxBounds,
@@ -81,7 +81,7 @@ function getBounds(){
 
 function update() {
   $.ajax({
-    url: 'http://livetrainapi.herokuapp.com',
+    url: 'http://104.131.206.60/',
     dataType: 'JSON',
     success: animate
   });
@@ -168,7 +168,7 @@ function zoomReset() {
   staticGroup.selectAll('.tooltip-pads')
               .attr('r', padZoomScale(currentZoom));
   dynamicGroup.selectAll('.trains')
-              .attr('r', trainZoomScale(currentZoom));
+              .attr('r', trainZoomScale(currentZoom) * 2);
 
   // Resize lines
   staticGroup.selectAll('.routePath')
@@ -284,7 +284,7 @@ function animate(data) {
   trains.enter()
         .append('circle')
         .attr('class', function(d){ return 'trains route-' + d.route })
-        .attr('r', trainZoomScale(startingZoom))
+        .attr('r', trainZoomScale(startingZoom) * 2)
         .attr('id', function(d){ return 'train-' + d.trip_id; });
 
   trains.exit()
