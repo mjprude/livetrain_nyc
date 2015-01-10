@@ -5,6 +5,8 @@ var northEastBounds = L.latLng(40.950344022008075, -73.69285583496094);
 var southWestBounds = L.latLng(40.54511315470123, -74.18724060058594);
 var maxBounds = L.latLngBounds(southWestBounds, northEastBounds);
 
+var routeData;
+
 L.mapbox.accessToken = 'pk.eyJ1IjoidGVkd2FyZG1haCIsImEiOiJqSkh3Uzc4In0.jXPGVTjh6dIKOd_FHtAxOA';
 var map = L.mapbox.map('map', 'tedwardmah.kjdgk1i3', {
               maxZoom: maxZoom,
@@ -181,9 +183,9 @@ function zoomReset() {
 // Event listener for zoom event
 map.on('viewreset', zoomReset)
 
-
 // ********************** LOAD JSON - STATIC DATA (STOPS AND LINES) ********************
 d3.json("/irt_routes_and_stops.json", function (json) {
+  routeData = json;
 
   // Add routes to map
   var routes = json.routes;
