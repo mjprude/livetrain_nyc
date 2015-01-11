@@ -1,9 +1,12 @@
+
+// map-config
 var startingZoom = 12;
 var maxZoom = 19;
 var minZoom = 11;
 var northEastBounds = L.latLng(40.950344022008075, -73.69285583496094);
 var southWestBounds = L.latLng(40.54511315470123, -74.18724060058594);
 var maxBounds = L.latLngBounds(southWestBounds, northEastBounds);
+var routeData;
 
 L.mapbox.accessToken = 'pk.eyJ1IjoibWpwcnVkZSIsImEiOiJiVG8yR2VrIn0.jtdF6eqGIKKs0To4p0mu0Q';
 var map = L.mapbox.map('map', 'mjprude.kcf5kl75', {
@@ -12,6 +15,9 @@ var map = L.mapbox.map('map', 'mjprude.kcf5kl75', {
               maxBounds: maxBounds,
             })
             .setView([ 40.75583970971843, -73.90090942382812 ], startingZoom);
+
+var stationCountdown;
+var stationCountdownView;
 
 // ******************* SVG OVERLAY GENERATION ***********************
 var svg = d3.select(map.getPanes().markerPane).append("svg");
@@ -181,9 +187,9 @@ function zoomReset() {
 // Event listener for zoom event
 map.on('viewreset', zoomReset)
 
-
 // ********************** LOAD JSON - STATIC DATA (STOPS AND LINES) ********************
 d3.json("/irt_routes_and_stops.json", function (json) {
+  routeData = json;
 
   // Add routes to map
   var routes = json.routes;
@@ -236,7 +242,8 @@ d3.json("/irt_routes_and_stops.json", function (json) {
             .attr('class', 'tooltip-pads')
             .attr('r', padZoomScale(startingZoom))            
             .on('mouseover', showStationTooltip)
-            .on('mouseout', hideStationTooltip);
+            .on('mouseout', hideStationTooltip)
+            .on('click', fetchCountdownInfo);
 
   // call positionReset and zoomReset to populate the stops and lines and such...
   positionReset();
@@ -418,6 +425,13 @@ function showStationTooltip(d){
 function hideStationTooltip(d){
   d3.select('#station-tooltip').classed('hidden', true);
 }
+
+function fetchCountdownInfo(d){  
+  stationCountdown.fetch({
+    data: {station_id: d.stop_id}
+  });
+  $('#station-name').text(d.stop_name);
+}
   
 console.log(" ,<-------------->,");
 console.log("/                  \\\ ");
@@ -433,10 +447,14 @@ console.log("    ||        ||");
 
 $(function() {
   d3.select('#map').append('div').attr('id', 'station-tooltip').append('h3').text('Station Stuff');
-
-  update();
-  setInterval(function(){
-    update();
-  },30000);
+  stationCountdown = new StationCountdown();
+  stationCountdownView = new StationCountdownView({
+    model: stationCountdown,
+    el: "#countdown-info",
+  });
+  // update();
+  // setInterval(function(){
+  //   update();
+  // },30000);
   $($('.leaflet-top')[0]).css('padding-top', '50px');
 });

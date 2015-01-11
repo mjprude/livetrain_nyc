@@ -8,8 +8,11 @@ function getPath(line, origin, destination, all_lines=['1','2','3','4','5','6','
 
 function getStopsByLine(line) {
   d3.json("/irt_routes_and_stops.json", function (json) {
-    debugger;
-  }
+    json.stops.map(function(stop) {
+      
+      debugger;
+    });
+  });
 }
 
 getStopsByLine(1)
