@@ -1,6 +1,7 @@
 body { 
   margin: 0; 
   padding: 0; 
+  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; 
 }
 
 #map {
@@ -10,6 +11,10 @@ body {
   height: 100%;
   width:100%;
   z-index: 1; 
+}
+
+.mapbox-improve-map {
+  display: none;
 }
 
 .leaflet-top {
@@ -132,7 +137,18 @@ h1 {
   display: none;
 }
 
+#station-countdown {
+  position: absolute;
+  right: 0;
+  top: 100px;
+  background-color: rgba(0, 0, 0, .75);
+  color: white;
+  z-index: 1;
+}
 
+#station-countdown.hidden {
+  display: none;
+}
 
 
 
