@@ -10,22 +10,28 @@
   <script src='javascripts/backbone.js'></script>
   <script src='javascripts/d3-3.5.2.min.js'></script>
   <script id="station-countdown-template" type="text/template">
+  <%% if (stationCountdown.northbound.length > 0) { %>
   <h4>Northbound</h4>
   <ul>
     <%% _.each(stationCountdown.northbound, function(stop) { %>
       <li>
-        <%%= stop.route %> train <%%= stop.min_till_train %> min away
+        <div class="countdown-train-icon icon-<%%= stop.route === 'GS' ? 'S' : stop.route %>"><%%= stop.route === 'GS' ? 'S' : stop.route %></div><span class="destination"><%%= stop.destination === null ? 'ALERT: Modified Service!' : stop.destination %></span><span class="minutes-till-arrival"><%%= stop.min_till_train %> min</span>
       </li>
     <%% }); %>
   </ul>
-  <h4>Southbound</h4>
+
+  <%% }; %>
+  <%% if (stationCountdown.southbound.length > 0) { %>
+	<h4>Southbound</h4>
+
   <ul>
     <%% _.each(stationCountdown.southbound, function(stop) { %>
       <li>
-        <%%= stop.route %> train <%%= stop.min_till_train %> min away
+        <div class="countdown-train-icon icon-<%%= stop.route === 'GS' ? 'S' : stop.route %>"><%%= stop.route === 'GS' ? 'S' : stop.route %></div><span class="destination"><%%= stop.destination === null ? 'ALERT: Modified Service!' : stop.destination %></span><span class="minutes-till-arrival"><%%= stop.min_till_train %> min</span>
       </li>
     <%% }); %>
   </ul>
+  <%% }; %>
   </script>
   <script src='javascripts/station_countdown/models/StationCountdown.js'></script>
   <script src='javascripts/station_countdown/views/StationCountdownView.js'></script>

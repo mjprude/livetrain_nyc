@@ -108,15 +108,19 @@ h1 {
 }
 
 .route-4 {
-  fill: green;
+  fill: #00933C;
 }
 
 .route-5 {
-  fill: green;
+  fill: #00933C;
 }
 
 .route-6 {
-  fill: green;
+  fill: #00933C;
+}
+
+.route-GS {
+  fill: #A7A9AC;
 }
 
 /* Station Tooltip stuff */
@@ -150,6 +154,93 @@ h1 {
   display: none;
 }
 
+#station-countdown h3 {
+  margin: 0;
+  padding: 5px 10px;
+  background-color: rgb(0, 0, 0);
+  text-align: center;
+}
+
+/* Styles the container below the station name that holds the countdown trips */
+#countdown-info {
+  padding: 0 10px;
+}
+
+#station-countdown h4 {
+  text-align: center;
+  border-bottom: 2px dotted white;
+}
+
+#station-countdown ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+#station-countdown li {
+  padding: 0;
+  margin: 5px 0;
+}
+
+#station-countdown span {
+  /*text-align: right;*/
+}
+
+.countdown-train-icon {
+  display: inline-block;
+  text-align: center;
+  width: 25px;
+  height: 25px;
+  border-radius: 25px;
+  margin: 0 10px;
+  /*padding-left: 1px;*/
+  line-height: 25px;
+  vertical-align: middle;
+}
+
+.icon-1 {
+  background-color: #EE352E;
+  /*border: 1px solid #EE352E;  */
+}
+
+.icon-2 {
+  background-color: #EE352E;
+  /*border: 1px solid white;*/
+}
+
+.icon-3 {
+  background-color: #EE352E;  
+  /*border: 1px solid white;*/
+}
+
+.icon-4 {
+  background-color: #00933C;
+  /*border: 1px solid white;*/
+}
+
+.icon-5 {
+  background-color: #00933C;
+  /*border: 1px solid white;*/
+}
+
+.icon-6 {
+  background-color: #00933C;
+  /*border: 1px solid #00933C;*/
+}
+
+.icon-S {
+  background-color: #A7A9AC;
+}
+
+.icon-L {
+  background-color: #A7A9AC;
+}
+
+.destination {
+  display: inline-block;
+  margin-right: 10px;
+  min-width: 280px;
+  text-transform: capitalize;
+}
 
 
 
