@@ -1,3 +1,5 @@
+var countingDown = false
+
 
 // map-config
 var startingZoom = 12;
@@ -434,6 +436,17 @@ function fetchCountdownInfo(d){
     data: {station_id: d.stop_id}
   });
   $('#station-name').text(d.stop_name);
+  showCountdownClock();
+}
+
+function showCountdownClock(){
+  d3.select('#station-countdown').classed('hidden', false);
+  countingDown = true;
+}
+
+function hideCountdownClock(){
+  d3.select('#station-countdown').classed('hidden', true);
+  countingDown = false;
 }
 
 function calulateMinTillTrain(timestamp) {
@@ -460,6 +473,7 @@ $(function() {
     model: stationCountdown,
     el: "#countdown-info",
   });
+  d3.select('#station-countdown-header').on('click', hideCountdownClock)
   // update();
   // setInterval(function(){
   //   update();
