@@ -440,12 +440,22 @@ function fetchCountdownInfo(d){
 }
 
 function showCountdownClock(){
-  d3.select('#station-countdown').classed('hidden', false);
+  d3.select('#station-countdown').classed('hidden', false)
+                                .transition()
+                                .duration(250)
+                                .style('opacity', 1);
   countingDown = true;
 }
 
 function hideCountdownClock(){
-  d3.select('#station-countdown').classed('hidden', true);
+  d3.select('#station-countdown').transition()
+                                .duration(250)
+                                .style('opacity', function(){
+                                  setTimeout(function(){
+                                    d3.select('#station-countdown').classed('hidden', true);
+                                  }, 250)
+                                  return 0;
+                                }); 
   countingDown = false;
 }
 
