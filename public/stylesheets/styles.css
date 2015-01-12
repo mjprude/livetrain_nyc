@@ -182,7 +182,7 @@ h1 {
 }
 
 #station-countdown span {
-  text-align: right;
+  /*text-align: right;*/
 }
 
 .countdown-train-icon {
@@ -234,3 +234,13 @@ h1 {
 .icon-L {
   background-color: #A7A9AC;
 }
+
+.destination {
+  display: inline-block;
+  margin-right: 10px;
+  min-width: 280px;
+  text-transform: capitalize;
+}
+
+
+

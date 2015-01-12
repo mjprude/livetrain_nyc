@@ -15,7 +15,7 @@
   <ul>
     <%% _.each(stationCountdown.northbound, function(stop) { %>
       <li>
-        <div class="countdown-train-icon icon-<%%= stop.route === 'GS' ? 'S' : stop.route %>"><%%= stop.route === 'GS' ? 'S' : stop.route %></div><span><%%= stop.min_till_train %> min</span>
+        <div class="countdown-train-icon icon-<%%= stop.route === 'GS' ? 'S' : stop.route %>"><%%= stop.route === 'GS' ? 'S' : stop.route %></div><span class="destination"><%%= stop.destination === null ? 'ALERT: Modified Service!' : stop.destination %></span><span class="minutes-till-arrival"><%%= stop.min_till_train %> min</span>
       </li>
     <%% }); %>
   </ul>
@@ -25,7 +25,7 @@
   <ul>
     <%% _.each(stationCountdown.southbound, function(stop) { %>
       <li>
-        <div class="countdown-train-icon icon-<%%= stop.route === 'GS' ? 'S' : stop.route %>"><%%= stop.route === 'GS' ? 'S' : stop.route %></div><span><%%= stop.min_till_train %> min</span>
+        <div class="countdown-train-icon icon-<%%= stop.route === 'GS' ? 'S' : stop.route %>"><%%= stop.route === 'GS' ? 'S' : stop.route %></div><span class="destination"><%%= stop.destination === null ? 'ALERT: Modified Service!' : stop.destination %></span><span class="minutes-till-arrival"><%%= stop.min_till_train %> min</span>
       </li>
     <%% }); %>
   </ul>
