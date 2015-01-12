@@ -167,8 +167,12 @@ h1 {
 }
 
 #station-countdown h4 {
-  text-align: center;
-  border-bottom: 2px dotted white;
+  margin: 0;
+  margin-top: 10px;
+  text-align: left;
+  border-bottom: 1px solid white;
+  padding-bottom: 5px;
+  padding-left: 5px;
 }
 
 #station-countdown ul {

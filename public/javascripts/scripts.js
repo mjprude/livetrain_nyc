@@ -305,8 +305,8 @@ function animate(data) {
 
   // Remember, arrivals are in the db as s, current time is ms
   function percentComplete(departure, arrival) {
-    totalTime = (arrival - departure);
-    currentTime = new Date().getTime();
+    var totalTime = (arrival - departure);
+    var currentTime = new Date().getTime();
     return (1 - ( (arrival * 1000) - currentTime) / (totalTime * 1000) );
   }
   
@@ -434,6 +434,11 @@ function fetchCountdownInfo(d){
     data: {station_id: d.stop_id}
   });
   $('#station-name').text(d.stop_name);
+}
+
+function calulateMinTillTrain(timestamp) {
+  var currentTime = new Date().getTime();
+  return Math.floor((( (timestamp * 1000 ) - currentTime) / 60000));
 }
   
 console.log(" ,<-------------->,");
