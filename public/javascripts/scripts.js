@@ -468,7 +468,11 @@ function updateCountdownTimes(){
   if (countingDown) {
     d3.selectAll('#station-countdown li').each(function(){
       var newTime = calculateMinTillTrain(this.dataset.timestamp);
-      this.lastElementChild.innerHTML = newTime + ' min';
+      if (newTime > -1) {
+        this.lastElementChild.innerHTML = newTime + ' min';
+      } else {
+        this.remove();
+      };
     });
   }
 }

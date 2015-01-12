@@ -124,6 +124,9 @@ h1 {
 }
 
 /* Station Tooltip stuff */
+.tooltip-pads {
+  cursor: pointer;
+}
 
 #station-tooltip {
   position: absolute;
@@ -180,6 +183,7 @@ h1 {
 /* Styles the container below the station name that holds the countdown trips */
 #countdown-info {
   padding: 0 10px;
+  cursor: default;
 }
 
 #station-countdown h4 {
@@ -199,6 +203,15 @@ h1 {
 #station-countdown li {
   padding: 0;
   margin: 5px 0;
+  display: none;
+}
+
+#northbound-countdown-trips li:nth-child(-n+6) {
+  display: list-item;
+}
+
+#southbound-countdown-trips li:nth-child(-n+6) {
+  display: list-item;
 }
 
 #station-countdown span {
