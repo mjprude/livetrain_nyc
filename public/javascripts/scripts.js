@@ -453,16 +453,26 @@ function hideCountdownClock(){
                                 .style('opacity', function(){
                                   setTimeout(function(){
                                     d3.select('#station-countdown').classed('hidden', true);
-                                  }, 250)
+                                  }, 250);
                                   return 0;
                                 }); 
   countingDown = false;
 }
 
-function calulateMinTillTrain(timestamp) {
+function calculateMinTillTrain(timestamp) {
   var currentTime = new Date().getTime();
   return Math.floor((( (timestamp * 1000 ) - currentTime) / 60000));
 }
+
+function updateCountdownTimes(){
+  if (countingDown) {
+    d3.selectAll('#station-countdown li').each(function(){
+      var newTime = calculateMinTillTrain(this.dataset.timestamp);
+      this.lastElementChild.innerHTML = newTime + ' min';
+    });
+  }
+}
+
   
 console.log(" ,<-------------->,");
 console.log("/                  \\\ ");
@@ -483,7 +493,10 @@ $(function() {
     model: stationCountdown,
     el: "#countdown-info",
   });
-  d3.select('#station-countdown-header').on('click', hideCountdownClock)
+  d3.select('#station-countdown-header').on('click', hideCountdownClock);
+
+  setInterval(updateCountdownTimes, 5000);
+
   // update();
   // setInterval(function(){
   //   update();
