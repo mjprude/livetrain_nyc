@@ -1,3 +1,5 @@
+var countingDown = false
+
 
 // map-config
 var startingZoom = 12;
@@ -302,8 +304,8 @@ function animate(data) {
 
   // Remember, arrivals are in the db as s, current time is ms
   function percentComplete(departure, arrival) {
-    totalTime = (arrival - departure);
-    currentTime = new Date().getTime();
+    var totalTime = (arrival - departure);
+    var currentTime = new Date().getTime();
     return (1 - ( (arrival * 1000) - currentTime) / (totalTime * 1000) );
   }
   
@@ -431,7 +433,47 @@ function fetchCountdownInfo(d){
     data: {station_id: d.stop_id}
   });
   $('#station-name').text(d.stop_name);
+  showCountdownClock();
 }
+
+function showCountdownClock(){
+  d3.select('#station-countdown').classed('hidden', false)
+                                .transition()
+                                .duration(250)
+                                .style('opacity', 1);
+  countingDown = true;
+}
+
+function hideCountdownClock(){
+  d3.select('#station-countdown').transition()
+                                .duration(250)
+                                .style('opacity', function(){
+                                  setTimeout(function(){
+                                    d3.select('#station-countdown').classed('hidden', true);
+                                  }, 250);
+                                  return 0;
+                                }); 
+  countingDown = false;
+}
+
+function calculateMinTillTrain(timestamp) {
+  var currentTime = new Date().getTime();
+  return Math.floor((( (timestamp * 1000 ) - currentTime) / 60000));
+}
+
+function updateCountdownTimes(){
+  if (countingDown) {
+    d3.selectAll('#station-countdown li').each(function(){
+      var newTime = calculateMinTillTrain(this.dataset.timestamp);
+      if (newTime > -1) {
+        this.lastElementChild.innerHTML = newTime + ' min';
+      } else {
+        this.remove();
+      };
+    });
+  }
+}
+
   
 console.log(" ,<-------------->,");
 console.log("/                  \\\ ");
@@ -452,6 +494,10 @@ $(function() {
     model: stationCountdown,
     el: "#countdown-info",
   });
+  d3.select('#station-countdown-header').on('click', hideCountdownClock);
+
+  setInterval(updateCountdownTimes, 5000);
+
   // update();
   // setInterval(function(){
   //   update();
