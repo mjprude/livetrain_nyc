@@ -1,12 +1,11 @@
 var countingDown = false
 
-
 // map-config
 var startingZoom = 12;
 var maxZoom = 19;
 var minZoom = 11;
-var northEastBounds = L.latLng(40.950344022008075, -73.69285583496094);
-var southWestBounds = L.latLng(40.54511315470123, -74.18724060058594);
+var northEastBounds = L.latLng(40.99803873280107, -73.40652465820311);
+var southWestBounds = L.latLng(40.493437209343654, -74.39529418945312);
 var maxBounds = L.latLngBounds(southWestBounds, northEastBounds);
 var routeData;
 
@@ -498,8 +497,8 @@ $(function() {
 
   setInterval(updateCountdownTimes, 5000);
 
-  // update();
-  // setInterval(function(){
-  //   update();
-  // },30000);
+  update();
+  setInterval(function(){
+    update();
+  },60000);
 });

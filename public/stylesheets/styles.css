@@ -103,6 +103,10 @@ h1 {
   fill: #00933C;
 }
 
+.route-6X {
+  fill: #00933C;
+}
+
 .route-GS {
   fill: #A7A9AC;
 }
@@ -236,6 +240,11 @@ h1 {
 }
 
 .icon-6 {
+  background-color: #00933C;
+  /*border: 1px solid #00933C;*/
+}
+
+.icon-6X {
   background-color: #00933C;
   /*border: 1px solid #00933C;*/
 }
