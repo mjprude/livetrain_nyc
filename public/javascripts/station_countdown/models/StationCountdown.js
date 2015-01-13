@@ -1,3 +1,3 @@
 var StationCountdown = Backbone.Model.extend({
-	url: 'http://localhost:8080/api/station'
+	url: 'http://104.131.206.60/'
 });

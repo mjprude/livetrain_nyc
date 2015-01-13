@@ -1,6 +1,5 @@
 var countingDown = false
 
-
 // map-config
 var startingZoom = 12;
 var maxZoom = 19;
@@ -501,8 +500,8 @@ $(function() {
 
   setInterval(updateCountdownTimes, 5000);
 
-  // update();
-  // setInterval(function(){
-  //   update();
-  // },30000);
+  update();
+  setInterval(function(){
+    update();
+  },60000);
 });
