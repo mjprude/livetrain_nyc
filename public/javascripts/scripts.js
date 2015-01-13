@@ -22,11 +22,11 @@ var stationCountdown;
 var stationCountdownView;
 
 // ******************* SVG OVERLAY GENERATION ***********************
-var svg = d3.select(map.getPanes().markerPane).append("svg")
-      .attr('x', function(){ return applyLatLngToLayer(largeSVGAnchorCoordinates).x })
-      .attr('y', function(){ return applyLatLngToLayer(largeSVGAnchorCoordinates).y })
-      .attr('width', 1500)
-      .attr('height', 1000);
+var svg = d3.select(map.getPanes().markerPane).append("svg");
+      // .attr('x', function(){ return applyLatLngToLayer(largeSVGAnchorCoordinates).x })
+      // .attr('y', function(){ return applyLatLngToLayer(largeSVGAnchorCoordinates).y })
+      // .attr('width', 1500)
+      // .attr('height', 1000);
 
 // The "g" elements to which we append things
 var staticGroup = svg.append("g").attr("class", "leaflet-zoom-hide");
@@ -116,28 +116,48 @@ function positionReset() {
     //   .attr('y', function(){ return applyLatLngToLayer(largeSVGAnchorCoordinates).y });
 
     svg.attr('x', 0)
-      .attr('y', 0)
-      .attr('width', mapWidth)
-      .attr('height', mapHeight)
-      .style('-webkit-transform', function(){
-        return 'translate3d(' + mapAnchorPoints.x + 'px,' + mapAnchorPoints.y + "px, 0px)";
-      })
-      .style('-ms-transform', function(){
-        return 'translate3d(' + mapAnchorPoints.x + 'px,' + mapAnchorPoints.y + "px, 0px)";
-      })
-      .style('-o-transform', function(){
-        return 'translate3d(' + mapAnchorPoints.x + 'px,' + mapAnchorPoints.y + "px, 0px)";
-      })
-      .style('transform', function(){
-        return 'translate3d(' + mapAnchorPoints.x + 'px,' + mapAnchorPoints.y + "px, 0px)";
-      });
+        .attr('y', 0)
+        .attr('width', mapWidth)
+        .attr('height', mapHeight)
+        .style('-webkit-transform', function(){
+          return 'translate3d(' + mapAnchorPoints.x + 'px,' + mapAnchorPoints.y + "px, 0px)";
+        })
+        .style('-ms-transform', function(){
+          return 'translate3d(' + mapAnchorPoints.x + 'px,' + mapAnchorPoints.y + "px, 0px)";
+        })
+        .style('-o-transform', function(){
+          return 'translate3d(' + mapAnchorPoints.x + 'px,' + mapAnchorPoints.y + "px, 0px)";
+        })
+        .style('transform', function(){
+          return 'translate3d(' + mapAnchorPoints.x + 'px,' + mapAnchorPoints.y + "px, 0px)";
+        });
+
     // "Untranslate" the group that holds the stop coordinates and path
-    staticGroup.style('transform', function(){
-      return 'translate3d(' + -mapAnchorPoints.x + 'px,' + -mapAnchorPoints.y + "px, 0px)";
-    });
-    dynamicGroup.style('transform', function(){
-      return 'translate3d(' + -mapAnchorPoints.x + 'px,' + -mapAnchorPoints.y + "px, 0px)";
-    });
+    staticGroup.style('-webkit-transform', function(){
+                  return 'translate3d(' + -mapAnchorPoints.x + 'px,' + -mapAnchorPoints.y + "px, 0px)";
+                })
+                .style('-ms-transform', function(){
+                  return 'translate3d(' + -mapAnchorPoints.x + 'px,' + -mapAnchorPoints.y + "px, 0px)";
+                })
+                .style('-o-transform', function(){
+                  return 'translate3d(' + -mapAnchorPoints.x + 'px,' + -mapAnchorPoints.y + "px, 0px)";
+                })
+                .style('transform', function(){
+                  return 'translate3d(' + -mapAnchorPoints.x + 'px,' + -mapAnchorPoints.y + "px, 0px)";
+                });
+
+    dynamicGroup.style('-webkit-transform', function(){
+                  return 'translate3d(' + -mapAnchorPoints.x + 'px,' + -mapAnchorPoints.y + "px, 0px)";
+                })
+                .style('-ms-transform', function(){
+                  return 'translate3d(' + -mapAnchorPoints.x + 'px,' + -mapAnchorPoints.y + "px, 0px)";
+                })
+                .style('-o-transform', function(){
+                  return 'translate3d(' + -mapAnchorPoints.x + 'px,' + -mapAnchorPoints.y + "px, 0px)";
+                })
+                .style('transform', function(){
+                  return 'translate3d(' + -mapAnchorPoints.x + 'px,' + -mapAnchorPoints.y + "px, 0px)";
+                });                
   }
 
   // Update STATIC routePaths
