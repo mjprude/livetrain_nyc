@@ -95,11 +95,11 @@ h1 {
 
 }
 
-.route-1 .route-2 .route-3 {
+.route-1, .route-2, .route-3 {
   fill: #EE352E;
 }
 
-.route-4 .route-5 .route-6 {
+.route-4, .route-5, .route-6, .route-6X {
   fill: #00933C;
 }
 
