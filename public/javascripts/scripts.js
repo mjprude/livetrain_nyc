@@ -6,7 +6,7 @@ var maxZoom = 19;
 var minZoom = 11;
 var northEastBounds = L.latLng(40.99803873280107, -73.40652465820311);
 var southWestBounds = L.latLng(40.493437209343654, -74.39529418945312);
-var largeSVGAnchorCoordinates = [40.96227093228072, -74.39529418945312];
+var largeSVGAnchorCoordinates = [-74.39529418945312 , 40.96227093228072];
 var maxBounds = L.latLngBounds(southWestBounds, northEastBounds);
 var routeData;
 
@@ -22,11 +22,11 @@ var stationCountdown;
 var stationCountdownView;
 
 // ******************* SVG OVERLAY GENERATION ***********************
-var svg = d3.select(map.getPanes().markerPane).append("svg");
-      // .attr('x', function(){ return applyLatLngToLayer(largeSVGAnchorCoordinates).x })
-      // .attr('y', function(){ return applyLatLngToLayer(largeSVGAnchorCoordinates).y })
-      // .attr('width', 1500)
-      // .attr('height', 1000);
+var svg = d3.select(map.getPanes().markerPane).append("svg")
+      .attr('x', function(){ return applyLatLngToLayer(largeSVGAnchorCoordinates).x })
+      .attr('y', function(){ return applyLatLngToLayer(largeSVGAnchorCoordinates).y })
+      .attr('width', 1500)
+      .attr('height', 1000);
 
 // The "g" elements to which we append things
 var staticGroup = svg.append("g").attr("class", "leaflet-zoom-hide");
@@ -112,10 +112,22 @@ function positionReset() {
     var mapHeight = mapSize.y;
 
     // Translate the svg to deal with map dragging
+    // svg.attr('x', function(){ return applyLatLngToLayer(largeSVGAnchorCoordinates).x })
+    //   .attr('y', function(){ return applyLatLngToLayer(largeSVGAnchorCoordinates).y });
+
     svg.attr('x', 0)
       .attr('y', 0)
       .attr('width', mapWidth)
       .attr('height', mapHeight)
+      .style('-webkit-transform', function(){
+        return 'translate3d(' + mapAnchorPoints.x + 'px,' + mapAnchorPoints.y + "px, 0px)";
+      })
+      .style('-ms-transform', function(){
+        return 'translate3d(' + mapAnchorPoints.x + 'px,' + mapAnchorPoints.y + "px, 0px)";
+      })
+      .style('-o-transform', function(){
+        return 'translate3d(' + mapAnchorPoints.x + 'px,' + mapAnchorPoints.y + "px, 0px)";
+      })
       .style('transform', function(){
         return 'translate3d(' + mapAnchorPoints.x + 'px,' + mapAnchorPoints.y + "px, 0px)";
       });
