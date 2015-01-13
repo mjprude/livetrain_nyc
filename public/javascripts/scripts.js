@@ -255,7 +255,7 @@ d3.json("/irt_routes_and_stops.json", function (json) {
 
 // //////////////  ANIMATION FOR REAL \\\\\\\\\\\\\\\\ \\
 function animate(data) {
-  console.dir(data);
+  // console.dir(data);
 
   var firstRails = railsGroup.selectAll('.firstRails')
                              .data(data, function(d){ return d.trip_id; });

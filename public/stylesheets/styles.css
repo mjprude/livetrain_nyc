@@ -99,11 +99,7 @@ h1 {
   fill: #EE352E;
 }
 
-.route-4, .route-5, .route-6, .route-6X {
-  fill: #00933C;
-}
-
-.route-6X {
+.route-4, .route-5, .route-5X, .route-6, .route-6X {
   fill: #00933C;
 }
 
@@ -214,37 +210,12 @@ h1 {
   vertical-align: middle;
 }
 
-.icon-1 {
-  background-color: #EE352E;
-  /*border: 1px solid #EE352E;  */
-}
-
-.icon-2 {
-  background-color: #EE352E;
-  /*border: 1px solid white;*/
-}
-
-.icon-3 {
+.icon-1, .icon-2, .icon-3 {
   background-color: #EE352E;  
   /*border: 1px solid white;*/
 }
 
-.icon-4 {
-  background-color: #00933C;
-  /*border: 1px solid white;*/
-}
-
-.icon-5 {
-  background-color: #00933C;
-  /*border: 1px solid white;*/
-}
-
-.icon-6 {
-  background-color: #00933C;
-  /*border: 1px solid #00933C;*/
-}
-
-.icon-6X {
+.icon-4, .icon-5, .icon-6, .icon-6X, .icon-5X {
   background-color: #00933C;
   /*border: 1px solid #00933C;*/
 }
