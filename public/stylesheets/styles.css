@@ -198,10 +198,6 @@ h1 {
   display: list-item;
 }
 
-#station-countdown span {
-  /*text-align: right;*/
-}
-
 .countdown-train-icon {
   display: inline-block;
   text-align: center;
@@ -254,10 +250,11 @@ h1 {
 
 .destination {
   display: inline-block;
-  margin-right: 10px;
-  min-width: 280px;
+  min-width: 305px;
   text-transform: capitalize;
 }
 
-
+.minutes-till-arrival {
+  float: right;
+}
 

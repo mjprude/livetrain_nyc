@@ -502,5 +502,4 @@ $(function() {
   // setInterval(function(){
   //   update();
   // },30000);
-  $($('.leaflet-top')[0]).css('padding-top', '50px');
 });
