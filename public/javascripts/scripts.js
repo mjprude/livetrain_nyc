@@ -1,11 +1,12 @@
 var countingDown = false
 
 // map-config
-var startingZoom = 12;
+var startingZoom = 11;
 var maxZoom = 19;
 var minZoom = 11;
 var northEastBounds = L.latLng(40.99803873280107, -73.40652465820311);
 var southWestBounds = L.latLng(40.493437209343654, -74.39529418945312);
+var largeSVGAnchorCoordinates = [40.96227093228072, -74.39529418945312];
 var maxBounds = L.latLngBounds(southWestBounds, northEastBounds);
 var routeData;
 
@@ -21,7 +22,12 @@ var stationCountdown;
 var stationCountdownView;
 
 // ******************* SVG OVERLAY GENERATION ***********************
-var svg = d3.select(map.getPanes().markerPane).append("svg");
+var svg = d3.select(map.getPanes().markerPane).append("svg")
+      .attr('x', function(){ return applyLatLngToLayer(largeSVGAnchorCoordinates).x })
+      .attr('y', function(){ return applyLatLngToLayer(largeSVGAnchorCoordinates).y })
+      .attr('width', 1500)
+      .attr('height', 1000);
+
 // The "g" elements to which we append things
 var staticGroup = svg.append("g").attr("class", "leaflet-zoom-hide");
 var dynamicGroup = svg.append("g").attr("class", "leaflet-zoom-hide");
