@@ -22,11 +22,11 @@ var stationCountdown;
 var stationCountdownView;
 
 // ******************* SVG OVERLAY GENERATION ***********************
-var svg = d3.select(map.getPanes().markerPane).append("svg")
-      .attr('x', function(){ return applyLatLngToLayer(largeSVGAnchorCoordinates).x })
-      .attr('y', function(){ return applyLatLngToLayer(largeSVGAnchorCoordinates).y })
-      .attr('width', 1500)
-      .attr('height', 1000);
+var svg = d3.select(map.getPanes().markerPane).append("svg");
+      // .attr('x', function(){ return applyLatLngToLayer(largeSVGAnchorCoordinates).x })
+      // .attr('y', function(){ return applyLatLngToLayer(largeSVGAnchorCoordinates).y })
+      // .attr('width', 1500)
+      // .attr('height', 1000);
 
 // The "g" elements to which we append things
 var staticGroup = svg.append("g").attr("class", "leaflet-zoom-hide");
@@ -162,6 +162,7 @@ function positionReset() {
 map.on('viewreset', positionReset);
 map.on('resize', positionReset);
 map.on('move', positionReset);
+map.on('touch', positionReset);
 
 
 //(Handle marker and path pixel resizing on user map zoom)
