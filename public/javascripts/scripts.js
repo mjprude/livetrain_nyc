@@ -162,7 +162,7 @@ function positionReset() {
 map.on('viewreset', positionReset);
 map.on('resize', positionReset);
 map.on('move', positionReset);
-map.on('touch', positionReset);
+map.on('swipe', positionReset);
 
 
 //(Handle marker and path pixel resizing on user map zoom)
