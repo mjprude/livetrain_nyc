@@ -56,7 +56,7 @@ var routePathZoomScale = d3.scale.linear()
 
 var trainLabelZoomScale = d3.scale.linear()
                               .domain([ minZoom, maxZoom])
-                              .range([3, 14]);
+                              .range([4, 14]);
 
 // ******************* Projection functions *************************
 // Line projection
@@ -200,6 +200,13 @@ map.on('swipe', positionReset);
 function zoomReset() {
   var currentZoom = map.getZoom();
 
+  var trainLabels = d3.selectAll('.trainLabels')
+  if (currentZoom < 14) {
+    trainLabels.classed('hidden', true);
+  } else {
+    trainLabels.classed('hidden', false);
+  }
+
   // Resize Stop circles
   staticGroup.selectAll('.stops')
               .attr('r', stopZoomScale(currentZoom))
@@ -330,7 +337,7 @@ function animate(data) {
   
   trains.enter()
         .append('circle')
-        .attr('class', function(d){ return 'trains route-' + d.route })
+        .attr('class', function(d){ return 'trains route-' + d.route; })
         .attr('r', trainZoomScale(startingZoom))
         .attr('id', function(d){ return 'train-' + d.trip_id; });
 
@@ -352,7 +359,7 @@ function animate(data) {
               .attr('text-anchor', 'middle')
               .attr('font-family', 'sans-serif')
               .attr('font-size', function(){ return trainLabelZoomScale(startingZoom) })
-              .attr('font-weight', 'bold')
+              // .attr('font-weight', 'bold')
               .text(function(d){ return d.route.replace('X', '').replace('GS', 'S') });
 
   trainLabels.exit()

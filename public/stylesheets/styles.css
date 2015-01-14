@@ -239,6 +239,11 @@ h1 {
 }
 
 .trainLabels {
+  pointer-events: none;
   fill: white;
+}
+
+.hidden {
+  display: none;
 }
 
