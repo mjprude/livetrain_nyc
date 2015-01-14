@@ -23,10 +23,6 @@ var stationCountdownView;
 
 // ******************* SVG OVERLAY GENERATION ***********************
 var svg = d3.select(map.getPanes().markerPane).append("svg");
-      // .attr('x', function(){ return applyLatLngToLayer(largeSVGAnchorCoordinates).x })
-      // .attr('y', function(){ return applyLatLngToLayer(largeSVGAnchorCoordinates).y })
-      // .attr('width', 1500)
-      // .attr('height', 1000);
 
 // The "g" elements to which we append things
 var staticGroup = svg.append("g").attr("class", "leaflet-zoom-hide");
@@ -52,12 +48,15 @@ var padZoomScale = d3.scale.linear()
 
 var trainZoomScale = d3.scale.linear()
                               .domain([ minZoom, maxZoom])
-                              .range([1, 6]);                              
+                              .range([2, 12]);                              
 
 var routePathZoomScale = d3.scale.linear()
                               .domain([ minZoom, maxZoom])
                               .range([1, 6]);
 
+var trainLabelZoomScale = d3.scale.linear()
+                              .domain([ minZoom, maxZoom])
+                              .range([3, 14]);
 
 // ******************* Projection functions *************************
 // Line projection
@@ -214,7 +213,9 @@ function zoomReset() {
   staticGroup.selectAll('.tooltip-pads')
               .attr('r', padZoomScale(currentZoom));
   dynamicGroup.selectAll('.trains')
-              .attr('r', trainZoomScale(currentZoom) * 2);
+              .attr('r', trainZoomScale(currentZoom));
+  dynamicGroup.selectAll('.trainLabels')
+              .attr('font-size', trainLabelZoomScale(currentZoom));              
 
   // Resize lines
   staticGroup.selectAll('.routePath')
@@ -310,7 +311,6 @@ function animate(data) {
             .duration(5000)
             .remove();
 
-
   var secondRails = railsGroup.selectAll('.secondRails')
                              .data(data, function(d){ return d.trip_id; });
 
@@ -331,7 +331,7 @@ function animate(data) {
   trains.enter()
         .append('circle')
         .attr('class', function(d){ return 'trains route-' + d.route })
-        .attr('r', trainZoomScale(startingZoom) * 2)
+        .attr('r', trainZoomScale(startingZoom))
         .attr('id', function(d){ return 'train-' + d.trip_id; });
 
   trains.exit()
@@ -339,6 +339,27 @@ function animate(data) {
         .duration(5000)
         .attr('opacity', 0)
         .remove();
+
+  // Draw train labels
+  var trainLabels = trainsGroup.selectAll('.trainLabels')
+                                .data(data, function(d){ return d.trip_id; });
+
+  trainLabels.enter()
+              .append('text')
+              .attr('class', function(d){ return 'trainLabels'; })
+              .attr('id', function(d){ return 'trainLabel-' + d.trip_id; })
+              .attr('y', 2)
+              .attr('text-anchor', 'middle')
+              .attr('font-family', 'sans-serif')
+              .attr('font-size', function(){ return trainLabelZoomScale(startingZoom) })
+              .attr('font-weight', 'bold')
+              .text(function(d){ return d.route.replace('X', '').replace('GS', 'S') });
+
+  trainLabels.exit()
+              .transition()
+              .duration(5000)
+              .attr('opacity', 0)
+              .remove();
 
   // Remember, arrivals are in the db as s, current time is ms
   function percentComplete(departure, arrival) {
@@ -355,14 +376,16 @@ function animate(data) {
         .duration(function(d){ return holdTime(d); })
         .attrTween('transform', function(d){
           var path = d3.select('#firstRail-' + d.trip_id);
-          return holdTrain(path);
+          var label = d3.select('#trainLabel-' + d.trip_id);          
+          return holdTrain(path, label);
         })
         .transition()
         .duration(function(d){ return duration(d) })
         .ease('linear')
         .attrTween('transform', function(d){
           var path = d3.select('#firstRail-' + d.trip_id);
-          return tweenTrain(path, percentComplete(d.lastDeparture, d.arrival1));
+          var label = d3.select('#trainLabel-' + d.trip_id);
+          return tweenTrain(path, percentComplete(d.lastDeparture, d.arrival1), label);
         })
         .transition()
         .duration(function(d){ 
@@ -384,7 +407,8 @@ function animate(data) {
         .attrTween('transform', function(d){
           if (d.path2) {
             var path = d3.select('#secondRail-' + d.trip_id);
-            return holdTrain(path);
+            var label = d3.select('#trainLabel-' + d.trip_id);            
+            return holdTrain(path, label);
           }
         })
         .transition()
@@ -393,15 +417,17 @@ function animate(data) {
         .attrTween('transform', function(d){
           if (d.path2) {
             var path = d3.select('#secondRail-' + d.trip_id);
-            return tweenTrain(path, 0)
+            var label = d3.select('#trainLabel-' + d.trip_id);
+            return tweenTrain(path, 0, label)
           }
         })
 
 
 
-  function tweenTrain(path, percentComplete) {
+  function tweenTrain(path, percentComplete, label) {
     return function(t) {  
       var p = path.node().getPointAtLength(t * (path.node().getTotalLength() * (1 - percentComplete) ) + (percentComplete * (path.node().getTotalLength()) ) );
+      label.attr('transform', function() { return 'translate(' + p.x + ',' + p.y + ')' } );
       return 'translate(' + p.x + ',' + p.y + ')';
     }
   }
@@ -426,9 +452,10 @@ function animate(data) {
     return (now > d.departure2) ? (now - (d.departure2 * 1000)) : 0;
   }
 
-  function holdTrain(path) {
+  function holdTrain(path, label) {
     return function(t) {
       var startPoint = path.node().getPointAtLength(0);
+      label.attr('transform', function() { return 'translate(' + startPoint.x + ',' + startPoint.y + ')' } );
       return 'translate(' + startPoint.x + ',' + startPoint.y + ')';
     }
   }
