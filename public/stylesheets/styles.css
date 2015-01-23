@@ -211,6 +211,14 @@ h1 {
   display: none;
 }
 
+#northbound-countdown-trips li:first-child {
+  margin-top: 0;
+}
+
+#southbound-countdown-trips li:first-child {
+  margin-top: 0;
+}
+
 #northbound-countdown-trips li:nth-child(-n+6) {
   display: list-item;
 }

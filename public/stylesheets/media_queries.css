@@ -1,8 +1,14 @@
+@media (max-width: 670px) {
+  .header span {
+    display: none;
+  }
+}
+
+
+
+
 /* iPhone 5 */
 @media (max-width: 320px) {
-.header span {
-  display: none;
-}
 
 #station-countdown {
   top: 60px;
@@ -39,18 +45,21 @@
   height: 25px;
   border-radius: 25px;
   margin: 0 10px;
-  /*padding-left: 1px;*/
   line-height: 25px;
 }
 
 .destination {
-  width: 235px;
+  width: 232px;
   overflow: scroll;
   text-transform: capitalize;
+  position: relative;
+  top: 2px;
 }
 
 .minutes-till-arrival {
-  padding-right: 2px;
+  position: relative;
+  top: 2px;
+  padding-right: 5px;
 }
 
 
