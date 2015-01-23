@@ -5,54 +5,61 @@
 }
 
 
+/* ALL PHONES */
+@media (max-width: 400px) {
+  #station-countdown {
+    top: 60px;
+    border-top: 2px solid white;
+  }
 
+  #station-countdown ul {
+    overflow-y: scroll;
+  }
+
+  #station-countdown h4 {
+    font-size: 1em;
+  }
+
+  .countdown-train-icon {
+    margin: 0;
+    margin-right: 10px;
+  }
+
+  #station-countdown li {
+    display: list-item;
+  }
+
+  .destination {
+    overflow: scroll;
+    position: relative;
+  }
+
+  .minutes-till-arrival {
+    position: relative;
+    padding-right: 5px;
+  }
+
+}
+
+/* iPhone 6 */
+@media (max-width: 375px) {
+
+}
 
 /* iPhone 5 */
 @media (max-width: 320px) {
 
-#station-countdown {
-  top: 60px;
-  border-top: 2px solid white;
-}
-
-#station-countdown h3 {
-  /*font-size: 90%;*/
-}
-
-#station-countdown h4 {
-  font-size: 1em;
-}
-
 #station-countdown ul {
-  overflow-y: scroll;
   max-height: 125px;
-}
-
-#station-countdown li {
-  display: list-item;
-}
-
-.countdown-train-icon {
-  width: 25px;
-  height: 25px;
-  border-radius: 25px;
-  margin: 0;
-  margin-right: 10px;
-  line-height: 25px;
 }
 
 .destination {
   width: 242px;
-  overflow: scroll;
-  text-transform: capitalize;
-  position: relative;
   top: 2px;
 }
 
 .minutes-till-arrival {
-  position: relative;
   top: 2px;
-  padding-right: 5px;
 }
 
 
