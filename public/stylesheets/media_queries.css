@@ -25,18 +25,10 @@
 
 #station-countdown ul {
   overflow-y: scroll;
-  max-height: 155px;
+  max-height: 125px;
 }
 
 #station-countdown li {
-  display: list-item;
-}
-
-#northbound-countdown-trips li:nth-child(-n+3) {
-  display: list-item;
-}
-
-#southbound-countdown-trips li:nth-child(-n+3) {
   display: list-item;
 }
 
