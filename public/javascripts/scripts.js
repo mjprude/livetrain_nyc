@@ -514,6 +514,7 @@ function showCountdownClock(){
                                 .duration(250)
                                 .style('opacity', 1);
   countingDown = true;
+  hideStationTooltip();
 }
 
 function hideCountdownClock(){

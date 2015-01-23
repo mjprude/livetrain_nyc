@@ -32,18 +32,26 @@
   .destination {
     overflow: scroll;
     position: relative;
+    top: 2px;
   }
 
   .minutes-till-arrival {
     position: relative;
     padding-right: 5px;
+    top: 2px;
   }
 
 }
 
 /* iPhone 6 */
 @media (max-width: 375px) {
+  #station-countdown ul {
+    max-height: 150px;
+  }
 
+  .destination {
+    width: 297px;
+  }
 }
 
 /* iPhone 5 */
@@ -55,12 +63,6 @@
 
 .destination {
   width: 242px;
-  top: 2px;
 }
-
-.minutes-till-arrival {
-  top: 2px;
-}
-
 
 }
