@@ -538,7 +538,7 @@ function updateCountdownTimes(){
     d3.selectAll('#station-countdown li').each(function(){
       var newTime = calculateMinTillTrain(this.dataset.timestamp);
       if (newTime > -1) {
-        this.lastElementChild.innerHTML = newTime + ' min';
+        this.lastElementChild.innerHTML = newTime;
       } else {
         this.remove();
       };

@@ -1,0 +1,57 @@
+/* iPhone 5 */
+@media (max-width: 320px) {
+.header span {
+  display: none;
+}
+
+#station-countdown {
+  top: 60px;
+  border-top: 2px solid white;
+}
+
+#station-countdown h3 {
+  /*font-size: 90%;*/
+}
+
+#station-countdown h4 {
+  font-size: 1em;
+}
+
+#station-countdown ul {
+  overflow-y: scroll;
+  max-height: 155px;
+}
+
+#station-countdown li {
+  display: list-item;
+}
+
+#northbound-countdown-trips li:nth-child(-n+3) {
+  display: list-item;
+}
+
+#southbound-countdown-trips li:nth-child(-n+3) {
+  display: list-item;
+}
+
+.countdown-train-icon {
+  width: 25px;
+  height: 25px;
+  border-radius: 25px;
+  margin: 0 10px;
+  /*padding-left: 1px;*/
+  line-height: 25px;
+}
+
+.destination {
+  width: 235px;
+  overflow: scroll;
+  text-transform: capitalize;
+}
+
+.minutes-till-arrival {
+  padding-right: 2px;
+}
+
+
+}
