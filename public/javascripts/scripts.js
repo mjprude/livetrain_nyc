@@ -93,7 +93,8 @@ function getBounds(){
 
 function update() {
   $.ajax({
-    url: 'http://104.131.206.60/api/update',
+    // url: 'http://104.131.206.60/api/update',
+    url: 'http://localhost:3000/api/update',
     dataType: 'JSON',
     success: animate
   });
