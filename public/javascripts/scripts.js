@@ -1,4 +1,5 @@
-var countingDown = false
+var countingDown = false;
+var trainInfoShowing = false;
 
 // map-config
 var startingZoom = 11;
@@ -510,7 +511,27 @@ function fetchTrainInfo(d){
   trainInfo.fetch({
     data: {train_id: d.trip_id}
   });
-  $('#train-info').text(d.trip_id)
+  showTrainInfo();
+}
+
+function showTrainInfo(){
+  d3.select('#train-info-container').classed('hidden', false)
+                                .transition()
+                                .duration(250)
+                                .style('opacity', 1);
+  trainInfoShowing = true;
+}
+
+function hideTrainInfo(){
+  d3.select('#train-info-container').transition()
+                                .duration(250)
+                                .style('opacity', function(){
+                                  setTimeout(function(){
+                                    d3.select('#train-info-container').classed('hidden', true);
+                                  }, 250);
+                                  return 0;
+                                }); 
+  trainInfoShowing = false;
 }
 
 function fetchCountdownInfo(d){  
@@ -587,6 +608,7 @@ $(function() {
     model: trainInfo,
     el: "#train-info",
   })
+  d3.select('#train-info-header').on('click', hideTrainInfo)
 
   setInterval(updateCountdownTimes, 5000);
 

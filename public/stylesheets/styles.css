@@ -293,7 +293,8 @@ h1 {
   top: 100px;
   background-color: rgba(0, 0, 0, .75);
   color: white;
-  z-index: 2;
+  z-index: 1;
+  opacity: 0;
 }
 
 #train-info-header {
