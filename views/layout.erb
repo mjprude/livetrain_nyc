@@ -35,8 +35,30 @@
   </ul>
   <%% }; %>
   </script>
-  <script src='javascripts/station_countdown/models/StationCountdown.js'></script>
-  <script src='javascripts/station_countdown/views/StationCountdownView.js'></script>
+  <script id="train-info-template" type="text/template">
+    <div><%%= trainInfo.trip_id %></div>
+    <div><%%= trainInfo.direction === 'N' ? "Northbound" : "Southbound" %></div>
+    <div>
+      <table>
+        <tr>
+          <th>Station</th>
+          <th>Arrival</th>
+          <th>Departure</th>
+        </tr>
+        <%% _.each(trainInfo.stops, function(stop) { %>
+        <tr>
+          <td><%%= stop.mta_stop_id %></td>
+          <td><%%= stop.arrival_time %></td>
+          <td><%%= stop.departure_time %></td>
+        </tr>
+        <%% }); %>
+      </table>
+    </div>
+  </script>
+  <script src='javascripts/models/StationCountdown.js'></script>
+  <script src='javascripts/views/StationCountdownView.js'></script>
+  <script src='javascripts/models/TrainInfo.js'></script>
+  <script src='javascripts/views/TrainInfoView.js'></script>
   <link href='https://api.tiles.mapbox.com/mapbox.js/v2.1.4/mapbox.css' rel='stylesheet' />
   <link rel="stylesheet" href="/stylesheets/styles.css">
   <link rel="stylesheet" href="/stylesheets/media_queries.css" />
