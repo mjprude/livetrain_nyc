@@ -507,6 +507,23 @@ function hideStationTooltip(d){
   d3.select('#station-tooltip').classed('hidden', true);
 }
 
+function convertStopIdToStationName(stop_id) {
+  var stationName = null;
+  var i = 0;
+  while (i < routeData.stops.length && !stationName) {
+    if (stop_id === routeData.stops[i].stop_id) {
+      stationName = routeData.stops[i].stop_name;
+    }
+    i++;
+  }
+
+  return stationName ? stationName : 'missing station info' ;
+}
+
+function convertUTCTimestamp(timestamp) {
+  return new Date(timestamp*1000).toLocaleTimeString();
+}
+
 function fetchTrainInfo(d){
   trainInfo.fetch({
     data: {train_id: d.trip_id}
