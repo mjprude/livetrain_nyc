@@ -1,3 +1,24 @@
+/***** clearfix *****/
+.cf:before,
+.cf:after {
+    content: " "; /* 1 */
+    display: table; /* 2 */
+}
+
+.cf:after {
+    clear: both;
+}
+
+/**
+ * For IE 6/7 only
+ * Include this rule to trigger hasLayout and contain floats.
+ */
+.cf {
+    *zoom: 1;
+}
+
+/*************** Livetrain styling ***************/  
+
 body { 
   margin: 0; 
   padding: 0; 
@@ -190,6 +211,14 @@ h1 {
   display: none;
 }
 
+#northbound-countdown-trips li:first-child {
+  margin-top: 0;
+}
+
+#southbound-countdown-trips li:first-child {
+  margin-top: 0;
+}
+
 #northbound-countdown-trips li:nth-child(-n+6) {
   display: list-item;
 }
@@ -205,7 +234,6 @@ h1 {
   height: 25px;
   border-radius: 25px;
   margin: 0 10px;
-  /*padding-left: 1px;*/
   line-height: 25px;
   vertical-align: middle;
 }
@@ -230,12 +258,17 @@ h1 {
 
 .destination {
   display: inline-block;
-  min-width: 305px;
+  width: 305px;
   text-transform: capitalize;
 }
 
 .minutes-till-arrival {
   float: right;
+}
+
+.min-till-arrival-header {
+  float: right;
+  padding-right: 5px;
 }
 
 .trainLabels {

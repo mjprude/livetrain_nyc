@@ -514,6 +514,7 @@ function showCountdownClock(){
                                 .duration(250)
                                 .style('opacity', 1);
   countingDown = true;
+  hideStationTooltip();
 }
 
 function hideCountdownClock(){
@@ -538,7 +539,7 @@ function updateCountdownTimes(){
     d3.selectAll('#station-countdown li').each(function(){
       var newTime = calculateMinTillTrain(this.dataset.timestamp);
       if (newTime > -1) {
-        this.lastElementChild.innerHTML = newTime + ' min';
+        this.lastElementChild.innerHTML = newTime;
       } else {
         this.remove();
       };
