@@ -287,7 +287,7 @@ h1 {
 }
 
 #train-info-container {
-  width: 320px;
+  /*width: 320px;*/
   position: absolute;
   left: 0;
   top: 100px;
@@ -304,6 +304,7 @@ h1 {
 
 #train-info-header h3 {
   margin: 0;
+  margin-left: 45px;
   padding: 10px 10px 10px 10px;
   text-align: center;
 }
@@ -311,4 +312,8 @@ h1 {
 #train-info {
   overflow: scroll;
   height: 400px;
+}
+
+.train-info-station-name {
+  text-transform: capitalize;
 }
