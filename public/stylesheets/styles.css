@@ -307,6 +307,7 @@ h1 {
   margin-left: 45px;
   padding: 10px 10px 10px 10px;
   text-align: center;
+  text-transform: uppercase;
 }
 
 #train-info {
