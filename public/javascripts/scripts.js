@@ -15,11 +15,15 @@ var map = L.mapbox.map('map', 'mjprude.kcf5kl75', {
               maxZoom: maxZoom,
               minZoom: minZoom,
               maxBounds: maxBounds,
+              zoomControl: false,
             })
             .setView([ 40.75583970971843, -73.90090942382812 ], startingZoom);
+new L.Control.Zoom({ position: 'bottomleft' }).addTo(map);
 
 var stationCountdown;
 var stationCountdownView;
+var trainInfo;
+var trainInfoView;
 
 // ******************* SVG OVERLAY GENERATION ***********************
 var svg = d3.select(map.getPanes().markerPane).append("svg");
@@ -289,10 +293,10 @@ d3.json("/irt_routes_and_stops.json", function (json) {
             .append('circle')
             .attr('opacity', 0)
             .attr('class', 'tooltip-pads')
-            .attr('r', padZoomScale(startingZoom))            
-            .on('mouseover', showStationTooltip)
-            .on('mouseout', hideStationTooltip)
-            .on('click', fetchCountdownInfo);
+            .attr('r', padZoomScale( startingZoom ))            
+            .on('mouseover', showStationTooltip )
+            .on('mouseout', hideStationTooltip )
+            .on('click', fetchCountdownInfo );
 
   // call positionReset and zoomReset to populate the stops and lines and such...
   positionReset();
@@ -340,7 +344,8 @@ function animate(data) {
         .append('circle')
         .attr('class', function(d){ return 'trains route-' + d.route; })
         .attr('r', trainZoomScale(startingZoom))
-        .attr('id', function(d){ return 'train-' + d.trip_id; });
+        .attr('id', function(d){ return 'train-' + d.trip_id; })
+        .on('click', fetchTrainInfo );
 
   trains.exit()
         .transition()
@@ -501,6 +506,13 @@ function hideStationTooltip(d){
   d3.select('#station-tooltip').classed('hidden', true);
 }
 
+function fetchTrainInfo(d){
+  trainInfo.fetch({
+    data: {train_id: d.trip_id}
+  });
+  $('#train-info').text(d.trip_id)
+}
+
 function fetchCountdownInfo(d){  
   stationCountdown.fetch({
     data: {station_id: d.stop_id}
@@ -569,6 +581,12 @@ $(function() {
     el: "#countdown-info",
   });
   d3.select('#station-countdown-header').on('click', hideCountdownClock);
+
+  trainInfo = new TrainInfo();
+  trainInfoView = new TrainInfoView({
+    model: trainInfo,
+    el: "#train-info",
+  })
 
   setInterval(updateCountdownTimes, 5000);
 
