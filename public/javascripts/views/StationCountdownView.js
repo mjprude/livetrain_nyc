@@ -5,11 +5,8 @@ var StationCountdownView = Backbone.View.extend({
 		this.listenTo( this.model, 'change', this.render );
 	},
 	render: function(){
-		// console.log("render");
 		this.$el.empty();
-		// var that = this;
 		this.$el.html( this.template({stationCountdown: this.model.toJSON() }));
-		// debugger
 		return this;
 	}
 })
