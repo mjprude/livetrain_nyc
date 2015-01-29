@@ -279,3 +279,46 @@ function hideTrainInfo(){
                                 }); 
   trainInfoShowing = false;
 }
+
+// ***************** Line Control ********************
+function lineControl(){
+  var route = this.dataset.route;
+  var button = d3.select(this);
+  if (route === 'All') {
+    var trains = d3.selectAll('.trains');
+    var trainLabels = d3.selectAll('.trainLabels');
+    if (button.classed('selected') ) {
+      d3.selectAll('.line-selector').classed('selected', false);
+      toggleTrains(trains, trainLabels, true);
+    } else {
+      d3.selectAll('.line-selector').classed('selected', true);
+      toggleTrains(trains, trainLabels, false);
+    }
+  } else {
+    var trains = d3.selectAll('.route-' + route);
+    var trainLabels = d3.selectAll('.trainLabel-' + route);
+    if (button.classed('selected')) {
+      button.classed('selected', false);
+      trains.classed('hidden', true);
+      toggleTrains(trains, trainLabels, true);
+    } else {
+      button.classed('selected', true);
+      toggleTrains(trains, trainLabels, false);
+    }
+  }
+  updateSelectedRoutes();
+}
+
+function updateSelectedRoutes(){
+  selectedRoutes = [];
+  $('.line-selector').each(function(idx, el){
+    if (d3.select(el).classed('selected')) {
+      selectedRoutes.push(el.dataset.route)
+    }
+  });
+}
+
+function toggleTrains(trains, trainLabels, boolean) {
+  trains.classed('hidden', boolean);
+  trainLabels.classed('hidden', boolean);
+}

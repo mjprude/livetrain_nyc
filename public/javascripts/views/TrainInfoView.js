@@ -5,9 +5,7 @@ var TrainInfoView = Backbone.View.extend({
     this.listenTo( this.model, 'change', this.render );
   },
   render: function(){
-    // console.log("render");
     this.$el.empty();
-    // var that = this;
     this.$el.html( this.template({trainInfo: this.model.toJSON() }));
     d3.select('#train-destination').text(trainInfo.toJSON().destination.toUpperCase());
     return this;

@@ -1,5 +1,6 @@
 var countingDown = false;
 var trainInfoShowing = false;
+var selectedRoutes = [];
 
 // map-config
 var startingZoom = 11;
@@ -148,7 +149,6 @@ d3.json("/new_irt_routes_stops_with_l_and_gs.json", function (json) {
 
 // //////////////  ANIMATION \\\\\\\\\\\\\\\\ \\
 function animate(data) {
-  // console.dir(data);
 
   var firstRails = railsGroup.selectAll('.firstRails')
                              .data(data, function(d){ return d.trip_id; });
@@ -186,6 +186,9 @@ function animate(data) {
         .attr('class', function(d){ return 'trains route-' + d.route; })
         .attr('r', trainZoomScale(startingZoom))
         .attr('id', function(d){ return 'train-' + d.trip_id; })
+        .classed('hidden', function(d){
+          return selectedRoutes.indexOf(d.route) < 0 ? true : false;
+        })
         .on('click', fetchTrainInfo );
 
   trains.exit()
@@ -200,13 +203,15 @@ function animate(data) {
 
   trainLabels.enter()
               .append('text')
-              .attr('class', function(d){ return 'trainLabels'; })
+              .attr('class', function(d){ return 'trainLabels trainLabel-' + d.route; })
               .attr('id', function(d){ return 'trainLabel-' + d.trip_id; })
               .attr('y', 2)
               .attr('text-anchor', 'middle')
               .attr('font-family', 'sans-serif')
               .attr('font-size', function(){ return trainLabelZoomScale(startingZoom) })
-              // .attr('font-weight', 'bold')
+              .classed('hidden', function(d){
+                return selectedRoutes.indexOf(d.route) < 0 ? true : false;
+              })
               .text(function(d){ return d.route.replace('X', '').replace('GS', 'S') });
 
   trainLabels.exit()
@@ -327,8 +332,8 @@ console.log("|      |    |      |");
 console.log("'+-----======-----+'");
 console.log("    ||        ||");
 
-
 $(function() {
+  updateSelectedRoutes();
   d3.select('#map').append('div').attr('id', 'station-tooltip').append('h3').text('Station Stuff');
   stationCountdown = new StationCountdown();
   stationCountdownView = new StationCountdownView({
@@ -343,6 +348,8 @@ $(function() {
     el: "#train-info",
   })
   d3.select('#train-info-header').on('click', hideTrainInfo)
+
+  d3.selectAll('.line-selector').on('click', lineControl)
 
   setInterval(updateCountdownTimes, 5000);
 

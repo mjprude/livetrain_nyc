@@ -312,9 +312,55 @@ h1 {
 
 #train-info {
   overflow: scroll;
-  height: 400px;
+  max-height: 400px;
 }
 
 .train-info-station-name {
   text-transform: capitalize;
+}
+
+/*********** Line-controls ****************/
+
+#line-controls {
+  position: fixed;
+  bottom: 15px;
+  left: 0;
+  width: 100%;
+  z-index: 2;
+  color: white;
+}
+
+#line-controls ul {
+  list-style-type: none;
+  margin: 50px;
+  padding: 0;
+}
+
+.line-selector {
+  float: left;
+  margin: 0;
+  padding: 10px 15px;
+  display: inline-block;
+  border-right: 1px solid white;
+  background-color: rgba(0,0,0,0.5);
+  line-height: 25px;
+  cursor: pointer;
+}
+
+.line-selector:last-child {
+  border-right: none;
+}
+
+.line-selector-icon {
+  text-align: center;
+  width: 25px;
+  height: 25px;
+  border-radius: 25px;
+  line-height: 25px;
+  vertical-align: middle;
+  pointer-events: none;
+}
+
+.selected {
+  background-color: rgba(0,0,0,0.8);
 }
