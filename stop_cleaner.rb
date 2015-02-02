@@ -2,7 +2,7 @@ require 'pry'
 require 'json'
 require 'csv'
 
-current_json = JSON.parse(File.read('./public/irt_routes_stops_with_l_and_gs.json'))
+current_json = JSON.parse(File.read('./public/irt_routes_stops_with_l_and_gs.json').gsub("\n", ''))
 updated_data = {}
 
 current_routes = current_json['routes']
@@ -24,8 +24,6 @@ new_json_file.write(updated_data.to_json)
 new_json_file.close
 
 binding.pry
-
-
 
 
 ### Use to write changed stop names csv from existing json
