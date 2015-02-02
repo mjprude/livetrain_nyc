@@ -1,6 +1,8 @@
 var countingDown = false;
 var trainInfoShowing = false;
 var selectedRoutes = [];
+var stationLoadEvent;
+
 
 // map-config
 var startingZoom = 11;

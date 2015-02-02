@@ -241,6 +241,10 @@ function updateCountdownTimes(){
   }
 }
 
+function findTrain(){
+  debugger
+}
+
 // ******************* Train info functions *************************
 
 function convertStopIdToStationName(stop_id) {
@@ -268,10 +272,17 @@ function fetchTrainInfo(d){
 }
 
 function showTrainInfo(){
-  d3.select('#train-info-container').classed('hidden', false)
-                                .transition()
-                                .duration(250)
-                                .style('opacity', 1);
+  stationLoadEvent = $.Deferred(function() {
+    d3.select('#train-info-container').classed('hidden', false)
+                                  .transition()
+                                  .duration(250)
+                                  .style('opacity', 1);
+  }).promise();
+
+  stationLoadEvent.done(function(){
+    $('.countdown-item').on('click', function(){console.log(this)});
+  });
+  
   trainInfoShowing = true;
 }
 
