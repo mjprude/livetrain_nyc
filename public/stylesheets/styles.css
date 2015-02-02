@@ -124,7 +124,7 @@ h1 {
   fill: #00933C;
 }
 
-.route-GS {
+.route-GS, .route-S, .route-L {
   fill: #A7A9AC;
 }
 
@@ -277,6 +277,10 @@ h1 {
 }
 
 .hidden {
+  display: none;
+}
+
+.invisible {
   display: none;
 }
 

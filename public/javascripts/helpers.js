@@ -94,9 +94,9 @@ function zoomReset() {
 
   var trainLabels = d3.selectAll('.trainLabels')
   if (currentZoom < 14) {
-    trainLabels.classed('hidden', true);
+    trainLabels.classed('invisible', true);
   } else {
-    trainLabels.classed('hidden', false);
+    trainLabels.classed('invisible', false);
   }
 
   // Resize Stop circles
@@ -299,7 +299,6 @@ function lineControl(){
     var trainLabels = d3.selectAll('.trainLabel-' + route);
     if (button.classed('selected')) {
       button.classed('selected', false);
-      trains.classed('hidden', true);
       toggleTrains(trains, trainLabels, true);
     } else {
       button.classed('selected', true);

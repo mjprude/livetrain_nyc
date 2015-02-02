@@ -183,11 +183,11 @@ function animate(data) {
   
   trains.enter()
         .append('circle')
-        .attr('class', function(d){ return 'trains route-' + d.route; })
+        .attr('class', function(d){ return 'trains route-' + d.route.replace('X', '').replace('GS', 'S'); })
         .attr('r', trainZoomScale(startingZoom))
         .attr('id', function(d){ return 'train-' + d.trip_id; })
         .classed('hidden', function(d){
-          return selectedRoutes.indexOf(d.route) < 0 ? true : false;
+          return selectedRoutes.indexOf(d.route.replace('X', '').replace('GS', 'S')) < 0 ? true : false;
         })
         .on('click', fetchTrainInfo );
 
@@ -203,14 +203,14 @@ function animate(data) {
 
   trainLabels.enter()
               .append('text')
-              .attr('class', function(d){ return 'trainLabels trainLabel-' + d.route; })
+              .attr('class', function(d){ return 'trainLabels trainLabel-' + d.route.replace('X', '').replace('GS', 'S'); })
               .attr('id', function(d){ return 'trainLabel-' + d.trip_id; })
               .attr('y', 2)
               .attr('text-anchor', 'middle')
               .attr('font-family', 'sans-serif')
               .attr('font-size', function(){ return trainLabelZoomScale(startingZoom) })
               .classed('hidden', function(d){
-                return selectedRoutes.indexOf(d.route) < 0 ? true : false;
+                return selectedRoutes.indexOf(d.route.replace('X', '').replace('GS', 'S')) < 0 ? true : false;
               })
               .text(function(d){ return d.route.replace('X', '').replace('GS', 'S') });
 
