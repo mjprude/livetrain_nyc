@@ -188,8 +188,8 @@ function animate(data) {
         .attr('id', function(d){ return 'train-' + d.trip_id; })
         .classed('hidden', function(d){
           return selectedRoutes.indexOf(d.route.replace('X', '').replace('GS', 'S')) < 0 ? true : false;
-        })
-        .on('click', fetchTrainInfo );
+        });
+        // .on('click', fetchTrainInfo );
 
   trains.exit()
         .transition()
