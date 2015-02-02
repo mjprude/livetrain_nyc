@@ -63,6 +63,10 @@ function positionReset() {
   d3.selectAll('.routePath').attr('d', function(d){ 
     return toLine(d.path_coordinates); 
   });
+
+  d3.selectAll('.routeOutline').attr('d', function(d){ 
+    return toLine(d.path_coordinates); 
+  });
   
   // Update DYNAMIC Rail paths
   d3.selectAll('.firstRails').attr('d', function(d){
@@ -119,6 +123,9 @@ function zoomReset() {
   // Resize lines
   staticGroup.selectAll('.routePath')
               .attr('stroke-width', routePathZoomScale(currentZoom));
+
+  staticGroup.selectAll('.routeOutline')
+                .attr('stroke-width', routeOutlineZoomScale(currentZoom));              
 
   dynamicGroup.selectAll('.rails')
               .attr('stroke-width', routePathZoomScale(currentZoom));           
