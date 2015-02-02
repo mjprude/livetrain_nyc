@@ -236,7 +236,7 @@ function zoomReset() {
 map.on('viewreset', zoomReset)
 
 // ********************** LOAD JSON - STATIC DATA (STOPS AND LINES) ********************
-d3.json("/irt_routes_and_stops.json", function (json) {
+d3.json("/new_irt_routes_stops_with_l_and_gs.json", function (json) {
   routeData = json;
 
   // Add routes to map
