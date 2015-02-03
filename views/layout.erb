@@ -31,20 +31,16 @@
   </script>
 
   <script id="train-info-template" type="text/template">
-    <div><%%= trainInfo.direction === 'N' ? "Northbound" : "Southbound" %></div>
-    <div>Route: <%%= trainInfo.route %></div>
     <div>
       <table>
-        <tr>
-          <th>Station</th>
-          <th>Time</th>
-        </tr>
+        <div id='train-stops-container'>
         <%% _.each(trainInfo.stops, function(stop) { %>
         <tr class='train-stop-row' data-timestamp='<%%= stop.arrival_time ? stop.arrival_time : stop.departure_time %>' >
           <td class='train-info-station-name'><%%= convertStopIdToStationName(stop.mta_stop_id).toLowerCase() %></td>
-          <td><%%= convertUTCTimestamp(stop.arrival_time ? stop.arrival_time : stop.departure_time) %></td>
+          <td class='train-info-times'><%%= convertUTCTimestamp(stop.arrival_time ? stop.arrival_time : stop.departure_time) %></td>
         </tr>
         <%% }); %>
+        </div>
       </table>
     </div>
   </script>

@@ -280,7 +280,7 @@ function showTrainInfo(){
   trainInfoShowing = true;
 }
 
-function haveFun(fun){
+function scrollToNextStop(model){
   var now = Date.now();
   var trainRows = $('.train-stop-row');
   var nextStopRow = null;
