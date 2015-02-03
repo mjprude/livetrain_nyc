@@ -241,8 +241,8 @@ function updateCountdownTimes(){
   }
 }
 
-function findTrain(){
-  // debugger
+function findTrain(trainId){
+  fetchTrainInfo({trip_id: trainId});
 }
 
 // ******************* Train info functions *************************
