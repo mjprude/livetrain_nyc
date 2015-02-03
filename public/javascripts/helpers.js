@@ -242,7 +242,7 @@ function updateCountdownTimes(){
 }
 
 function findTrain(){
-  debugger
+  // debugger
 }
 
 // ******************* Train info functions *************************
