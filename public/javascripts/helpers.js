@@ -280,6 +280,21 @@ function showTrainInfo(){
   trainInfoShowing = true;
 }
 
+function haveFun(fun){
+  var now = Date.now();
+  var trainRows = $('.train-stop-row');
+  var nextStopRow = null;
+  var i = 0;
+  while (!nextStopRow && i < trainRows.length) {
+    if ( (trainRows[i].dataset.timestamp * 1000) > now ) {
+      nextStopRow = trainRows[i];
+    } else {
+      i++;
+    }
+  }
+  nextStopRow.scrollIntoView();
+}
+
 function hideTrainInfo(){
   d3.select('#train-info-container').transition()
                                 .duration(250)

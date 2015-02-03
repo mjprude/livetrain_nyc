@@ -1,2 +1,2 @@
 // use with StationCountdownView
-var StationCountdownItem = Backbone.Model.extend({});
+var StationCountdownModel = Backbone.Model.extend({});

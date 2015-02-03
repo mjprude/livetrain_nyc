@@ -14,7 +14,7 @@ var maxBounds = L.latLngBounds(southWestBounds, northEastBounds);
 var routeData;
 
 L.mapbox.accessToken = 'pk.eyJ1IjoibWpwcnVkZSIsImEiOiJiVG8yR2VrIn0.jtdF6eqGIKKs0To4p0mu0Q';
-var map = L.mapbox.map('map', 'mjprude.kcf5kl75', {
+var map = L.mapbox.map('map', 'mjprude.l44chham', {
               maxZoom: maxZoom,
               minZoom: minZoom,
               maxBounds: maxBounds,

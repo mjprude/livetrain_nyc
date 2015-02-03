@@ -26,12 +26,11 @@
   <%% }; %>
   </script>
 
-  <script id="station-countdown-item-template" type="text/template">
+  <script id="station-countdown-model-template" type="text/template">
       <div class="countdown-train-icon icon-<%%= stop.route === 'GS' ? 'S' : stop.route %>"><%%= stop.route === 'GS' ? 'S' : stop.route %></div><span class="destination"><%%= stop.destination === null ? 'ALERT: Modified Service!' : stop.destination %></span><span class="minutes-till-arrival"><%%= calculateMinTillTrain(stop.timestamp) %></span>
   </script>
 
   <script id="train-info-template" type="text/template">
-    <div><%%= trainInfo.trip_id %></div>
     <div><%%= trainInfo.direction === 'N' ? "Northbound" : "Southbound" %></div>
     <div>Route: <%%= trainInfo.route %></div>
     <div>
@@ -41,7 +40,7 @@
           <th>Time</th>
         </tr>
         <%% _.each(trainInfo.stops, function(stop) { %>
-        <tr>
+        <tr class='train-stop-row' data-timestamp='<%%= stop.arrival_time ? stop.arrival_time : stop.departure_time %>' >
           <td class='train-info-station-name'><%%= convertStopIdToStationName(stop.mta_stop_id).toLowerCase() %></td>
           <td><%%= convertUTCTimestamp(stop.arrival_time ? stop.arrival_time : stop.departure_time) %></td>
         </tr>
@@ -52,7 +51,7 @@
   
   <script src='javascripts/models/StationCountdown.js'></script>
   <script src='javascripts/models/StationCountdownModel.js'></script>
-  <script src='javascripts/views/StationCountdownItemView.js'></script>
+  <script src='javascripts/views/StationCountdownModelView.js'></script>
   <script src='javascripts/views/StationCountdownView.js'></script>
   <script src='javascripts/models/TrainInfo.js'></script>
   <script src='javascripts/views/TrainInfoView.js'></script>
