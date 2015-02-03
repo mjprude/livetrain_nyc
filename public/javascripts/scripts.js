@@ -364,7 +364,7 @@ $(function() {
 
   d3.selectAll('.line-selector').on('click', lineControl)
 
-  setInterval(updateCountdownTimes, 5000);
+  // setInterval(updateCountdownTimes, 5000);
 
   update();
   setInterval(function(){

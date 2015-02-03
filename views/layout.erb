@@ -25,10 +25,9 @@
   </ul>
   <%% }; %>
   </script>
+
   <script id="station-countdown-item-template" type="text/template">
-    <li id='<%%= stop.stop_id %>' class='countdown-item' data-timestamp='<%%= stop.timestamp %>' data-trainId='<%%= stop.trip_id %>'>
       <div class="countdown-train-icon icon-<%%= stop.route === 'GS' ? 'S' : stop.route %>"><%%= stop.route === 'GS' ? 'S' : stop.route %></div><span class="destination"><%%= stop.destination === null ? 'ALERT: Modified Service!' : stop.destination %></span><span class="minutes-till-arrival"><%%= calculateMinTillTrain(stop.timestamp) %></span>
-    </li>
   </script>
 
   <script id="train-info-template" type="text/template">
@@ -51,6 +50,8 @@
     </div>
   </script>
   <script src='javascripts/models/StationCountdown.js'></script>
+  <script src='javascripts/models/StationCountdownItem.js'></script>
+  <script src='javascripts/views/StationCountdownItemView.js'></script>
   <script src='javascripts/views/StationCountdownView.js'></script>
   <script src='javascripts/models/TrainInfo.js'></script>
   <script src='javascripts/views/TrainInfoView.js'></script>

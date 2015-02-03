@@ -1,0 +1,1 @@
+var StationCountdownItem = Backbone.Model.extend({})

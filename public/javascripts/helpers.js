@@ -231,7 +231,7 @@ function calculateMinTillTrain(timestamp) {
 function updateCountdownTimes(){
   if (countingDown) {
     d3.selectAll('#station-countdown li').each(function(){
-      var newTime = calculateMinTillTrain(this.dataset.timestamp);
+      var newTime = calculateMinTillTrain(this.data.timestamp);
       if (newTime > -1) {
         this.lastElementChild.innerHTML = newTime;
       } else {
@@ -266,22 +266,16 @@ function convertUTCTimestamp(timestamp) {
 
 function fetchTrainInfo(d){
   trainInfo.fetch({
-    data: {train_id: d.trip_id}
+    data: {train_id: d.trip_id},
+    success: showTrainInfo
   });
-  showTrainInfo();
 }
 
 function showTrainInfo(){
-  stationLoadEvent = $.Deferred(function() {
-    d3.select('#train-info-container').classed('hidden', false)
-                                  .transition()
-                                  .duration(250)
-                                  .style('opacity', 1);
-  }).promise();
-
-  stationLoadEvent.done(function(){
-    $('.countdown-item').on('click', function(){console.log(this)});
-  });
+  d3.select('#train-info-container').classed('hidden', false)
+                                .transition()
+                                .duration(250)
+                                .style('opacity', 1);
   
   trainInfoShowing = true;
 }

@@ -8,11 +8,22 @@ var StationCountdownView = Backbone.View.extend({
 		var modelData = this.model.toJSON();
 		this.$el.empty();
 		this.$el.html( this.template({stationCountdown: modelData }));
+		var that = this;
 		if (modelData.northbound.length > 0) {
-			$('#northbound-countdown-trips').text("northbound");
+			$(modelData.northbound).each(function(idx){
+				var itemView = new StationCountdownItemView({
+					model: new StationCountdownItem(this)
+				});
+				$('#northbound-countdown-trips').append(itemView.render().$el);
+			})
 		}
 		if (modelData.southbound.length > 0) {
-			$('#southbound-countdown-trips').text("southbound");
+			$(modelData.southbound).each(function(idx){
+				var itemView = new StationCountdownItemView({
+					model: new StationCountdownItem(this)
+				});
+				$('#southbound-countdown-trips').append(itemView.render().$el);
+			})
 		}
 
 		return this;
