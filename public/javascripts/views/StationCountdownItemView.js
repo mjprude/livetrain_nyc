@@ -1,4 +1,7 @@
 var StationCountdownItemView = Backbone.View.extend({
   tagName: 'li',
-  template: _.template($('#station-countdown-item-template'))
+  template: _.template($('#station-countdown-item-template').html() ),
+  render: function(countdownItem){
+    
+  }
 })
