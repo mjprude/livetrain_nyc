@@ -244,7 +244,7 @@ function animate(data) {
 
   // Animate all the trains
   trains.transition()
-        .duration(function(d){ return holdTime(d); })
+        .duration(function(d){ return 0; })
         .attrTween('transform', function(d){
           var path = d3.select('#firstRail-' + d.trip_id);
           var label = d3.select('#trainLabel-' + d.trip_id);          
@@ -315,12 +315,12 @@ function animate(data) {
 
   function holdTime(d) {
     var now = new Date().getTime();
-    return (now > d.departure1) ? (now - (d.departure1 * 1000)) : 0; 
+    return (now > (d.departure1 * 1000 )) ? (now - (d.departure1 * 1000)) : 0; 
   }
 
   function holdTimeTwo(d) {
     var now = new Date().getTime();
-    return (now > d.departure2) ? (now - (d.departure2 * 1000)) : 0;
+    return (now > (d.departure2 * 1000 )) ? (now - (d.departure2 * 1000)) : 0;
   }
 
   function holdTrain(path, label) {
