@@ -89,7 +89,7 @@ h1 {
 
 /* Stops & Overlays */
 .stops {
-  fill: white;
+  fill: #eee;
 }
 
 .stopOverlays {
@@ -103,12 +103,14 @@ h1 {
 
 .routeOutline {
   fill: none;
-  stroke: grey;
+  stroke: black;
+  stroke-linejoin: round;
 }
 
 .routePath {
   fill: none;
-  stroke: white;
+  stroke: #d6d6d6;
+  stroke-linejoin: round;
 }
 
 /* Rails (The Invisible Stuff) */ 

@@ -97,7 +97,7 @@ function zoomReset() {
   var currentZoom = map.getZoom();
 
   var trainLabels = d3.selectAll('.trainLabels')
-  if (currentZoom < 14) {
+  if (currentZoom < 13) {
     trainLabels.classed('invisible', true);
   } else {
     trainLabels.classed('invisible', false);

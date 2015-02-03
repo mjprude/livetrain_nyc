@@ -23,6 +23,17 @@ var map = L.mapbox.map('map', 'mjprude.l44chham', {
             .setView([ 40.75583970971843, -73.90090942382812 ], startingZoom);
 new L.Control.Zoom({ position: 'bottomleft' }).addTo(map);
 
+// function geoLocate() {
+//   if (navigator.geolocation) {
+//     navigator.geolocation.getCurrentPosition(function(pos) {
+//       // startingZoom = 15
+//       return [pos.coords.latitude, pos.coords.longitude]
+//     });
+//   } else {
+//     return [ 40.75583970971843, -73.90090942382812 ]
+//   }
+// }
+
 function update() {
   $.ajax({
     url: 'http://104.131.206.60/api/update',
