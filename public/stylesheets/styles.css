@@ -313,21 +313,49 @@ h1 {
 
 #train-info-header h3 {
   margin: 0;
-  margin-left: 45px;
+  margin-left: 20px;
   padding: 10px 10px 10px 10px;
   text-align: center;
   text-transform: uppercase;
+  line-height: 25px;
 }
 
 #train-info {
+  padding: 5px 10px;
   overflow: scroll;
   max-height: 400px;
 }
 
 .train-info-station-name {
   text-transform: capitalize;
+  min-width: 220px;
 }
 
+.train-info-times {
+  text-align: right;
+}
+
+#train-direction {
+  margin: 0;
+  margin-left: 15px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+#train-info-icon {
+  display: inline-block;
+  text-align: center;
+  width: 25px;
+  height: 25px;
+  border-radius: 25px;
+  line-height: 25px;
+  vertical-align: middle;
+  margin-left: 15px;
+}
+
+#train-close-button {
+  top: 21px;
+}
 /*********** Line-controls ****************/
 
 #line-controls {

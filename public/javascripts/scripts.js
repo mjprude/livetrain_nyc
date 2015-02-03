@@ -195,7 +195,7 @@ function animate(data) {
   
   trains.enter()
         .append('circle')
-        .attr('class', function(d){ return 'trains route-' + d.route.replace('X', '').replace('GS', 'S'); })
+        .attr('class', function(d){ return 'trains route-' + d.route.replace('X', '').replace('GS', 'S') + ' ' + (d.direction === 'N' ? "northbound" : "southbound"); })
         .attr('r', trainZoomScale(startingZoom))
         .attr('id', function(d){ return 'train-' + d.trip_id; })
         .classed('hidden', function(d){
@@ -215,7 +215,7 @@ function animate(data) {
 
   trainLabels.enter()
               .append('text')
-              .attr('class', function(d){ return 'trainLabels trainLabel-' + d.route.replace('X', '').replace('GS', 'S'); })
+              .attr('class', function(d){ return 'trainLabels trainLabel-' + d.route.replace('X', '').replace('GS', 'S') + ' ' + (d.direction === 'N' ? "northbound" : "southbound"); })
               .attr('id', function(d){ return 'trainLabel-' + d.trip_id; })
               .attr('y', 2)
               .attr('text-anchor', 'middle')
