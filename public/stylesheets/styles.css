@@ -101,9 +101,14 @@ h1 {
   opacity: .5;
 }
 
-.routePath {
+.routeOutline {
   fill: none;
   stroke: grey;
+}
+
+.routePath {
+  fill: none;
+  stroke: white;
 }
 
 /* Rails (The Invisible Stuff) */ 

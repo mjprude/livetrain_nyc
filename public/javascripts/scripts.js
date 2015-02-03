@@ -1,6 +1,8 @@
 var countingDown = false;
 var trainInfoShowing = false;
 var selectedRoutes = [];
+var stationLoadEvent;
+
 
 // map-config
 var startingZoom = 11;
@@ -67,7 +69,11 @@ var trainZoomScale = d3.scale.linear()
 
 var routePathZoomScale = d3.scale.linear()
                               .domain([ minZoom, maxZoom])
-                              .range([1, 6]);
+                              .range([2, 12]);
+
+var routeOutlineZoomScale = d3.scale.linear()
+                              .domain([ minZoom, maxZoom])
+                              .range([4, 14]);                              
 
 var trainLabelZoomScale = d3.scale.linear()
                               .domain([ minZoom, maxZoom])
@@ -91,12 +97,19 @@ d3.json("/new_irt_routes_stops_with_l_and_gs.json", function (json) {
   var routeGroup = staticGroup.append('g')
               .attr('class', 'routeGroup')
 
+  routeGroup.selectAll('.routeOutline')
+            .data(routes)
+            .enter()
+            .append('path')
+            .attr('class', 'routeOutline')
+            .attr('stroke-width', routeOutlineZoomScale(startingZoom));
+
   routeGroup.selectAll('.routePath')
             .data(routes)
             .enter()
             .append('path')
             .attr('class', 'routePath')
-            .attr('stroke-width', routePathZoomScale(startingZoom))
+            .attr('stroke-width', routePathZoomScale(startingZoom));
 
   // Add Stops to map
   var stopGroup = staticGroup.append('g')
@@ -188,8 +201,8 @@ function animate(data) {
         .attr('id', function(d){ return 'train-' + d.trip_id; })
         .classed('hidden', function(d){
           return selectedRoutes.indexOf(d.route.replace('X', '').replace('GS', 'S')) < 0 ? true : false;
-        });
-        // .on('click', fetchTrainInfo );
+        })
+        .on('click', fetchTrainInfo );
 
   trains.exit()
         .transition()
@@ -351,7 +364,7 @@ $(function() {
 
   d3.selectAll('.line-selector').on('click', lineControl)
 
-  setInterval(updateCountdownTimes, 5000);
+  // setInterval(updateCountdownTimes, 5000);
 
   update();
   setInterval(function(){

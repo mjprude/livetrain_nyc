@@ -63,6 +63,10 @@ function positionReset() {
   d3.selectAll('.routePath').attr('d', function(d){ 
     return toLine(d.path_coordinates); 
   });
+
+  d3.selectAll('.routeOutline').attr('d', function(d){ 
+    return toLine(d.path_coordinates); 
+  });
   
   // Update DYNAMIC Rail paths
   d3.selectAll('.firstRails').attr('d', function(d){
@@ -119,6 +123,9 @@ function zoomReset() {
   // Resize lines
   staticGroup.selectAll('.routePath')
               .attr('stroke-width', routePathZoomScale(currentZoom));
+
+  staticGroup.selectAll('.routeOutline')
+                .attr('stroke-width', routeOutlineZoomScale(currentZoom));              
 
   dynamicGroup.selectAll('.rails')
               .attr('stroke-width', routePathZoomScale(currentZoom));           
@@ -224,7 +231,7 @@ function calculateMinTillTrain(timestamp) {
 function updateCountdownTimes(){
   if (countingDown) {
     d3.selectAll('#station-countdown li').each(function(){
-      var newTime = calculateMinTillTrain(this.dataset.timestamp);
+      var newTime = calculateMinTillTrain(this.data.timestamp);
       if (newTime > -1) {
         this.lastElementChild.innerHTML = newTime;
       } else {
@@ -232,6 +239,10 @@ function updateCountdownTimes(){
       };
     });
   }
+}
+
+function findTrain(){
+  // debugger
 }
 
 // ******************* Train info functions *************************
@@ -255,9 +266,9 @@ function convertUTCTimestamp(timestamp) {
 
 function fetchTrainInfo(d){
   trainInfo.fetch({
-    data: {train_id: d.trip_id}
+    data: {train_id: d.trip_id},
+    success: showTrainInfo
   });
-  showTrainInfo();
 }
 
 function showTrainInfo(){
@@ -265,6 +276,7 @@ function showTrainInfo(){
                                 .transition()
                                 .duration(250)
                                 .style('opacity', 1);
+  
   trainInfoShowing = true;
 }
 

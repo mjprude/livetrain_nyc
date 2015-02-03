@@ -15,11 +15,6 @@
   <%% if (stationCountdown.northbound.length > 0) { %>
   <h4>Northbound <span class='min-till-arrival-header'>Min</span></h4>
   <ul id='northbound-countdown-trips'>
-    <%% _.each(stationCountdown.northbound, function(stop) { %>
-      <li id='<%%= stop.stop_id %>' data-timestamp='<%%= stop.timestamp %>'>
-        <div class="countdown-train-icon icon-<%%= stop.route === 'GS' ? 'S' : stop.route %>"><%%= stop.route === 'GS' ? 'S' : stop.route %></div><span class="destination"><%%= stop.destination === null ? 'ALERT: Modified Service!' : stop.destination %></span><span class="minutes-till-arrival"><%%= calculateMinTillTrain(stop.timestamp) %></span>
-      </li>
-    <%% }); %>
   </ul>
 
   <%% }; %>
@@ -27,14 +22,14 @@
 	<h4>Southbound<span class='min-till-arrival-header'>Min</span></h4>
 
   <ul id='southbound-countdown-trips'>
-    <%% _.each(stationCountdown.southbound, function(stop) { %>
-      <li id='<%%= stop.stop_id %>' data-timestamp='<%%= stop.timestamp %>'>
-        <div class="countdown-train-icon icon-<%%= stop.route === 'GS' ? 'S' : stop.route %>"><%%= stop.route === 'GS' ? 'S' : stop.route %></div><span class="destination"><%%= stop.destination === null ? 'ALERT: Modified Service!' : stop.destination %></span><span class="minutes-till-arrival"><%%= calculateMinTillTrain(stop.timestamp) %></span>
-      </li>
-    <%% }); %>
   </ul>
   <%% }; %>
   </script>
+
+  <script id="station-countdown-item-template" type="text/template">
+      <div class="countdown-train-icon icon-<%%= stop.route === 'GS' ? 'S' : stop.route %>"><%%= stop.route === 'GS' ? 'S' : stop.route %></div><span class="destination"><%%= stop.destination === null ? 'ALERT: Modified Service!' : stop.destination %></span><span class="minutes-till-arrival"><%%= calculateMinTillTrain(stop.timestamp) %></span>
+  </script>
+
   <script id="train-info-template" type="text/template">
     <div><%%= trainInfo.trip_id %></div>
     <div><%%= trainInfo.direction === 'N' ? "Northbound" : "Southbound" %></div>
@@ -55,6 +50,8 @@
     </div>
   </script>
   <script src='javascripts/models/StationCountdown.js'></script>
+  <script src='javascripts/models/StationCountdownItem.js'></script>
+  <script src='javascripts/views/StationCountdownItemView.js'></script>
   <script src='javascripts/views/StationCountdownView.js'></script>
   <script src='javascripts/models/TrainInfo.js'></script>
   <script src='javascripts/views/TrainInfoView.js'></script>
