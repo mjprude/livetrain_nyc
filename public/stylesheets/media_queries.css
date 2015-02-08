@@ -1,12 +1,49 @@
 @media (max-width: 670px) {
+  .header {
+    padding-left: 0;
+    text-align: center;
+  }
+
   .header span {
     display: none;
   }
 }
 
+/* SMALL WINDOWS (For line-selector) */
+@media (max-width: 560px) {
+  .line-selector {
+    padding: 10px 2.5%;
+  }
+}
+
+@media (max-width: 520px) {
+  .line-selector {
+    padding: 10px 2%;
+  }
+}
+
+@media (max-width: 440px) {
+
+  .leaflet-control-zoom {
+    display: none;
+  }
+
+  #line-controls {
+    left: 4%;
+  }
+
+  .line-selector {
+    padding: 10px 2%;
+  }
+}
 
 /* ALL PHONES */
 @media (max-width: 400px) {
+
+  #line-controls {
+    left: 1%;
+  }
+
   #station-countdown {
     top: 60px;
     border-top: 2px solid white;
@@ -54,15 +91,43 @@
   }
 }
 
-/* iPhone 5 */
-@media (max-width: 320px) {
+/* Samsung Galaxy, etc */
+@media (max-width: 365px) {
 
-#station-countdown ul {
-  max-height: 125px;
+  .destination {
+    width: 282px;
+  }
+
+  #line-controls {
+    left: 1.8%;
+  }
+
+  .line-selector {
+    padding: 9px 1.75%;
+  }
 }
 
-.destination {
-  width: 242px;
+/* iPhone 4 & 5 (320px width) */
+@media (max-width: 340px) {
+
+  #station-countdown ul {
+    max-height: 125px;
+  }
+
+  .destination {
+    width: 242px;
+  }
+
+  #line-controls {
+    left: 1%;
+  }
+
+  .line-selector {
+    padding: 7px 1.4%;
+  }
 }
 
-}
+
+
+
+
