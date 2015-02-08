@@ -293,7 +293,7 @@ h1 {
 
 /************** Train Info *************/
 
-th {
+th, td {
   white-space: nowrap;
 }
 
