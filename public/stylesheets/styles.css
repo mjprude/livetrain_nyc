@@ -363,7 +363,7 @@ h1 {
 #line-controls {
   position: fixed;
   bottom: 15px;
-  left: 0;
+  left: 50px;
   width: 100%;
   z-index: 2;
   color: white;
@@ -371,7 +371,6 @@ h1 {
 
 #line-controls ul {
   list-style-type: none;
-  margin: 50px;
   padding: 0;
 }
 
@@ -403,3 +402,73 @@ h1 {
 .selected {
   background-color: rgba(0,0,0,0.8);
 }
+
+/*  Plus/Minus Controls  */
+.leaflet-control-zoom, .leaflet-bar, .leaflet-control {
+  z-index: 5;
+  float: left;
+}
+
+/*  Media Queries  */
+
+@media (min-width: 510px) and (max-width: 610px) {
+
+  .line-selector {
+    line-height: 20px;
+    padding: 8px 12px;
+  }
+
+  .line-selector-icon {
+    width: 20px;
+    height: 20px;
+    line-height: 20px;
+    font-size: .8em;
+  }
+}
+
+@media (min-width: 400px) and (max-width: 510px) {
+
+  .line-selector {
+    line-height: 15px;
+    padding: 7px 10px;
+  }
+
+  .line-selector-icon {
+    width: 15px;
+    height: 15px;
+    line-height: 15px;
+    font-size: .75em;
+  }
+}
+
+@media (min-width: 300px) and (max-width: 400px) {
+
+  #line-controls {
+    left: 7px;
+  }
+
+  .leaflet-control-zoom {
+    display: none;
+  }
+
+  .line-selector {
+    line-height: 15px;
+    padding: 7px 9px;
+  }
+
+  .line-selector-icon {
+    width: 15px;
+    height: 15px;
+    line-height: 15px;
+    font-size: .75em;
+  }
+}
+
+
+
+
+
+
+
+
+
