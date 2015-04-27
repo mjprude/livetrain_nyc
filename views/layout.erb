@@ -24,6 +24,9 @@
   <ul id='southbound-countdown-trips'>
   </ul>
   <%% }; %>
+  <%% if ( stationCountdown.northbound.length === 0 && stationCountdown.southbound.length === 0) { %>
+  <h3><div class='alert-icon'>&excl;</div>No trains found, possible <a href='http://travel.mtanyct.info/serviceadvisory/default.aspx'>service change</a></h3>
+  <%% }; %>
   </script>
 
   <script id="station-countdown-model-template" type="text/template">
