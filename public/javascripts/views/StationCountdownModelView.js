@@ -6,7 +6,7 @@ var StationCountdownModelView = Backbone.View.extend({
     this.$el.data( modelData );
     this.$el.html( this.template({ stop: modelData }));
     this.$el.on('click', function(){
-      findTrain(modelData.trip_id);
+      fetchTrainInfo({trip_id: modelData.trip_id});
     });
     return this;
   }

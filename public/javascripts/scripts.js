@@ -4,7 +4,7 @@ var selectedRoutes = [];
 
 
 // map-config
-var startingZoom = 11;
+var startingZoom = 12;
 var maxZoom = 19;
 var minZoom = 11;
 var northEastBounds = L.latLng(40.99803873280107, -73.40652465820311);
@@ -212,6 +212,9 @@ function animate(data) {
         .classed('hidden', function(d){
           return selectedRoutes.indexOf(d.route.replace('X', '').replace('GS', 'S')) < 0 ? true : false;
         })
+        .classed('faded', function(d){
+          return trainInfoShowing;
+        })
         .on('click', fetchTrainInfo );
 
   trains.exit()
@@ -277,11 +280,11 @@ function animate(data) {
             return 5000;
           }
         })
-        .style('opacity', function(d){ 
+        .style('display', function(d){ 
           if (d.path2) {
-            return 1;
+            return 'inline';
           } else {
-            return 0;
+            return 'none';
           }
         })
         .transition()

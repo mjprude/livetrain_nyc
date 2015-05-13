@@ -342,6 +342,7 @@ th, td {
   text-align: center;
   text-transform: uppercase;
   line-height: 25px;
+  font-size: .9em;
 }
 
 #train-info {
@@ -374,12 +375,18 @@ th, td {
   border-radius: 25px;
   line-height: 25px;
   vertical-align: middle;
-  margin-left: 15px;
+  margin-left: 25px;
 }
 
 #train-close-button {
   top: 21px;
 }
+
+#train-stops-container table {
+  width: 100%;
+  font-size: .95em;
+}
+
 /*********** Line-controls ****************/
 
 #line-controls {
@@ -431,6 +438,13 @@ th, td {
   float: left;
 }
 
+.faded {
+  opacity: .3;
+}
+
+.endingTrip {
+  opacity: 0;
+}
 
 
 
