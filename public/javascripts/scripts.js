@@ -96,7 +96,7 @@ map.on('move', positionReset);
 map.on('swipe', positionReset);
 
 // Event listener for zoom event
-map.on('viewreset', zoomReset)
+map.on('viewreset', zoomReset);
 
 // ********************** LOAD JSON - STATIC DATA (STOPS AND LINES) ********************
 d3.json("/new_irt_routes_stops_with_l_and_gs.json", function (json) {
@@ -105,7 +105,7 @@ d3.json("/new_irt_routes_stops_with_l_and_gs.json", function (json) {
   // Add routes to map
   var routes = json.routes;
   var routeGroup = staticGroup.append('g')
-              .attr('class', 'routeGroup')
+              .attr('class', 'routeGroup');
 
   routeGroup.selectAll('.routeOutline')
             .data(routes)
@@ -123,7 +123,7 @@ d3.json("/new_irt_routes_stops_with_l_and_gs.json", function (json) {
 
   // Add Stops to map
   var stopGroup = staticGroup.append('g')
-              .attr('class', 'stopGroup')
+              .attr('class', 'stopGroup');
 
   var stops = json.stops;
   stopGroup.selectAll('.stops')
@@ -303,7 +303,7 @@ function animate(data) {
           if (d.path2) {
             var path = d3.select('#secondRail-' + d.trip_id);
             var label = d3.select('#trainLabel-' + d.trip_id);
-            return tweenTrain(path, 0, label)
+            return tweenTrain(path, 0, label);
           }
         })
 
@@ -372,12 +372,20 @@ $(function() {
   trainInfoView = new TrainInfoView({
     model: trainInfo,
     el: "#train-info",
+  });
+  d3.select('#train-info-header').on('click', hideTrainInfo);
+
+  d3.select('#about-button').on('click', function(){
+    d3.select('#about-section-container').classed('hidden', false);
+  });
+
+  d3.selectAll('.line-selector').on('click', lineControl);
+
+  d3.select('#about-section-header').on('click', function(){
+    d3.select('#about-section-container').classed('hidden', true);
   })
-  d3.select('#train-info-header').on('click', hideTrainInfo)
 
-  d3.selectAll('.line-selector').on('click', lineControl)
-
-  // setInterval(updateCountdownTimes, 5000);
+  setInterval(updateCountdownTimes, 5000);
 
   update();
   setInterval(function(){

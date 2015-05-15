@@ -446,7 +446,40 @@ th, td {
   opacity: 0;
 }
 
+#about-section-container{
+  width: 90%;
+  margin: 0 auto;
+  position: absolute;
+  top: 10%;
+  left: 5%;
+  background-color: rgba(0, 0, 0, .75);
+  color: white;
+  z-index: 1;
+  opacity: 1;
+}
 
 
+#about-section-header {
+  background-color: black;
+  cursor: pointer;
+}
 
+/*the actual text in the header*/
+#about-header {
+  margin: 0;
+  padding: 10px 10px 10px 60px;
+  text-align: center;
+}
+
+#about-button {
+/*  position: absolute;
+  top: 0;
+  right: 10px;*/
+}
+
+#about-section-body {
+  text-align: left;
+  padding: 0 5%;
+  letter-spacing: 1px;
+}
 
