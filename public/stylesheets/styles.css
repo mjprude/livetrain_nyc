@@ -448,10 +448,10 @@ th, td {
 
 #about-section-container{
   width: 90%;
+  max-width: 800px;
   margin: 0 auto;
-  position: absolute;
-  top: 10%;
-  left: 5%;
+  position: relative;
+  top: 75px;
   background-color: rgba(0, 0, 0, .75);
   color: white;
   z-index: 1;
@@ -469,6 +469,8 @@ th, td {
   margin: 0;
   padding: 10px 10px 10px 60px;
   text-align: center;
+  text-transform: uppercase;
+  font-size: 
 }
 
 #about-button {
@@ -479,7 +481,18 @@ th, td {
 
 #about-section-body {
   text-align: left;
-  padding: 0 5%;
+  padding: 0 5% 15px 5%;
   letter-spacing: 1px;
+  font-size: .95em;
+}
+
+#about-section-body a {
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+#about-section-body a:hover {
+  text-decoration: underline;
 }
 

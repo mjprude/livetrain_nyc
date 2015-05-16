@@ -1,6 +1,7 @@
 var countingDown = false;
 var trainInfoShowing = false;
 var selectedRoutes = [];
+var lastServiceCallNumTrains;
 
 
 // map-config
@@ -169,6 +170,53 @@ d3.json("/new_irt_routes_stops_with_l_and_gs.json", function (json) {
 });// end of static JSON call
 
 
+// Remember, arrivals are in the db as s, current time is ms
+function percentComplete(departure, arrival) {
+  var totalTime = (arrival - departure);
+  var currentTime = new Date().getTime();
+  return (1 - ( (arrival * 1000) - currentTime) / (totalTime * 1000) );
+}
+
+function tweenTrain(path, percentComplete, label) {
+  return function(t) {  
+    if (path === undefined || path.node === undefined) {
+      console.log('tweenTrain was passed a bad path');
+    } else {
+      var p = path.node().getPointAtLength(t * (path.node().getTotalLength() * (1 - percentComplete) ) + (percentComplete * (path.node().getTotalLength())));
+      label.attr('transform', function() { return 'translate(' + p.x + ',' + p.y + ')' } );
+      return 'translate(' + p.x + ',' + p.y + ')';
+    }
+  }
+}
+
+function duration(d) {
+  var now = new Date().getTime();
+  return ((d.arrival1 * 1000) - now);
+}
+
+function durationTwo(d) {
+  var now = new Date().getTime();
+  return ((d.arrival2 * 1000) - now);
+}
+
+function holdTime(d) {
+  var now = new Date().getTime();
+  return (now > (d.departure1 * 1000 )) ? (now - (d.departure1 * 1000)) : 0; 
+}
+
+function holdTimeTwo(d) {
+  var now = new Date().getTime();
+  return (now > (d.departure2 * 1000 )) ? (now - (d.departure2 * 1000)) : 0;
+}
+
+function holdTrain(path, label) {
+  return function(t) {
+    var startPoint = path.node().getPointAtLength(0);
+    label.attr('transform', function() { return 'translate(' + startPoint.x + ',' + startPoint.y + ')' } );
+    return 'translate(' + startPoint.x + ',' + startPoint.y + ')';
+  }
+}
+
 
 // //////////////  ANIMATION \\\\\\\\\\\\\\\\ \\
 function animate(data) {
@@ -203,13 +251,14 @@ function animate(data) {
   // Draw new trains
   var trains = trainsGroup.selectAll('.trains')
                           .data(data, function(d){ return d.trip_id; });
-  
+  var numEntering = 0;
   trains.enter()
         .append('circle')
         .attr('class', function(d){ return 'trains route-' + d.route.replace('X', '').replace('GS', 'S') + ' ' + (d.direction === 'N' ? "northbound" : "southbound"); })
         .attr('r', trainZoomScale(startingZoom))
         .attr('id', function(d){ return 'train-' + d.trip_id; })
         .classed('hidden', function(d){
+          numEntering += 1;
           return selectedRoutes.indexOf(d.route.replace('X', '').replace('GS', 'S')) < 0 ? true : false;
         })
         .classed('faded', function(d){
@@ -217,9 +266,13 @@ function animate(data) {
         })
         .on('click', fetchTrainInfo );
 
+  var numExiting = 0;
   trains.exit()
         .transition()
-        .duration(5000)
+        .duration(function(){
+          numExiting += 1; //only necessary for debugging
+          return 1000;
+        })
         .attr('opacity', 0)
         .remove();
 
@@ -245,20 +298,18 @@ function animate(data) {
               .duration(5000)
               .attr('opacity', 0)
               .remove();
-
-  // Remember, arrivals are in the db as s, current time is ms
-  function percentComplete(departure, arrival) {
-    var totalTime = (arrival - departure);
-    var currentTime = new Date().getTime();
-    return (1 - ( (arrival * 1000) - currentTime) / (totalTime * 1000) );
-  }
   
   positionReset();
   zoomReset();
 
   // Animate all the trains
+  // look at duration on line 298, is this right?
+  var trainsAnimated = 0;
   trains.transition()
-        .duration(function(d){ return 0; })
+        .duration(function(d){ 
+          trainsAnimated += 1;
+          return holdTime(d); 
+        }) 
         .attrTween('transform', function(d){
           var path = d3.select('#firstRail-' + d.trip_id);
           var label = d3.select('#trainLabel-' + d.trip_id);          
@@ -288,7 +339,7 @@ function animate(data) {
           }
         })
         .transition()
-        .duration(function(d){ return holdTime(d); })
+        .duration(function(d){ return holdTimeTwo(d); })
         .attrTween('transform', function(d){
           if (d.path2) {
             var path = d3.select('#secondRail-' + d.trip_id);
@@ -305,46 +356,20 @@ function animate(data) {
             var label = d3.select('#trainLabel-' + d.trip_id);
             return tweenTrain(path, 0, label);
           }
-        })
+        });
 
+    checkNumTrains({
+      jsonCount: data.length,
+      trainCount: trains[0].length,
+      numExiting: numExiting,
+      numEntering: numEntering,
+      trainsAnimated: trainsAnimated
+    });
+}
 
-
-  function tweenTrain(path, percentComplete, label) {
-    return function(t) {  
-      var p = path.node().getPointAtLength(t * (path.node().getTotalLength() * (1 - percentComplete) ) + (percentComplete * (path.node().getTotalLength()) ) );
-      label.attr('transform', function() { return 'translate(' + p.x + ',' + p.y + ')' } );
-      return 'translate(' + p.x + ',' + p.y + ')';
-    }
-  }
-
-  function duration(d) {
-    var now = new Date().getTime();
-    return ((d.arrival1 * 1000) - now);
-  }
-
-  function durationTwo(d) {
-    var now = new Date().getTime();
-    return ((d.arrival2 * 1000) - now);
-  }
-
-  function holdTime(d) {
-    var now = new Date().getTime();
-    return (now > (d.departure1 * 1000 )) ? (now - (d.departure1 * 1000)) : 0; 
-  }
-
-  function holdTimeTwo(d) {
-    var now = new Date().getTime();
-    return (now > (d.departure2 * 1000 )) ? (now - (d.departure2 * 1000)) : 0;
-  }
-
-  function holdTrain(path, label) {
-    return function(t) {
-      var startPoint = path.node().getPointAtLength(0);
-      label.attr('transform', function() { return 'translate(' + startPoint.x + ',' + startPoint.y + ')' } );
-      return 'translate(' + startPoint.x + ',' + startPoint.y + ')';
-    }
-  }
-  positionReset();
+//// Debugger functions
+function checkNumTrains(options) {
+  console.dir(options);
 }
   
 console.log(" ,<-------------->,");
@@ -384,8 +409,6 @@ $(function() {
   d3.select('#about-section-header').on('click', function(){
     d3.select('#about-section-container').classed('hidden', true);
   })
-
-  setInterval(updateCountdownTimes, 5000);
 
   update();
   setInterval(function(){
