@@ -188,12 +188,13 @@ function percentComplete(departure, arrival) {
 
 function tweenTrain(path, percentComplete) {
     return function(t) {
-        if (path === undefined || path.node === undefined) {
-            console.log('tweenTrain was passed a bad path');
-        } else {
-            var p = path.node().getPointAtLength(t * (path.node().getTotalLength() * (1 - percentComplete)) + (percentComplete * (path.node().getTotalLength())));
-            return 'translate(' + p.x + ',' + p.y + ')';
-        }
+      var p;
+      try {
+        p = path.node().getPointAtLength(t * (path.node().getTotalLength() * (1 - percentComplete)) + (percentComplete * (path.node().getTotalLength())));
+      } catch(err) {
+        debugger;
+      }
+        return 'translate(' + p.x + ',' + p.y + ')';
     };
 }
 
@@ -219,7 +220,12 @@ function holdTimeTwo(d) {
 
 function holdTrain(path) {
     return function() {
-        var startPoint = path.node().getPointAtLength(0);
+      var startPoint;
+        try {
+          startPoint = path.node().getPointAtLength(0);
+        } catch(err) {
+          debugger;
+        }
         return 'translate(' + startPoint.x + ',' + startPoint.y + ')';
     };
 }
@@ -269,9 +275,6 @@ function animate(data) {
     var enteringTrains = trains.enter()
         .append('g')
         .attr('class', 'trainGroups')
-        .attr('id', function(d) {
-            return 'train-' + d.trip_id;
-        })
         .classed('hidden', function(d) {
             return selectedRoutes.indexOf(d.route.replace('X', '').replace('GS', 'S')) < 0 ? true : false;
         })
@@ -306,6 +309,11 @@ function animate(data) {
             return d.route.replace('X', '').replace('GS', 'S');
         });
 
+    secondRails.exit()
+        .remove();
+
+    firstRails.exit()
+        .remove();
 
     positionReset();
     zoomReset();
@@ -313,7 +321,65 @@ function animate(data) {
     // Animate all the trains
     // look at duration on line 298, is this right?
     var trainsAnimated = 0;
-    trains.transition()
+    var singlePaths = 0;
+    var doublePaths = 0;
+
+    trains.filter(function(d){
+          if (d.path2) {
+            doublePaths += 1
+            return true;
+          } else {
+            return false;
+          }
+          // return d.path2 ? true : false;
+        })
+        .transition()
+        .duration(function(d) {
+            trainsAnimated += 1;
+            return holdTime(d);
+        })
+        .attrTween('transform', function(d) {
+            var path = d3.select('#firstRail-' + d.trip_id);
+            return holdTrain(path, trip_id);
+        })
+        .transition()
+        .duration(function(d) {
+            return duration(d);
+        })
+        .ease('linear')
+        .attrTween('transform', function(d) {
+            var path = d3.select('#firstRail-' + d.trip_id);
+            return tweenTrain(path, percentComplete(d.lastDeparture, d.arrival1));
+        })
+        .transition()
+        .duration(function(d) {
+            return holdTimeTwo(d);
+        })
+        .attrTween('transform', function(d) {
+            var path = d3.select('#secondRail-' + d.trip_id);
+            return holdTrain(path);
+        })
+        .transition()
+        .duration(function(d) {
+            return durationTwo(d);
+        })
+        .ease('linear')
+        .attrTween('transform', function(d) {
+            var path = d3.select('#secondRail-' + d.trip_id);
+            return tweenTrain(path, 0);
+        });
+
+    //animate trains with a single path
+    trains.filter(function(d){
+          if (d.path2) {
+            return false;
+          } else {
+            singlePaths += 1;
+            return true;
+          }
+          // return d.path2 ? false : true;
+        })
+        .transition()
         .duration(function(d) {
             trainsAnimated += 1;
             return holdTime(d);
@@ -332,55 +398,17 @@ function animate(data) {
             return tweenTrain(path, percentComplete(d.lastDeparture, d.arrival1));
         })
         .transition()
-        .duration(function(d) {
-            if (d.path2) {
-                return 0;
-            } else {
-                return 5000;
-            }
-        })
-        .style('display', function(d) {
-            if (d.path2) {
-                return 'inline';
-            } else {
-                return 'none';
-            }
-        })
-        .transition()
-        .duration(function(d) {
-            return holdTimeTwo(d);
-        })
-        .attrTween('transform', function(d) {
-            if (d.path2) {
-                var path = d3.select('#secondRail-' + d.trip_id);
-                return holdTrain(path);
-            }
-        })
-        .transition()
-        .duration(function(d) {
-            return durationTwo(d);
-        })
-        .ease('linear')
-        .attrTween('transform', function(d) {
-            if (d.path2) {
-                var path = d3.select('#secondRail-' + d.trip_id);
-                return tweenTrain(path, 0);
-            }
-        });
-
-
-    secondRails.exit()
-        .remove();
-
-    firstRails.exit()
-        .remove();
+        .duration(5000)
+        .style('opacity', 0);
 
     checkNumTrains({
         jsonCount: data.length,
         trainCount: trains[0].length,
         numExiting: numExiting,
         numEntering: numEntering,
-        trainsAnimated: trainsAnimated
+        trainsAnimated: trainsAnimated,
+        singlePaths: singlePaths,
+        doublePaths: doublePaths
     });
 }
 
