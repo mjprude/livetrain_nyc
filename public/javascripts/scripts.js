@@ -218,7 +218,7 @@ function holdTimeTwo(d) {
     return (now > (d.departure2 * 1000)) ? (now - (d.departure2 * 1000)) : 0;
 }
 
-function holdTrain(path) {
+function holdTrain(path, tripId) {
     return function() {
       var startPoint;
         try {
@@ -235,31 +235,6 @@ function holdTrain(path) {
 
 // //////////////  ANIMATION \\\\\\\\\\\\\\\\ \\
 function animate(data) {
-
-    var firstRails = railsGroup.selectAll('.firstRails')
-        .data(data, function(d) {
-            return d.trip_id;
-        });
-
-    firstRails.enter()
-        .append('path')
-        .attr('class', 'firstRails rails')
-        .attr('id', function(d) {
-            return 'firstRail-' + d.trip_id;
-        });
-
-
-    var secondRails = railsGroup.selectAll('.secondRails')
-        .data(data, function(d) {
-            return d.trip_id;
-        });
-
-    secondRails.enter()
-        .append('path')
-        .attr('class', 'secondRails rails')
-        .attr('id', function(d) {
-            return 'secondRail-' + d.trip_id;
-        });
 
     // Draw new trains
     var trains = dynamicGroup.selectAll('.trainGroups')
@@ -282,6 +257,18 @@ function animate(data) {
             return trainInfoShowing;
         })
         .on('click', fetchTrainInfo);
+
+    enteringTrains.append('path')
+        .attr('class', 'firstRails rails')
+        .attr('id', function(d) {
+            return 'firstRail-' + d.trip_id;
+        });
+
+    enteringTrains.append('path')
+        .attr('class', 'secondRails rails')
+        .attr('id', function(d) {
+            return 'secondRail-' + d.trip_id;
+        });
 
     enteringTrains.append('circle')
         .attr('class', function(d) {
@@ -309,12 +296,6 @@ function animate(data) {
             return d.route.replace('X', '').replace('GS', 'S');
         });
 
-    secondRails.exit()
-        .remove();
-
-    firstRails.exit()
-        .remove();
-
     positionReset();
     zoomReset();
 
@@ -326,7 +307,6 @@ function animate(data) {
 
     trains.filter(function(d){
           if (d.path2) {
-            doublePaths += 1
             return true;
           } else {
             return false;
@@ -335,12 +315,13 @@ function animate(data) {
         })
         .transition()
         .duration(function(d) {
+            doublePaths += 1;
             trainsAnimated += 1;
             return holdTime(d);
         })
         .attrTween('transform', function(d) {
             var path = d3.select('#firstRail-' + d.trip_id);
-            return holdTrain(path, trip_id);
+            return holdTrain(path, d.trip_id);
         })
         .transition()
         .duration(function(d) {
@@ -374,13 +355,13 @@ function animate(data) {
           if (d.path2) {
             return false;
           } else {
-            singlePaths += 1;
             return true;
           }
           // return d.path2 ? false : true;
         })
         .transition()
         .duration(function(d) {
+            singlePaths += 1;
             trainsAnimated += 1;
             return holdTime(d);
         })
