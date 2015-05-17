@@ -126,9 +126,6 @@ function zoomReset() {
 
     staticGroup.selectAll('.routeOutline')
         .attr('stroke-width', routeOutlineZoomScale(currentZoom));
-
-    dynamicGroup.selectAll('.rails')
-        .attr('stroke-width', routePathZoomScale(currentZoom));
 }
 
 // ******************* Projection functions *************************
