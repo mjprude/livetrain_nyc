@@ -218,6 +218,24 @@ h1 {
   display: none;
 }
 
+.alert-icon {
+  background-color: white;
+  color: red;
+  font-weight: bolder;
+  display: inline-block;
+  width: 1.23em;
+  text-align: center;
+  border-radius: 1em;
+  font-size: 1.25em;
+  line-height: 1.25em;
+  height: 1.25em;
+  margin-right: 15px;
+}
+
+#countdown-info h3 a {
+  color: white;
+}
+
 #northbound-countdown-trips li:first-child {
   margin-top: 0;
 }
@@ -324,6 +342,7 @@ th, td {
   text-align: center;
   text-transform: uppercase;
   line-height: 25px;
+  font-size: .9em;
 }
 
 #train-info {
@@ -356,12 +375,18 @@ th, td {
   border-radius: 25px;
   line-height: 25px;
   vertical-align: middle;
-  margin-left: 15px;
+  margin-left: 25px;
 }
 
 #train-close-button {
   top: 21px;
 }
+
+#train-stops-container table {
+  width: 100%;
+  font-size: .95em;
+}
+
 /*********** Line-controls ****************/
 
 #line-controls {
@@ -413,6 +438,13 @@ th, td {
   float: left;
 }
 
+.faded {
+  opacity: .3;
+}
+
+.endingTrip {
+  opacity: 0;
+}
 
 
 

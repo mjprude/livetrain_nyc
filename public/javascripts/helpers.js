@@ -241,10 +241,6 @@ function updateCountdownTimes(){
   }
 }
 
-function findTrain(trainId){
-  fetchTrainInfo({trip_id: trainId});
-}
-
 // ******************* Train info functions *************************
 
 function convertStopIdToStationName(stop_id) {
@@ -261,10 +257,14 @@ function convertStopIdToStationName(stop_id) {
 }
 
 function convertUTCTimestamp(timestamp) {
-  return new Date(timestamp*1000).toLocaleTimeString();
+  return new Date(timestamp*1000).toLocaleTimeString('en-US', {hour: '2-digit', minute: '2-digit'});
 }
 
 function fetchTrainInfo(d){
+  // 'this' is the circle clicked
+  var thisTrain = this;
+  d3.selectAll('.trains').classed('faded', true);
+  d3.select('#train-' + d.trip_id).classed('faded', false);
   trainInfo.fetch({
     data: {train_id: d.trip_id},
     success: showTrainInfo
@@ -305,6 +305,8 @@ function hideTrainInfo(){
                                   return 0;
                                 }); 
   trainInfoShowing = false;
+  // Bring .trains back to regular opacity
+  d3.selectAll('.trains').classed('faded', false);
 }
 
 // ***************** Line Control ********************

@@ -25,6 +25,9 @@
   <ul id='southbound-countdown-trips'>
   </ul>
   <%% }; %>
+  <%% if ( stationCountdown.northbound.length === 0 && stationCountdown.southbound.length === 0) { %>
+  <h3><div class='alert-icon'>&excl;</div>No trains found, possible <a href='http://travel.mtanyct.info/serviceadvisory/default.aspx'>service change</a></h3>
+  <%% }; %>
   </script>
 
   <script id="station-countdown-model-template" type="text/template">
@@ -33,16 +36,16 @@
 
   <script id="train-info-template" type="text/template">
     <div>
-      <table>
-        <div id='train-stops-container'>
+      <div id='train-stops-container'>
+        <table>
         <%% _.each(trainInfo.stops, function(stop) { %>
         <tr class='train-stop-row' data-timestamp='<%%= stop.arrival_time ? stop.arrival_time : stop.departure_time %>' >
           <td class='train-info-station-name'><%%= convertStopIdToStationName(stop.mta_stop_id).toLowerCase() %></td>
           <td class='train-info-times'><%%= convertUTCTimestamp(stop.arrival_time ? stop.arrival_time : stop.departure_time) %></td>
         </tr>
         <%% }); %>
-        </div>
-      </table>
+        </table>
+      </div>
     </div>
   </script>
   
