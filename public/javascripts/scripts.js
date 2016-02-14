@@ -34,15 +34,6 @@ new L.Control.Zoom({ position: 'bottomleft' }).addTo(map);
 //   }
 // }
 
-function update() {
-  $.ajax({
-    url: 'http://104.131.206.60/api/update',
-    // url: 'http://localhost:3000/api/update',
-    dataType: 'JSON',
-    success: animate
-  });
-}
-
 var stationCountdown;
 var stationCountdownView;
 var trainInfo;
@@ -96,7 +87,7 @@ map.on('move', positionReset);
 map.on('swipe', positionReset);
 
 // Event listener for zoom event
-map.on('viewreset', zoomReset)
+map.on('viewreset', zoomReset);
 
 // ********************** LOAD JSON - STATIC DATA (STOPS AND LINES) ********************
 d3.json("/new_irt_routes_stops_with_l_and_gs.json", function (json) {
@@ -105,7 +96,7 @@ d3.json("/new_irt_routes_stops_with_l_and_gs.json", function (json) {
   // Add routes to map
   var routes = json.routes;
   var routeGroup = staticGroup.append('g')
-              .attr('class', 'routeGroup')
+              .attr('class', 'routeGroup');
 
   routeGroup.selectAll('.routeOutline')
             .data(routes)
@@ -123,7 +114,7 @@ d3.json("/new_irt_routes_stops_with_l_and_gs.json", function (json) {
 
   // Add Stops to map
   var stopGroup = staticGroup.append('g')
-              .attr('class', 'stopGroup')
+              .attr('class', 'stopGroup');
 
   var stops = json.stops;
   stopGroup.selectAll('.stops')
@@ -168,7 +159,66 @@ d3.json("/new_irt_routes_stops_with_l_and_gs.json", function (json) {
   zoomReset();
 });// end of static JSON call
 
+var isPathAvailable = function isPathAvailable(path) {
+    return path.node().getTotalLength() > 0;
+};
 
+// Remember, arrivals are in the db as s, current time is ms
+var percentComplete = function percentComplete(departure, arrival) {
+  var totalTime = (arrival - departure);
+  var currentTime = new Date().getTime();
+  return (1 - ( (arrival * 1000) - currentTime) / (totalTime * 1000) );
+};
+
+var tweenTrain = function tweenTrain(path, percentComplete, label, train) {
+  return function(t) {
+    if (isPathAvailable(path)) {
+      var p = path.node().getPointAtLength(t * (path.node().getTotalLength() * (1 - percentComplete) ) + (percentComplete * (path.node().getTotalLength()) ) );
+      label.attr('transform', function() { 
+        return 'translate(' + p.x + ',' + p.y + ')'; 
+      });
+      return 'translate(' + p.x + ',' + p.y + ')';
+    } else {
+      // console.log('tweenTrain failure block');
+      return 'rotate(0)';
+    }
+  };
+};
+
+var duration = function duration(d) {
+  var now = new Date().getTime();
+  return ((d.arrival1 * 1000) - now);
+};
+
+var durationTwo = function durationTwo(d) {
+  var now = new Date().getTime();
+  return ((d.arrival2 * 1000) - now);
+};
+
+var holdTime = function holdTime(d) {
+  var now = new Date().getTime();
+  return (now > (d.departure1 * 1000 )) ? (now - (d.departure1 * 1000)) : 0; 
+};
+
+var holdTimeTwo = function holdTimeTwo(d) {
+  var now = new Date().getTime();
+  return (now > (d.departure2 * 1000 )) ? (now - (d.departure2 * 1000)) : 0;
+};
+
+var holdTrain = function holdTrain(path, label, d) {
+  return function(t) {
+    if (path.node().getTotalLength() > 0) {
+      var startPoint = path.node().getPointAtLength(0);
+      label.attr('transform', function() { 
+        return 'translate(' + startPoint.x + ',' + startPoint.y + ')'; 
+      });
+      return 'translate(' + startPoint.x + ',' + startPoint.y + ')';
+    } else {
+      // console.log('I have no length. I am a held train');
+      return "rotate(0)";
+    }
+  };
+};
 
 // //////////////  ANIMATION \\\\\\\\\\\\\\\\ \\
 function animate(data) {
@@ -176,37 +226,58 @@ function animate(data) {
   var firstRails = railsGroup.selectAll('.firstRails')
                              .data(data, function(d){ return d.trip_id; });
 
-  firstRails.enter()
-            .append('path')
-            .attr('class', 'firstRails rails')
-            .attr('id', function(d){ return 'firstRail-' + d.trip_id });
+  var secondRails = railsGroup.selectAll('.secondRails')
+                             .data(data, function(d){ return d.trip_id; });
 
-  // exit stuff TBD
+  var trains = trainsGroup.selectAll('.trains')
+                          .data(data, function(d){ return d.trip_id; });
+  
+  var trainLabels = trainsGroup.selectAll('.trainLabels')
+                                .data(data, function(d){ return d.trip_id; });
+
+  trains.exit()
+        .transition()
+        .duration(5000)
+        .attr('opacity', 0)
+        .remove();
+  
+  trainLabels.exit()
+              .transition()
+              .duration(5000)
+              .attr('opacity', 0)
+              .remove();
+
   firstRails.exit()
             .transition()
             .duration(5000)
             .remove();
 
-  var secondRails = railsGroup.selectAll('.secondRails')
-                             .data(data, function(d){ return d.trip_id; });
-
-  secondRails.enter()
-            .append('path')
-            .attr('class', 'secondRails rails')
-            .attr('id', function(d){ return 'secondRail-' + d.trip_id });
-
   secondRails.exit()
             .transition()
             .duration(5000)
             .remove();
+              
+  firstRails.enter()
+            .append('path')
+            .attr('class', 'firstRails rails')
+            .attr('id', function(d){ 
+              return 'firstRail-' + d.trip_id;
+            });
 
-  // Draw new trains
-  var trains = trainsGroup.selectAll('.trains')
-                          .data(data, function(d){ return d.trip_id; });
   
+  secondRails.enter()
+            .append('path')
+            .attr('class', 'secondRails rails')
+            .attr('id', function(d){ 
+              return 'secondRail-' + d.trip_id;
+            });
+
+
   trains.enter()
         .append('circle')
-        .attr('class', function(d){ return 'trains route-' + d.route.replace('X', '').replace('GS', 'S') + ' ' + (d.direction === 'N' ? "northbound" : "southbound"); })
+        .attr('class', function(d){
+          return 'trains route-' + d.route.replace('X', '').replace('GS', 'S') + ' ' + (d.direction === 'N' ? "northbound" : "southbound"); 
+        })
         .attr('r', trainZoomScale(startingZoom))
         .attr('id', function(d){ return 'train-' + d.trip_id; })
         .classed('hidden', function(d){
@@ -217,15 +288,7 @@ function animate(data) {
         })
         .on('click', fetchTrainInfo );
 
-  trains.exit()
-        .transition()
-        .duration(5000)
-        .attr('opacity', 0)
-        .remove();
 
-  // Draw train labels
-  var trainLabels = trainsGroup.selectAll('.trainLabels')
-                                .data(data, function(d){ return d.trip_id; });
 
   trainLabels.enter()
               .append('text')
@@ -234,24 +297,17 @@ function animate(data) {
               .attr('y', 2)
               .attr('text-anchor', 'middle')
               .attr('font-family', 'sans-serif')
-              .attr('font-size', function(){ return trainLabelZoomScale(startingZoom) })
+              .attr('font-size', function(){ 
+                return trainLabelZoomScale(startingZoom);
+              })
               .classed('hidden', function(d){
                 return selectedRoutes.indexOf(d.route.replace('X', '').replace('GS', 'S')) < 0 ? true : false;
               })
-              .text(function(d){ return d.route.replace('X', '').replace('GS', 'S') });
+              .text(function(d){ 
+                return d.route.replace('X', '').replace('GS', 'S');
+              });
 
-  trainLabels.exit()
-              .transition()
-              .duration(5000)
-              .attr('opacity', 0)
-              .remove();
 
-  // Remember, arrivals are in the db as s, current time is ms
-  function percentComplete(departure, arrival) {
-    var totalTime = (arrival - departure);
-    var currentTime = new Date().getTime();
-    return (1 - ( (arrival * 1000) - currentTime) / (totalTime * 1000) );
-  }
   
   positionReset();
   zoomReset();
@@ -261,11 +317,13 @@ function animate(data) {
         .duration(function(d){ return 0; })
         .attrTween('transform', function(d){
           var path = d3.select('#firstRail-' + d.trip_id);
-          var label = d3.select('#trainLabel-' + d.trip_id);          
+          var label = d3.select('#trainLabel-' + d.trip_id);
           return holdTrain(path, label);
         })
         .transition()
-        .duration(function(d){ return duration(d) })
+        .duration(function(d){ 
+          return duration(d);
+        })
         .ease('linear')
         .attrTween('transform', function(d){
           var path = d3.select('#firstRail-' + d.trip_id);
@@ -292,59 +350,32 @@ function animate(data) {
         .attrTween('transform', function(d){
           if (d.path2) {
             var path = d3.select('#secondRail-' + d.trip_id);
-            var label = d3.select('#trainLabel-' + d.trip_id);            
+            var label = d3.select('#trainLabel-' + d.trip_id);
             return holdTrain(path, label);
           }
         })
         .transition()
-        .duration(function(d){ return durationTwo(d) })
+        .duration(function(d){ 
+          return durationTwo(d);
+        })
         .ease('linear')
         .attrTween('transform', function(d){
           if (d.path2) {
             var path = d3.select('#secondRail-' + d.trip_id);
             var label = d3.select('#trainLabel-' + d.trip_id);
-            return tweenTrain(path, 0, label)
+            return tweenTrain(path, 0, label);
           }
-        })
-
-
-
-  function tweenTrain(path, percentComplete, label) {
-    return function(t) {  
-      var p = path.node().getPointAtLength(t * (path.node().getTotalLength() * (1 - percentComplete) ) + (percentComplete * (path.node().getTotalLength()) ) );
-      label.attr('transform', function() { return 'translate(' + p.x + ',' + p.y + ')' } );
-      return 'translate(' + p.x + ',' + p.y + ')';
-    }
-  }
-
-  function duration(d) {
-    var now = new Date().getTime();
-    return ((d.arrival1 * 1000) - now);
-  }
-
-  function durationTwo(d) {
-    var now = new Date().getTime();
-    return ((d.arrival2 * 1000) - now);
-  }
-
-  function holdTime(d) {
-    var now = new Date().getTime();
-    return (now > (d.departure1 * 1000 )) ? (now - (d.departure1 * 1000)) : 0; 
-  }
-
-  function holdTimeTwo(d) {
-    var now = new Date().getTime();
-    return (now > (d.departure2 * 1000 )) ? (now - (d.departure2 * 1000)) : 0;
-  }
-
-  function holdTrain(path, label) {
-    return function(t) {
-      var startPoint = path.node().getPointAtLength(0);
-      label.attr('transform', function() { return 'translate(' + startPoint.x + ',' + startPoint.y + ')' } );
-      return 'translate(' + startPoint.x + ',' + startPoint.y + ')';
-    }
-  }
+        });
   positionReset();
+}
+
+function update() {
+  $.ajax({
+    url: 'http://104.131.206.60/api/update',
+    // url: 'http://localhost:3000/api/update',
+    dataType: 'JSON',
+    success: animate
+  });
 }
   
 console.log(" ,<-------------->,");
@@ -372,10 +403,10 @@ $(function() {
   trainInfoView = new TrainInfoView({
     model: trainInfo,
     el: "#train-info",
-  })
-  d3.select('#train-info-header').on('click', hideTrainInfo)
+  });
+  d3.select('#train-info-header').on('click', hideTrainInfo);
 
-  d3.selectAll('.line-selector').on('click', lineControl)
+  d3.selectAll('.line-selector').on('click', lineControl);
 
   // setInterval(updateCountdownTimes, 5000);
 
