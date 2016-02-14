@@ -413,5 +413,5 @@ $(function() {
   update();
   setInterval(function(){
     update();
-  },45000);
+  },60000);
 });
