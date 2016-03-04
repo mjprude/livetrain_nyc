@@ -230,6 +230,7 @@ h1 {
   line-height: 1.25em;
   height: 1.25em;
   margin-right: 15px;
+  margin-left: 10px;
 }
 
 #countdown-info h3 a {
@@ -446,7 +447,53 @@ th, td {
   opacity: 0;
 }
 
+#about-section-container{
+  width: 90%;
+  max-width: 800px;
+  margin: 0 auto;
+  position: relative;
+  top: 75px;
+  background-color: rgba(0, 0, 0, .75);
+  color: white;
+  z-index: 1;
+  opacity: 1;
+}
 
 
+#about-section-header {
+  background-color: black;
+  cursor: pointer;
+}
 
+/*the actual text in the header*/
+#about-header {
+  margin: 0;
+  padding: 10px 10px 10px 60px;
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 
+}
+
+#about-button {
+/*  position: absolute;
+  top: 0;
+  right: 10px;*/
+}
+
+#about-section-body {
+  text-align: left;
+  padding: 0 5% 15px 5%;
+  letter-spacing: 1px;
+  font-size: .95em;
+}
+
+#about-section-body a {
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+#about-section-body a:hover {
+  text-decoration: underline;
+}
 
