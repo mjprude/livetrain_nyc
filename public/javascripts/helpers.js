@@ -89,6 +89,10 @@ function positionReset() {
     return 'translate(' + stopApplyLatLngToLayer(d).x + ',' + stopApplyLatLngToLayer(d).y + ")";
   });
 
+  d3.selectAll('.stopLabel').attr('transform', function(d){
+    return 'translate(' + stopApplyLatLngToLayer(d).x + ',' + stopApplyLatLngToLayer(d).y + ")";
+  });  
+
   anchorMapOverlay();
 }
 

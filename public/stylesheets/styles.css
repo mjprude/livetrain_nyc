@@ -301,6 +301,11 @@ h1 {
   fill: white;
 }
 
+.stopLabel {
+  opacity: 1;
+  fill: red;
+}
+
 .hidden {
   display: none;
 }

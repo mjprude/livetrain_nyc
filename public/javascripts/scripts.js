@@ -35,12 +35,12 @@ new L.Control.Zoom({ position: 'bottomleft' }).addTo(map);
 // }
 
 function update() {
-  $.ajax({
-    url: 'http://104.131.206.60/api/update',
-    // url: 'http://localhost:3000/api/update',
-    dataType: 'JSON',
-    success: animate
-  });
+  // $.ajax({
+  //   url: 'http://104.131.206.60/api/update',
+  //   // url: 'http://localhost:3000/api/update',
+  //   dataType: 'JSON',
+  //   success: animate
+  // });
 }
 
 var stationCountdown;
@@ -152,6 +152,7 @@ d3.json("/new_irt_routes_stops_with_l_and_gs.json", function (json) {
             })
             .attr('stroke-width', stopStrokeZoomScale(startingZoom));
 
+
   stopGroup.selectAll('.tooltip-pads')
             .data(stops)
             .enter()
@@ -162,6 +163,21 @@ d3.json("/new_irt_routes_stops_with_l_and_gs.json", function (json) {
             .on('mouseover', showStationTooltip )
             .on('mouseout', hideStationTooltip )
             .on('click', fetchCountdownInfo );
+
+  
+  stopGroup.selectAll('.stopLabel')
+            .data(stops)
+            .enter()
+            .append('text')
+            .attr('class', 'stopLabel')
+            .attr('id', function(d){ return 'stopLabel-' + d.stop_id; })
+            .attr('y', 5)
+            .attr('x', 10)
+            .attr('text-anchor', 'left')
+            .attr('font-family', 'sans-serif')
+            // .attr('font-size', function(){ return trainLabelZoomScale(startingZoom) })
+            .attr('font-size', function(){ return '16px' })
+            .text(function(d){ return d.stop_id });            
 
   // call positionReset and zoomReset to populate the stops and lines and such...
   positionReset();
